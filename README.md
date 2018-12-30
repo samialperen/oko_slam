@@ -4,11 +4,7 @@
 * Uğur Açıkgöz - https://github.com/ugurmozart
 * Sami Alperen Akgün - https://github.com/samialperen
 * Mustafa Kılınç - https://github.com/dorasprime
-<<<<<<< HEAD
-* Furkan Güllü - 
-=======
 * Furkan Güllü - https://github.com/gullufurkan
->>>>>>> 669813d1c3b3fcf7b2d36d4c0609a874980f4fc4
 
 
 This repository contains all the documentation, code and design of the robot made by "Öz Kardeşler Otomasyon (OKO)".
