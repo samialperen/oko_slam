@@ -22,7 +22,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://meshes/generic_map.STL</uri>
+            <uri>model://meshes/kamu_map.STL</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -49,7 +49,7 @@
         <pose frame=''>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://meshes/generic_map.STL</uri>
+            <uri>model://meshes/kamu_map.STL</uri>
           </mesh>
         </geometry>
         <surface>
