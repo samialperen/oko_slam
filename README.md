@@ -14,6 +14,7 @@ The main purpose of the robot is to extract map of the unknown indoor environmen
 * Ubuntu 16.04
 * [ros-kinetic-turtlebot3 (already installed in ros_ws)](https://github.com/ROBOTIS-GIT/turtlebot3)
 * [ros-kinetic-hector_mapping and hector_slam (already installed in ros_ws)](https://github.com/tu-darmstadt-ros-pkg/hector_slam)
+* [ros-serial (already installed in ros_ws)](https://github.com/wjwwood/serial)
 ## Installation 
 Go to directory ros_ws.
 ```
