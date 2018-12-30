@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package>
+  <name>kamu_robotu_lidarbridge</name>
+  <version>0.0.1</version>
+  <description>Example package for using http://wjwwood.io/serial/ library and obtaining laser scan data from a bluetooth module</description>
+
+  <author email="mustafa.kilinc@ieee.metu.edu.tr">Mustafa KILINC</author>
+
+  <maintainer email="mustafa.kilinc@ieee.metu.edu.tr">Mustafa KILINC</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>serial</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <run_depend>serial</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+
+</package>
