@@ -23,5 +23,9 @@ Build ROS workspace with catkin
 ```
 $ catkin_make
 ```
+**NOTE:** Do not forget to make source to setup.bash after build. You have to source setup.bash from each new terminal. If you don't want to do this, you can make source in your .bashrc file.
+```
+$ source ros_ws/devel/setup.bash
+```
 ## Documentation
 For documentation and tutorials please see the doc directory.
