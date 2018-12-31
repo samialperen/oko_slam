@@ -25,7 +25,7 @@
 
     
     <!-- Map size / start point -->
-    <param name="map_resolution" value="0.010"/>
+    <param name="map_resolution" value="0.025"/>
     <param name="map_size" value="$(arg map_size)"/>
     <param name="map_start_x" value="0.5"/>
     <param name="map_start_y" value="0.5" />
@@ -39,7 +39,7 @@
     <param name="map_pub_period"             value="2" />
     <param name="laser_z_min_value" value = "-0.1" />
     <param name="laser_z_max_value" value = "0.1" />
-    <param name="laser_min_dist"             value="0.12" />
+    <param name="laser_min_dist"             value="0.07" />
     <param name="laser_max_dist"             value="3.5" />
     
     <!-- Advertising config --> 
