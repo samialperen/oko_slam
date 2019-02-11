@@ -2,7 +2,7 @@
 <package format="2">
   <name>kamu_robotu_map_analyzer</name>
   <version>1.0.0</version>
- 
+  <description>The kamu_robotu_map_analyzer package</description> 
   <maintainer email="sami.akgun@ieee.metu.edu.tr">alperen</maintainer>
   <license>MIT</license>
  
