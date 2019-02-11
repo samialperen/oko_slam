@@ -40,7 +40,7 @@
     <param name="laser_z_min_value" value = "-0.1" />
     <param name="laser_z_max_value" value = "0.1" />
     <param name="laser_min_dist"             value="0.07" />
-    <param name="laser_max_dist"             value="3.5" />
+    <param name="laser_max_dist"             value="6" />
     
     <!-- Advertising config --> 
     <param name="advertise_map_service" value="true"/>
