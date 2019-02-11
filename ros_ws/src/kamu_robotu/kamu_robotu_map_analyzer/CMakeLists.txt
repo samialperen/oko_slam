@@ -23,7 +23,7 @@ generate_messages(
 )
 
 catkin_package(
-  INCLUDE_DIRS include
+  #INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp std_msgs message_runtime
   DEPENDS system_lib
