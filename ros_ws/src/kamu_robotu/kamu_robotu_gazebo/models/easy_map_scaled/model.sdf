@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
-  <model name='easy_map'>
+  <model name='easy_map_scaled'>
     <link name='link_0'>
       <pose frame=''>0.04317 0.028473 0.003887 0 -0 0</pose>
       <inertial>
@@ -23,7 +23,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/easy_map.STL</uri>
-            <scale>1 1 1</scale>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <material>
@@ -47,6 +47,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/easy_map.STL</uri>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <surface>
@@ -114,7 +115,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/cylinder_5dia.STL</uri>
-            <scale>1 1 1</scale>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <material>
@@ -138,6 +139,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/cylinder_5dia.STL</uri>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <surface>
@@ -205,7 +207,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/cylinder_10dia.STL</uri>
-            <scale>1 1 1</scale>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <material>
@@ -229,6 +231,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/cylinder_10dia.STL</uri>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <surface>
@@ -296,7 +299,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/square_prism.STL</uri>
-            <scale>1 1 1</scale>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <material>
@@ -320,6 +323,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/square_prism.STL</uri>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <surface>
@@ -387,7 +391,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/triangular_prism.STL</uri>
-            <scale>1 1 1</scale>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <material>
@@ -411,6 +415,7 @@
         <geometry>
           <mesh>
             <uri>model://meshes/triangular_prism.STL</uri>
+            <scale>2 2 2</scale>
           </mesh>
         </geometry>
         <surface>
