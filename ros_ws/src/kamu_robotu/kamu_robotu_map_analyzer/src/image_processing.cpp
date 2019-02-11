@@ -20,12 +20,57 @@ std::string GetCurrentWorkingDir(void);
 
 int main(int argc, char** argv)
 {
-  ros::init(argc, argv, "map_analyzer");
-  ros::NodeHandle nh;    
-  
-  std::string current_dir = GetCurrentWorkingDir();
-  std::cout << current_dir << std::endl;
-  
+    ros::init(argc, argv, "map_analyzer");
+    ros::NodeHandle nh("~");
+    std::string map_name;
+    if (nh.getParam("map_name", map_name))
+    {
+        ROS_INFO("Got param: %s", map_name.c_str());
+    }
+    else
+    {
+        ROS_ERROR("Failed to get param 'map_name'");
+    }
+
+    std::string current_dir = GetCurrentWorkingDir();
+    std::cout << current_dir << std::endl;
+
+    // Saved map directory from slam package
+    std::string read_dir = current_dir + "/saved_maps/" + map_name + ".pgm";
+    std::cout << read_dir << std::endl;
+
+    // Read saved map.pgm created by map_saver
+    cv::Mat input_map_image, input_map_image_gs;
+    input_map_image = cv::imread(read_dir);
+    cv::cvtColor( input_map_image, input_map_image_gs, CV_BGR2GRAY );
+
+    std::cout << "Image Channels: " << input_map_image_gs.channels() << std::endl;
+    cv::namedWindow( "Display window", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Display window", 600, 800);
+    cv::imshow("Display window",input_map_image_gs); //original map
+    cv::waitKey(0);
+
+    //Detect circles
+    std::vector<cv::Vec3f> circles;
+    /// Apply the Hough Transform to find the circles
+    cv::HoughCircles(input_map_image_gs, circles, CV_HOUGH_GRADIENT, 1, input_map_image_gs.rows/2, 20, 10, 0, 0 );
+    /// Draw the circles detected
+    for( size_t i = 0; i < circles.size(); i++ )
+    {
+        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+        int radius = cvRound(circles[i][2]);
+        // circle center
+        circle( input_map_image, center, 3, cv::Scalar(0,255,0), -1, 8, 0 );
+        // circle outline
+        circle( input_map_image, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+    }
+ 
+    cv::namedWindow( "Display window2", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Display window2", 600, 800);
+    cv::imshow("Display window2",input_map_image);
+    cv::waitKey(0);
+
+
 //  struct dirent **depthfileNameList;
 //  struct stat depthstat;
 //  int nDepth;
