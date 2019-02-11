@@ -36,8 +36,8 @@ include_directories(
 )
 
 
-#add_executable(kinect2_recorder src/kinect2_recorder.cpp src/kinect2_recorder_node.cpp src/ParseArg.cpp )
-#target_link_libraries(kinect2_recorder ${catkin_LIBRARIES} ${OpenCV_LIBS})
+add_executable(map_analyzer src/image_processing.cpp)
+target_link_libraries(map_analyzer ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 
 #add_executable(binary_converter src/binary_converter.cpp src/binary_converter_node.cpp src/ParseArg.cpp)
