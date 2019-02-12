@@ -15,7 +15,9 @@
 // GetCurrentDir
 #include <unistd.h> 
 #define GetCurrentDir getcwd
+
 std::string GetCurrentWorkingDir(void);
+bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 );
 
 
 int main(int argc, char** argv)
@@ -74,6 +76,52 @@ int main(int argc, char** argv)
     cv::namedWindow( "Display window2", CV_WINDOW_NORMAL);
     cv::resizeWindow("Display window2", 600, 800);
     cv::imshow("Display window2",input_map_image_focused);
+    cv::waitKey(0);
+
+//    // Find map boundaries
+//    cv::Mat map_boundaries;
+//    cv::Canny(input_map_image, map_boundaries, 30,90);
+//    cv::namedWindow( "Map Boundaries", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Map Boundaries", 600, 800);
+//    cv::imshow("Map Boundaries",map_boundaries);
+//    cv::waitKey(0);
+
+    // Find map boundaries
+    cv::Mat orig_map_im, orig_map_im_gs, orig_map_im_blur, boundaries;
+    orig_map_im = cv::imread(read_dir);
+    cv::cvtColor(orig_map_im, orig_map_im_gs, CV_BGR2GRAY);
+    cv::GaussianBlur(orig_map_im_gs, orig_map_im_blur, cv::Size(3,3),0,0);
+    cv::Canny(orig_map_im_blur, boundaries, 10,30);
+    cv::namedWindow( "Map Boundaries", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Map Boundaries", 600, 800);
+    cv::imshow("Map Boundaries",boundaries);
+    cv::waitKey(0);
+
+    std::vector<std::vector<cv::Point> > contours;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::findContours(boundaries, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+    //std::sort(contours.begin(), contours.end(), compareContourAreas);
+    //std::vector<cv::Point> biggestContour = contours[contours.size()-1];
+    int largest_area = 0, largest_contour_index = 0;
+    cv::Rect bounding_rect;
+    for( int i = 0; i< contours.size(); i++ ) // iterate through each contour.
+    {
+        double a = cv::contourArea( contours[i],false);  //  Find the area of contour
+        if(a>largest_area){
+            largest_area=a;
+            largest_contour_index=i;                //Store the index of largest contour
+            bounding_rect=cv::boundingRect(contours[i]); // Find the bounding rectangle for biggest contour
+        }
+
+    }
+    cv::Mat dst(orig_map_im.rows,orig_map_im.cols,CV_8UC1,cv::Scalar::all(0));
+    cv::Scalar color( 255,255,255);
+    drawContours(dst , contours,largest_contour_index, color, CV_FILLED, 8, hierarchy ); // Draw the largest contour using previously stored index.
+    rectangle(orig_map_im, bounding_rect,  cv::Scalar(0,255,0),1, 8,0);
+
+    cv::namedWindow( "Rectangled", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Rectangled", 600, 800);
+    cv::imshow( "Rectangled", orig_map_im );
     cv::waitKey(0);
 
 
@@ -140,4 +188,11 @@ std::string GetCurrentWorkingDir( void ) {
   GetCurrentDir( buff, FILENAME_MAX );
   std::string current_working_dir(buff);
   return current_working_dir;
+}
+
+// comparison function object
+bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 ) {
+    double i = fabs( contourArea(cv::Mat(contour1)) );
+    double j = fabs( contourArea(cv::Mat(contour2)) );
+    return ( i < j );
 }
