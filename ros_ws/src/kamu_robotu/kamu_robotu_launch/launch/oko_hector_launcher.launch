@@ -19,9 +19,9 @@
 <!--    args="0.0 0.0 0.0 0.0 0.0 0.0 /base_frame /base_stabilized 10" />-->
 <!--    -->
   <node pkg="rviz" type="rviz" name="rviz"
-    args="-d $(find hector_slam_launch)/rviz_cfg/mapping_demo.rviz"/>
+    args="-d $(find kamu_robotu_launch)/rviz_cfg/mapping_demo.rviz"/>
 
-  <include file="$(find hector_mapping)/launch/oko_hector_mapping.launch"/>
+  <include file="$(find kamu_robotu_launch)/launch/oko_hector_mapping.launch"/>
 
   <include file="$(find hector_geotiff)/launch/geotiff_mapper.launch">
     <arg name="trajectory_source_frame_name" value="scanmatcher_frame"/>
