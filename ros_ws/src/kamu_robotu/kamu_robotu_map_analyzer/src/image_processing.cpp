@@ -35,47 +35,85 @@ int main(int argc, char** argv)
     }
 
     std::string current_dir = GetCurrentWorkingDir();
-    std::cout << current_dir << std::endl;
-
+    std::cout << "Current Directory: " << current_dir << std::endl;
     // Saved map directory from slam package
     std::string read_dir = current_dir + "/saved_maps/" + map_name + ".pgm";
-    std::cout << read_dir << std::endl;
+    std::cout << "Reading Directory: " << read_dir << std::endl;
 
-    // Read saved map.pgm created by map_saver
-    cv::Mat input_map_image, input_map_image_focused, input_map_image_gs;
+    ////// Read saved map.pgm created by ROS map_saver
+    cv::Mat input_map_image, input_map_image_gs;
     input_map_image = cv::imread(read_dir);
-    // Crop taken gs image
-    input_map_image_focused = input_map_image(cv::Rect(1024-150,1024-150,300,300));
-    
-    // Grayscale it
-    cv::cvtColor( input_map_image_focused, input_map_image_gs, CV_BGR2GRAY );
-    
-    
-    
-    std::cout << "Image Channels: " << input_map_image_gs.channels() << std::endl;
-    cv::namedWindow( "Display window", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Display window", 600, 800);
-    cv::imshow("Display window",input_map_image_focused); //original map
+    cv::namedWindow( "Original Map", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Original Map", 600, 800);
+    cv::imshow("Original Map",input_map_image);
     cv::waitKey(0);
 
-    //Detect circles
+    // Convert original map image to grayscale
+    cv::cvtColor( input_map_image, input_map_image_gs, CV_BGR2GRAY );
+    ////// Smooth the image to filter noise and find edges using Canny
+    cv::Mat map_im_blurred, map_im_edges;
+    cv::GaussianBlur(input_map_image_gs, map_im_blurred, cv::Size(3,3),0,0);
+    cv::Canny(map_im_blurred, map_im_edges, 10,30);
+    cv::namedWindow( "Map Edges", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Map Edges", 600, 800);
+    cv::imshow("Map Edges",map_im_edges);
+    cv::waitKey(0);
+
+    ////// Find Contours of the map with largest area and get a rectangle around
+    // findContours uses edges to detect contours which possible belong to
+    // closed structures like objects
+    std::vector<std::vector<cv::Point> > map_im_contours;
+    std::vector<cv::Vec4i> hierarchy;
+    cv::findContours(map_im_edges, map_im_contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+    int largest_area = 0, largest_contour_index = 0;
+    cv::Rect bounding_rect; //Rectangle around largest contour
+    for( int i = 0; i< map_im_contours.size(); i++ )
+    {
+        double a = cv::contourArea( map_im_contours[i],false);
+        if(a>largest_area){
+            largest_area=a;
+            largest_contour_index=i;
+            bounding_rect=cv::boundingRect(map_im_contours[i]);
+        }
+    }
+    ////// Display Rectangle that contains largest contour area = outer map walls
+    cv::rectangle(input_map_image, bounding_rect,  cv::Scalar(255,0,0),1, 8,0);
+    cv::namedWindow( "Area that will be cropped", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Area that will be cropped", 600, 800);
+    cv::imshow( "Area that will be cropped", input_map_image );
+    cv::waitKey(0);
+
+    ////// Crop the original map image to eliminate redundant parts
+    cv::Mat map_im_cropped, map_im_cropped_gs;
+    map_im_cropped = input_map_image(bounding_rect);
+    cv::cvtColor( map_im_cropped, map_im_cropped_gs, CV_BGR2GRAY );
+    cv::namedWindow( "Cropped Map Im", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Cropped Map Im", 600, 800);
+    cv::imshow( "Cropped Map Im", map_im_cropped);
+    cv::waitKey(0);
+
+
+
+    //////// OBJECT DETECTION
+    ////// CIRCLE DETECTION
     std::vector<cv::Vec3f> circles;
-    /// Apply the Hough Transform to find the circles
-    cv::HoughCircles(input_map_image_gs, circles, CV_HOUGH_GRADIENT, 1, input_map_image_gs.rows/1, 20, 10, 0, 0 );
+    cv::Mat im_cropped_gs_blurred;
+    cv::GaussianBlur(map_im_cropped_gs, im_cropped_gs_blurred, cv::Size(9,9),2,2);
+    cv::HoughCircles(im_cropped_gs_blurred, circles, CV_HOUGH_GRADIENT, 1, im_cropped_gs_blurred.rows/20, 250, 25, 0, 0 );
     /// Draw the circles detected
     for( size_t i = 0; i < circles.size(); i++ )
     {
         cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
         int radius = cvRound(circles[i][2]);
         // circle center
-        circle( input_map_image_focused, center, 1, cv::Scalar(0,255,0), -1, 8, 0 );
+        cv::circle( map_im_cropped, center, 1, cv::Scalar(0,255,0), 1, 8, 0 );
         // circle outline
-        circle( input_map_image_focused, center, radius, cv::Scalar(0,0,255), 3, 8, 0 );
+        cv::circle( map_im_cropped, center, radius, cv::Scalar(0,0,255), 1, 8, 0 );
     }
- 
-    cv::namedWindow( "Display window2", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Display window2", 600, 800);
-    cv::imshow("Display window2",input_map_image_focused);
+
+    cv::namedWindow( "Detected Circles", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Detected Circles", 600, 800);
+    cv::imshow("Detected Circles",map_im_cropped);
     cv::waitKey(0);
 
 //    // Find map boundaries
@@ -85,45 +123,6 @@ int main(int argc, char** argv)
 //    cv::resizeWindow("Map Boundaries", 600, 800);
 //    cv::imshow("Map Boundaries",map_boundaries);
 //    cv::waitKey(0);
-
-    // Find map boundaries
-    cv::Mat orig_map_im, orig_map_im_gs, orig_map_im_blur, boundaries;
-    orig_map_im = cv::imread(read_dir);
-    cv::cvtColor(orig_map_im, orig_map_im_gs, CV_BGR2GRAY);
-    cv::GaussianBlur(orig_map_im_gs, orig_map_im_blur, cv::Size(3,3),0,0);
-    cv::Canny(orig_map_im_blur, boundaries, 10,30);
-    cv::namedWindow( "Map Boundaries", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Map Boundaries", 600, 800);
-    cv::imshow("Map Boundaries",boundaries);
-    cv::waitKey(0);
-
-    std::vector<std::vector<cv::Point> > contours;
-    std::vector<cv::Vec4i> hierarchy;
-    cv::findContours(boundaries, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
-    //std::sort(contours.begin(), contours.end(), compareContourAreas);
-    //std::vector<cv::Point> biggestContour = contours[contours.size()-1];
-    int largest_area = 0, largest_contour_index = 0;
-    cv::Rect bounding_rect;
-    for( int i = 0; i< contours.size(); i++ ) // iterate through each contour.
-    {
-        double a = cv::contourArea( contours[i],false);  //  Find the area of contour
-        if(a>largest_area){
-            largest_area=a;
-            largest_contour_index=i;                //Store the index of largest contour
-            bounding_rect=cv::boundingRect(contours[i]); // Find the bounding rectangle for biggest contour
-        }
-
-    }
-    cv::Mat dst(orig_map_im.rows,orig_map_im.cols,CV_8UC1,cv::Scalar::all(0));
-    cv::Scalar color( 255,255,255);
-    drawContours(dst , contours,largest_contour_index, color, CV_FILLED, 8, hierarchy ); // Draw the largest contour using previously stored index.
-    rectangle(orig_map_im, bounding_rect,  cv::Scalar(0,255,0),1, 8,0);
-
-    cv::namedWindow( "Rectangled", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Rectangled", 600, 800);
-    cv::imshow( "Rectangled", orig_map_im );
-    cv::waitKey(0);
-
 
 //  struct dirent **depthfileNameList;
 //  struct stat depthstat;
@@ -183,6 +182,7 @@ int main(int argc, char** argv)
   return 0;
 }
 
+
 std::string GetCurrentWorkingDir( void ) {
   char buff[FILENAME_MAX];
   GetCurrentDir( buff, FILENAME_MAX );
@@ -190,9 +190,11 @@ std::string GetCurrentWorkingDir( void ) {
   return current_working_dir;
 }
 
-// comparison function object
-bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 ) {
-    double i = fabs( contourArea(cv::Mat(contour1)) );
-    double j = fabs( contourArea(cv::Mat(contour2)) );
-    return ( i < j );
-}
+//// comparison function object
+//bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 ) {
+//    double i = fabs( contourArea(cv::Mat(contour1)) );
+//    double j = fabs( contourArea(cv::Mat(contour2)) );
+//    return ( i < j );
+//}
+//std::sort(contours.begin(), contours.end(), compareContourAreas);
+//std::vector<cv::Point> biggestContour = contours[contours.size()-1];
