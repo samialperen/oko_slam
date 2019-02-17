@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(kamu_robotu_lidarbridge)
+project(kamu_robotu_lidar_bridge)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp

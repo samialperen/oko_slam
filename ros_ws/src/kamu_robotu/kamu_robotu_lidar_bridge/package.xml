@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package>
-  <name>kamu_robotu_lidarbridge</name>
+  <name>kamu_robotu_lidar_bridge</name>
   <version>0.0.1</version>
   <description>Example package for using http://wjwwood.io/serial/ library and obtaining laser scan data from a bluetooth module</description>
 
