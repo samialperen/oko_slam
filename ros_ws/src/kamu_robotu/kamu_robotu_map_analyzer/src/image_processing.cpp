@@ -1,3 +1,5 @@
+// rosrun kamu_robotu_map_analyzer map_analyzer _map_name:=easy_map_scaled_360p_2hz_0.02res
+
 // ROS
 #include <ros/ros.h>
 #include <std_msgs/String.h>
@@ -15,10 +17,8 @@
 // GetCurrentDir
 #include <unistd.h> 
 #define GetCurrentDir getcwd
-
+// Function Prototypes
 std::string GetCurrentWorkingDir(void);
-bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 );
-
 
 int main(int argc, char** argv)
 {
@@ -116,85 +116,59 @@ int main(int argc, char** argv)
     cv::imshow("Detected Circles",map_im_cropped);
     cv::waitKey(0);
 
-//    // Find map boundaries
-//    cv::Mat map_boundaries;
-//    cv::Canny(input_map_image, map_boundaries, 30,90);
-//    cv::namedWindow( "Map Boundaries", CV_WINDOW_NORMAL);
-//    cv::resizeWindow("Map Boundaries", 600, 800);
-//    cv::imshow("Map Boundaries",map_boundaries);
-//    cv::waitKey(0);
+    ////// TRIANGLE DETECTION
+    // Dilate the image (bridge the gaps, objects grows)
+    cv::Mat im_cropped_gs_dilated;
+    int dilation_size = 3;
+    cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,
+                                                cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+                                                cv::Point(dilation_size, dilation_size) );
+    cv::dilate(map_im_cropped_gs,im_cropped_gs_dilated,element);
+    cv::namedWindow( "Dilated Image", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Dilated Image", 600, 800);
+    cv::imshow("Dilated Image",im_cropped_gs_dilated);
+    cv::waitKey(0);
+    // Smooth the image
+    cv::Mat im_crop_dil_blur;
+    cv::GaussianBlur(im_cropped_gs_dilated, im_crop_dil_blur, cv::Size(5,5),0,0);
+    cv::namedWindow( "Blurred Dilated Image", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Blurred Dilated Image", 600, 800);
+    cv::imshow("Blurred Dilated Image",im_crop_dil_blur);
+    cv::waitKey(0);
 
-//  struct dirent **depthfileNameList;
-//  struct stat depthstat;
-//  int nDepth;
-//    
-//  // Image read directory       
-//  std::string obj_read_dir = read_dir;
-//  obj_read_dir = obj_read_dir.append(obj_name + "/");  
-//  std::string dummy_depth_dir = obj_read_dir;
-//  std::string depth_dir = dummy_depth_dir.append("depth_desired_out2/"); //Read directory
-//  std::cout << "Reading directory: " << depth_dir << std::endl;
-//  
-//  // Output image directory
-//  std::string depth_out = obj_read_dir + "depth_thresholded_png/"; //Desired save directory
-//  boost::filesystem::path depth_out_dir(depth_out);
-//  boost::filesystem::create_directory(depth_out_dir);
-//  std::cout << "Saving directory: " << depth_out << std::endl;             
-//   
-//  nDepth = scandir(depth_dir.c_str(),&depthfileNameList, NULL,alphasort);
-//  std::cout << "The number of images found: " << nDepth-2 << std::endl;
-//  if (nDepth<0)
-//  { 
-//      return 0;
-//  } 
-//  cv::namedWindow("Display window", CV_WINDOW_AUTOSIZE );
-//  for (int counter = 1;counter<nDepth-1;counter++)
-//  {
-//      // Read images
-//      std::stringstream ss;
-//      ss << std::setw(6) << std::setfill('0') << counter; 
-//      std::string filename = ss.str();
-//      std::string depth_fullpath = depth_dir + filename + ".png";
-//      std::cout << "Reading: " << depth_fullpath << std::endl;
-//      cv::Mat cv_depth;
-//      cv_depth = cv::imread(depth_fullpath, CV_LOAD_IMAGE_ANYCOLOR | CV_LOAD_IMAGE_ANYDEPTH);
-//          
-//      // Apply thresholding  (zero-inverted)
-//      int threshold_level = 1300;
-//      int max_value = 65535; //16 bit depth image!
-//      int threshold_type = 4; // zero-inverted           
-//      cv::Mat cv_depth_thresholded; 
-//      cv::threshold(cv_depth,cv_depth_thresholded,threshold_level,max_value,threshold_type);
-//      //cv::imwrite(depth_out + filename + ".png",  cv_depth_thresholded);  
+    // Adaptive threshold may be needed
+    std::vector<std::vector<cv::Point> > cropped_contours;
+    std::vector<cv::Vec4i> cropped_hierarchy;
+    cv::findContours(map_im_cropped_gs, cropped_contours, cropped_hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+    std::cout << "Largest Area: " << largest_area << std::endl;
+    for( int i = 0; i< cropped_contours.size(); i++ )
+    {
+        std::vector<cv::Point> approx_cont;
+        cv::approxPolyDP(cropped_contours[i], approx_cont, 0.1*cv::arcLength(map_im_contours[i],true),true);
+        std::cout << "Edge Number:" << approx_cont.size() << std::endl;
+        if (approx_cont.size() == 3 && cv::contourArea( cropped_contours[i],false) < largest_area/4)
+        {
+            cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(0,255,255),0,8,cropped_hierarchy);
+        }
+        if (approx_cont.size() == 4 && cv::contourArea( cropped_contours[i],false) < (largest_area/100) )
+        {
+            cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
+        }
+    }
+    cv::namedWindow( "Detected Triangles + Circles + Rectangles", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Detected Triangles + Circles + Rectangles", 600, 800);
+    cv::imshow("Detected Triangles + Circles + Rectangles",map_im_cropped);
+    cv::waitKey(0);
 
-
-//      // Display         
-//      double min;
-//      double max;
-//      cv::minMaxIdx(cv_depth_thresholded, &min, &max);
-//      cv::Mat adjMap;
-//      // expand range to 0..255
-//      cv_depth_thresholded.convertTo(adjMap,CV_8UC1, 255 / (max-min), -min); 
-//      cv::imshow("Display window",adjMap);
-//      cv::waitKey(0);  
-//  } 
-
-  return 0;
+    return 0;
 }
 
 
 std::string GetCurrentWorkingDir( void ) {
-  char buff[FILENAME_MAX];
-  GetCurrentDir( buff, FILENAME_MAX );
-  std::string current_working_dir(buff);
-  return current_working_dir;
+    char buff[FILENAME_MAX];
+    GetCurrentDir( buff, FILENAME_MAX );
+    std::string current_working_dir(buff);
+    return current_working_dir;
 }
 
-//// comparison function object
-//bool compareContourAreas ( std::vector<cv::Point> contour1, std::vector<cv::Point> contour2 ) {
-//    double i = fabs( contourArea(cv::Mat(contour1)) );
-//    double j = fabs( contourArea(cv::Mat(contour2)) );
-//    return ( i < j );
-//}
-//std::sort(contours.begin(), contours.end(), compareContourAreas);
-//std::vector<cv::Point> biggestContour = contours[contours.size()-1];
+
