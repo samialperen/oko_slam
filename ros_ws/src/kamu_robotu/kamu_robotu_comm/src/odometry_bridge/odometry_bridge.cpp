@@ -12,10 +12,11 @@ int main(int argc, char** argv){
   double x = 0.0;
   double y = 0.0;
   double th = 0.0;
-
-  double vx = 0.1;
-  double vy = -0.1;
-  double vth = 0.1;
+  
+  double vx = 0.0;
+  double vy = 0.0;
+  double vth = 0.0;
+  
 
   ros::Time current_time, last_time;
   current_time = ros::Time::now();
@@ -26,17 +27,15 @@ int main(int argc, char** argv){
 
     ros::spinOnce();               // check for incoming messages
     current_time = ros::Time::now();
-
-    //compute odometry in a typical way given the velocities of the robot
-    vx = 0.1 + sin(current_time.toSec() - 1550428680);
-    double dt = (current_time - last_time).toSec();
-    double delta_x = (vx * cos(th) - vy * sin(th)) * dt;
-    double delta_y = (vx * sin(th) + vy * cos(th)) * dt;
-    double delta_th = vth * dt;
-
-    x += delta_x;
-    y += delta_y;
-    th += delta_th;
+    /* Read from serial and assign these values from serial, then everything will be working
+    data = serial_read;
+    x = serial_read.x;
+    y = serial_read.y;
+    th= serial_read.th;
+    vx = serial_read.vx;
+    vy = serial_read.vy;
+    vth= serial_read.vth;
+    */
 
     //since all odometry is 6DOF we'll need a quaternion created from yaw
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(th);
