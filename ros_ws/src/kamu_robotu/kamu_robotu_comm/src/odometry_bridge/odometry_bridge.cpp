@@ -1,4 +1,8 @@
 #include <ros/ros.h>
+#include <serial/serial.h>
+#include <std_msgs/String.h>
+#include <std_msgs/Empty.h>
+#include <string>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 
@@ -18,15 +22,14 @@ int main(int argc, char** argv){
   double vth = 0.0;
   
 
-  ros::Time current_time, last_time;
-  current_time = ros::Time::now();
-  last_time = ros::Time::now();
+  ros::Time current_time;
 
   ros::Rate r(30);
   while(n.ok()){
 
     ros::spinOnce();               // check for incoming messages
     current_time = ros::Time::now();
+    
     /* Read from serial and assign these values from serial, then everything will be working
     data = serial_read;
     x = serial_read.x;
@@ -73,8 +76,6 @@ int main(int argc, char** argv){
 
     //publish the message
     odom_pub.publish(odom);
-
-    last_time = current_time;
     r.sleep();
   }
 }
