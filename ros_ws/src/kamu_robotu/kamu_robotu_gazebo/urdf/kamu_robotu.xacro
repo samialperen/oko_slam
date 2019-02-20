@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <robot name="kamu_robotu" xmlns:xacro="https://www.ros.org/wiki/xacro" >
-  <!--<xacro:include filename="$(find kamu_robotu_gazebo)/urdf/kamu_robotu.gazebo.xacro"/> -->
   
-  <xacro:arg name="laser_visual" default="true"/>
-  <xacro:arg name="imu_visual"   default="true"/>
+  <xacro:arg name="laser_visual" default="false"/>
+  <xacro:arg name="imu_visual"   default="false"/>
   <xacro:property name="wheel_radius" value="0.024" />
   <xacro:property name="wheel_length" value="0.01" />
   <xacro:property name="wheel_seperation" value="0.2" />
+  <xacro:property name="chasis_height" value="0.115" />
     
   <material name="black">
     <color rgba="0.0 0.0 0.0 1.0"/>
@@ -33,17 +33,17 @@
     <color rgba="1.0 1.0 1.0 1.0"/>
   </material>  
   
-  <gazebo reference="link_chassis">
+  <gazebo reference="base_link">
     <material>Gazebo/Orange</material>
   </gazebo>
-  <gazebo reference="link_left_wheel">
+  <gazebo reference="wheel_left_link">
     <material>Gazebo/Blue</material>
   </gazebo>
-  <gazebo reference="link_right_wheel">
+  <gazebo reference="wheel_right_link">
     <material>Gazebo/Blue</material>
   </gazebo>
     
-  <link name="link_chassis">
+  <link name="base_link">
     <!-- pose and inertial -->
     <pose>0 0 0.1 0 0 0</pose>
     
@@ -55,23 +55,24 @@
     
     <collision name="collision_chassis">
       <geometry>
-        <box size="0.18 0.18 0.005"/>
+        <cylinder length="0.015" radius="0.2"/>
       </geometry>
     </collision>
     
     <visual>
+      <pose>0 0 0 0 1.57080 1.5708</pose>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <box size="0.18 0.18 0.005"/>
+        <mesh filename="package://kamu_robotu_gazebo/meshes/base.STL" scale="1 1 1"/>
       </geometry>
       <material name="blue"/>
     </visual>
     
     <!-- caster front -->
     <collision name="caster_front_collision">
-      <origin rpy=" 0 0 0" xyz="0.05 0 0"/>
+      <origin rpy=" 0 0 0" xyz="0.05 0 -${chasis_height/2}"/>
       <geometry>
-        <sphere radius="0.0235"/>
+        <sphere radius="0.0239"/>
       </geometry>
       <surface>
         <friction>
@@ -86,17 +87,17 @@
     </collision>
     
     <visual name="caster_front_visual">
-      <origin rpy=" 0 0 0" xyz="0.05 0 0"/>
+      <origin rpy=" 0 0 0" xyz="0.05 0 -${chasis_height/2}"/>
       <geometry>
-        <sphere radius="0.0235"/>
+        <sphere radius="0.0239"/>
       </geometry>
     </visual>
     
     <!-- caster back -->
     <collision name="caster_back_collision">
-      <origin rpy=" 0 0 0" xyz="-0.05 0 0"/>
+      <origin rpy=" 0 0 0" xyz="-0.05 0 -${chasis_height/2}"/>
       <geometry>
-        <sphere radius="0.0235"/>
+        <sphere radius="0.0238"/>
       </geometry>
       <surface>
         <friction>
@@ -111,94 +112,92 @@
     </collision>
     
     <visual name="caster_back_visual">
-      <origin rpy=" 0 0 0" xyz="-0.05 0 0"/>
+      <origin rpy=" 0 0 0" xyz="-0.05 0 -${chasis_height/2}"/>
       <geometry>
-        <sphere radius="0.0235"/>
+        <sphere radius="0.0239"/>
       </geometry>
-    </visual>
-      
-  <!-- Create wheel right -->  
+    </visual>      
   </link>  
  
-  <link name="link_right_wheel">    
+  <!-- Create wheel right -->  
+  <link name="wheel_right_link">    
     <inertial>
       <mass value="0.2"/>
       <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
       <inertia ixx="0.00052666666" ixy="0" ixz="0" iyy="0.00052666666" iyz="0" izz="0.001"/>
     </inertial>
     
-    <collision name="link_right_wheel_collision">
+    <collision name="wheel_right_link_collision">
       <origin rpy="0 1.5707 1.5707" xyz="0 0 0" />
       <geometry>
         <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
       </geometry>
     </collision>
     
-    <visual name="link_right_wheel_visual">
+    <visual name="wheel_right_link_visual">
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
+      <geometry>
+        <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+      </geometry>      
+    </visual>    
+  </link>
+        
+ 
+  <!-- Left Wheel link -->   
+  <link name="wheel_left_link">    
+    <inertial>
+      <mass value="0.2"/>
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
+      <inertia ixx="0.00052666666" ixy="0" ixz="0" iyy="0.00052666666" iyz="0" izz="0.001"/>
+    </inertial>
+    
+    <collision name="wheel_left_link_collision">
+      <origin rpy="0 1.5707 1.5707" xyz="0 0 0" />
+      <geometry>
+        <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
+      </geometry>
+    </collision>
+    
+    <visual name="wheel_left_link_visual">
       <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
       <geometry>
         <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
       </geometry>      
     </visual>
-    
   </link>
-    
+  
   <!--   Joint for right wheel  -->
-  <joint name="joint_right_wheel" type="continuous">
-    <origin rpy="0 0 0" xyz="0 ${wheel_seperation/2} 0"/>
-    <child link="link_right_wheel" />
-    <parent link="link_chassis"/>
+  <joint name="wheel_right_joint" type="continuous">
+    <origin rpy="0 0 0" xyz="0 ${wheel_seperation/2} -${chasis_height/2}"/>
+    <child link="wheel_right_link" />
+    <parent link="base_link"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
     <limit effort="10000" velocity="1000"/>
     <joint_properties damping="1.0" friction="1.0" />
   </joint>  
-    
-  <!-- Left Wheel link -->
-    
-  <link name="link_left_wheel">    
-    <inertial>
-      <mass value="0.2"/>
-      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
-      <inertia ixx="0.00052666666" ixy="0" ixz="0" iyy="0.00052666666" iyz="0" izz="0.001"/>
-    </inertial>
-    
-    <collision name="link_left_wheel_collision">
-      <origin rpy="0 1.5707 1.5707" xyz="0 0 0" />
-      <geometry>
-        <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
-      </geometry>
-    </collision>
-    
-    <visual name="link_left_wheel_visual">
-      <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
-      <geometry>
-        <cylinder length="${wheel_length}" radius="${wheel_radius}"/>
-      </geometry>      
-    </visual>
-    
-  </link>
-    
-  <!--   Joint for right wheel  -->
-  <joint name="joint_left_wheel" type="continuous">
-    <origin rpy="0 0 0" xyz="0 -${wheel_seperation/2} 0"/>
-    <child link="link_left_wheel" />
-    <parent link="link_chassis"/>
+   
+  <!--   Joint for left wheel  -->
+  <joint name="wheel_left_joint" type="continuous">
+    <origin rpy="0 0 0" xyz="0 -${wheel_seperation/2} -${chasis_height/2}"/>
+    <child link="wheel_left_link" />
+    <parent link="base_link"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
     <limit effort="10000" velocity="1000"/>
     <joint_properties damping="1.0" friction="1.0" />
   </joint>    
+  
   <joint name="imu_joint" type="fixed">
-    <parent link="link_chassis"/>
+    <parent link="base_link"/>
     <child link="imu_link"/>
-    <origin xyz="-0.032 0 0.068" rpy="0 0 0"/>
+    <origin xyz="-0.032 0 ${chasis_height}" rpy="0 0 0"/>
   </joint>
 
   <link name="imu_link"/>
 
   <joint name="scan_joint" type="fixed">
-    <parent link="link_chassis"/>
+    <parent link="base_link"/>
     <child link="base_scan"/>
-    <origin xyz="-0.032 0 0.172" rpy="0 0 0"/>
+    <origin xyz="0 0 ${chasis_height-0.035}" rpy="0 0 0"/>
   </joint>
 
   <link name="base_scan">
@@ -211,7 +210,7 @@
     </visual>
 
     <collision>
-      <origin xyz="0.015 0 -0.0065" rpy="0 0 0"/>
+      <origin xyz="0 0 ${chasis_height}" rpy="0 0 0"/>
       <geometry>
         <cylinder length="0.0315" radius="0.055"/>
       </geometry>
@@ -227,21 +226,56 @@
   </link>
   
   <!-- Gazebo side -->
+  
+  <!-- 
+  
+  <gazebo reference="wheel_left_link">
+    <mu1>0</mu1>
+    <mu2>0</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>10</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
+  <gazebo reference="wheel_right_link">
+    <mu1>0</mu1>
+    <mu2>0</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>10</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo> -->
+
+  <gazebo reference="imu_link">
+    <sensor type="imu" name="imu">
+      <always_on>true</always_on>
+      <visualize>$(arg imu_visual)</visualize>
+    </sensor>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
+
   <gazebo>
     <plugin name="kamu_robotu_controller" filename="libgazebo_ros_diff_drive.so">
+      <legacyMode>false</legacyMode>
       <alwaysOn>true</alwaysOn>
       <updateRate>20</updateRate>
-      <leftJoint>joint_left_wheel</leftJoint>
-      <rightJoint>joint_right_wheel</rightJoint>
+      <leftJoint>wheel_left_joint</leftJoint>
+      <rightJoint>wheel_right_joint</rightJoint>
       <wheelSeparation>0.2</wheelSeparation>
       <wheelDiameter>0.48</wheelDiameter>
       <torque>0.1</torque>
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
-      <robotBaseFrame>link_chassis</robotBaseFrame>
+      <robotBaseFrame>base_link</robotBaseFrame>
     </plugin>
   </gazebo>
+
   <gazebo>
     <plugin name="imu_plugin" filename="libgazebo_ros_imu.so">
       <alwaysOn>true</alwaysOn>
@@ -294,7 +328,7 @@
         <noise>
           <type>gaussian</type>
           <mean>0.0</mean>
-          <stddev>0.00</stddev>
+          <stddev>4e-3</stddev>
         </noise>
       </ray>
       <plugin name="gazebo_ros_lds_lfcd_controller" filename="libgazebo_ros_laser.so">
@@ -303,5 +337,7 @@
       </plugin>
     </sensor>
   </gazebo>
-   
+  
+  -->
+
 </robot>
