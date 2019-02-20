@@ -63,7 +63,7 @@
       <pose>0 0 0 0 1.57080 1.5708</pose>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://kamu_robotu_gazebo/meshes/base.STL" scale="1 1 1"/>
+        <mesh filename="package://kamu_robotu_gazebo/models/meshes/base.STL" scale="1 1 1"/>
       </geometry>
       <material name="blue"/>
     </visual>
