@@ -55,7 +55,7 @@
     
     <collision name="collision_chassis">
       <geometry>
-        <cylinder length="0.015" radius="0.2"/>
+        <cylinder length="0.015" radius="0.1"/>
       </geometry>
     </collision>
     
@@ -193,6 +193,14 @@
   </joint>
 
   <link name="imu_link"/>
+  
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_footprint"/>
+    <origin xyz="0 0 -0.12" rpy="0 0 0"/>
+  </joint>
+  
+  <link name="base_footprint"/>
 
   <joint name="scan_joint" type="fixed">
     <parent link="base_link"/>

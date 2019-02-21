@@ -6,14 +6,14 @@
 
   <param name="/use_sim_time" value="true"/>
   
-<!--  <node name="static_tf0" pkg="tf" type="static_transform_publisher" -->
-<!--    args="1 0 0 0 0 0 /world /map 100"/>-->
-  
+  <node pkg="tf" type="static_transform_publisher" name="map_baselink_broadcaster" args="0 0 0 0 0 0 /map /base_link 100"/>
+<!-- 
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser0"
     args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /base_scan 10" />
-    
+
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser1"
     args="0.0 0.0 0.0 0.0 0.0 0.0 /base_footprint /base_link 10" />
+-->
     
 <!--  <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser2"-->
 <!--    args="0.0 0.0 0.0 0.0 0.0 0.0 /base_frame /base_stabilized 10" />-->
