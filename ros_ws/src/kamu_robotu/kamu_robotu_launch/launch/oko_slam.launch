@@ -6,7 +6,7 @@
 
   <param name="/use_sim_time" value="true"/>
   
-  <node pkg="tf" type="static_transform_publisher" name="map_baselink_broadcaster" args="0 0 0 0 0 0 /map /base_link 100"/>
+  <node pkg="tf" type="static_transform_publisher" name="map_baselink_broadcaster" args="0 0 0 0 0 0 /odom /map 100"/>
 <!-- 
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser0"
     args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /base_scan 10" />
