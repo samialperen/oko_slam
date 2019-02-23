@@ -7,6 +7,5 @@
     <arg name="headless" value="false"/>
     <arg name="debug" value="false"/>
   </include>
-  <param name="robot_description" command="cat '$(find kamu_robotu_gazebo)/urdf/kamu_robotu.xacro'" />
   <include file="$(find kamu_robotu_gazebo)/launch/spawn.launch"/>
 </launch>
