@@ -34,13 +34,13 @@
   </material>  
   
   <gazebo reference="base_link">
-    <material>Gazebo/Orange</material>
+    <material>Gazebo/FlatBlack</material>
   </gazebo>
   <gazebo reference="wheel_left_link">
-    <material>Gazebo/Blue</material>
+    <material>Gazebo/Red</material>
   </gazebo>
   <gazebo reference="wheel_right_link">
-    <material>Gazebo/Blue</material>
+    <material>Gazebo/Red</material>
   </gazebo>
     
   <link name="base_link">

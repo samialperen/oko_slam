@@ -7,5 +7,8 @@
     <arg name="headless" value="false"/>
     <arg name="debug" value="false"/>
   </include>
-  <include file="$(find kamu_robotu_gazebo)/launch/spawn.launch"/>
+  
+  <arg name="robot" default="kamu_robotu" doc="choose one of the robots [kamu_robotu, turtlebot3]"/>
+  <include file="$(find kamu_robotu_gazebo)/launch/spawn_$(arg robot).launch"/>
+  
 </launch>
