@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 
 <launch>
-  <arg name="slam_type" default="hector_mapping" doc="slam_type [hector_mapping, gmapping]"/>
+  <arg name="slam_type" default="gmapping" doc="slam_type [hector_mapping, gmapping]"/>
   <arg name="geotiff_map_file_path" default="$(find hector_geotiff)/maps"/>
 
   <param name="/use_sim_time" value="true"/>
-  
+<!--
   <node pkg="tf" type="static_transform_publisher" name="map_baselink_broadcaster" args="0 0 0 0 0 0 /odom /map 100"/>
-<!-- 
+   
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser0"
     args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /base_scan 10" />
 

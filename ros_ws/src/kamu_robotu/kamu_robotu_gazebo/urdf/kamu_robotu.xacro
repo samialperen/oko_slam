@@ -203,14 +203,14 @@
   <link name="base_footprint"/>
 
   <joint name="scan_joint" type="fixed">
-    <parent link="base_link"/>
+    <parent link="base_footprint"/>
     <child link="base_scan"/>
-    <origin xyz="0 0 ${chasis_height-0.035}" rpy="0 0 0"/>
+    <origin xyz="0 0 ${chasis_height+0.085}" rpy="0 0 0"/>
   </joint>
 
   <link name="base_scan">
     <visual>
-      <origin xyz="0 0 0.0" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="package://turtlebot3_description/meshes/sensors/lds.stl" scale="0.001 0.001 0.001"/>
       </geometry>
@@ -218,7 +218,7 @@
     </visual>
 
     <collision>
-      <origin xyz="0 0 ${chasis_height}" rpy="0 0 0"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <cylinder length="0.0315" radius="0.055"/>
       </geometry>
@@ -316,7 +316,7 @@
   <gazebo reference="base_scan">
     <material>Gazebo/FlatBlack</material>
     <sensor type="ray" name="lds_lfcd_sensor">
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0 0 -0.2 0 0 0</pose>
       <visualize>$(arg laser_visual)</visualize>
       <update_rate>2</update_rate>
       <ray>
