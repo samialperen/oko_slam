@@ -7,5 +7,5 @@
     <arg name="headless" value="false"/>
     <arg name="debug" value="false"/>
   </include>
-  <include file="$(find kamu_robotu_gazebo)/launch/spawn.launch"/>
+  <include file="$(find kamu_robotu_gazebo)/launch/spawn_turtlebot3.launch"/>
 </launch>
