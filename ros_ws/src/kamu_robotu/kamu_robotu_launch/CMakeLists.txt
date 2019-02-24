@@ -119,8 +119,16 @@ include_directories(
 # )
 
 install(DIRECTORY launch/
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 )
+
+#install(DIRECTORY gmapping/
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch/gmapping
+#)
+
+#install(DIRECTORY hector_slam/
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch/hector
+#)
 
 install(DIRECTORY rviz_cfg/
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/rviz_cfg/
