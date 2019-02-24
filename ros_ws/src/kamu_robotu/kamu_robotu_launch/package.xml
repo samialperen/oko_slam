@@ -32,6 +32,7 @@
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>gmapping</run_depend>
   <run_depend>hector_mapping</run_depend>
   <run_depend>hector_map_server</run_depend>
   <run_depend>hector_trajectory_server</run_depend>

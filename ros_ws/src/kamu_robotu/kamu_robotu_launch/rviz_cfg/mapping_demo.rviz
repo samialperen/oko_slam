@@ -4,11 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
         - /Status1
-        - /Map1
-        - /LaserScan1
-        - /RobotModel1
       Splitter Ratio: 0.5
     Tree Height: 775
   - Class: rviz/Selection
