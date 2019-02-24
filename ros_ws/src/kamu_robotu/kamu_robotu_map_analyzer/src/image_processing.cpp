@@ -36,6 +36,9 @@ int main(int argc, char** argv)
         ROS_ERROR("Failed to get param 'map_name'");
     }
 
+
+    std::string current_dir = GetCurrentWorkingDir();
+    std::string read_dir = current_dir + "/saved_maps/" + map_name + ".pgm";
     ////// Read saved map_name.pgm in oko_slam/ros_ws/saved_maps
     cv::Mat input_map_image, input_map_image_gs;
     input_map_image = cv::imread(read_dir);
