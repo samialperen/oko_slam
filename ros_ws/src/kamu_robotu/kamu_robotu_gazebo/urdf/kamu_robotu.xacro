@@ -275,7 +275,7 @@
       <leftJoint>wheel_left_joint</leftJoint>
       <rightJoint>wheel_right_joint</rightJoint>
       <wheelSeparation>0.2</wheelSeparation>
-      <wheelDiameter>0.48</wheelDiameter>
+      <wheelDiameter>0.048</wheelDiameter>
       <torque>0.1</torque>
       <commandTopic>cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>

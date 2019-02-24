@@ -119,12 +119,12 @@ include_directories(
 # )
 
 
-#install(DIRECTORY gmapping/
-#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch/gmapping
-#)
+install(DIRECTORY params/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/params
+)
 
-#install(DIRECTORY hector_slam/
-#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch/hector
+#install(DIRECTORY launch/
+#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
 #)
 
 
