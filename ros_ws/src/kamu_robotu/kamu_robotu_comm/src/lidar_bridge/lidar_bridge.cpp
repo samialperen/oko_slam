@@ -52,7 +52,7 @@ int main (int argc, char** argv){
     //ros::Subscriber write_sub = nh.subscribe("write", 1000, write_callback);
     //ros::Publisher read_pub = nh.advertise<std_msgs::String>("read", 1000);
 
-	unsigned int num_readings = 64;
+	unsigned int num_readings = 128;
 	double laser_frequency = 0.46; // this true for 32 readings 
 	double ranges[num_readings];
 	int count = 0 ; 
