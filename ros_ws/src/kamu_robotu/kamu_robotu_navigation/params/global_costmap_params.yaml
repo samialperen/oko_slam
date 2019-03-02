@@ -6,7 +6,7 @@ global_costmap:
   #If you aren't using an existing map or map server, set the static_map parameter to false.
   rolling_window: true
   #Setting the "rolling_window" parameter to true means that the costmap will remain centered around the robot as the robot moves through the world
-  width: 6.0
-  height: 6.0
+  width: 2.0
+  height: 2.0
   
   #If you will use static_map you will need to add and specify rolling_window, width and height parameters!

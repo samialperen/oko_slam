@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="slam_type" default="gmapping" doc="slam_type [hector_mapping, gmapping]"/>
+  <arg name="sim_time" default="true" doc="sim_time [true, false]"/>
+  <arg name="use_simulation" default="true" doc="use_simulation [true, false]"/>
+    
+  <arg name="geotiff_map_file_path" default="$(find hector_geotiff)/maps"/>
+
+  <param name="/use_sim_time" value="$(arg sim_time)"/>
+
+<!-- if="$(eval use_simulation == 'true')"   -->
+  <!-- Run Gazebo if use_simulation is true -->
+  <include file="$(find kamu_robotu_gazebo)/launch/kamu_map.launch" />
+  
+  <node pkg="rviz" type="rviz" name="rviz2"
+    args="-d $(find kamu_robotu_launch)/rviz_cfg/oko.rviz"/> 
+  
+  <!--- Run gmapping -->
+  <include file="$(find kamu_robotu_launch)/launch/oko_slam.launch" />
+
+  <!--- Run Move Base -->
+  <include file="$(find kamu_robotu_navigation)/launch/move_base.launch" />
+
+  <!-- Run Frontier Exploration -->
+  <include file="$(find kamu_robotu_navigation)/launch/frontier.launch" />
+
+</launch>

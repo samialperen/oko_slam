@@ -7,9 +7,9 @@
   <arg name="geotiff_map_file_path" default="$(find hector_geotiff)/maps"/>
 
   <param name="/use_sim_time" value="$(arg sim_time)"/>
-
+    
   <node pkg="rviz" type="rviz" name="rviz"
-    args="-d $(find kamu_robotu_launch)/rviz_cfg/mapping_demo.rviz"/>
+    args="-d $(find kamu_robotu_launch)/rviz_cfg/mapping_demo.rviz"/> 
 
   <include file="$(find kamu_robotu_launch)/launch/oko_$(arg slam_type).launch"/>
 
