@@ -1,6 +1,6 @@
-## Move Autonomously While Extracting Map of the Environment with SLAM
+# Move Autonomously While Extracting Map of the Environment with SLAM
 
-# How to run?
+### Frontier Exploration Tutorial
 * First start the simulation environment.
 ```
 $ roslaunch kamu_robotu_gazebo kamu_map.launch
@@ -31,4 +31,13 @@ to the robot.
 ```
 After all these steps, robot will autonomously navigate and try to 
 extract map of the overall environment inside the given polygon.
+
+### Explore Lite Tutorial
+Explore lite is a greedy frontier based exploration algorithm and it can be used
+instead of frontier-based exploration ROS package. 
+* Follow above steps and after launching move_base, launch explore_lite instead
+of frontier_exploration
+```
+$ roslaunch explore_lite explore.launch
+```
 

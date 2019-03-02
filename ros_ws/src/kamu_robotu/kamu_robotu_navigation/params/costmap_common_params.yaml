@@ -6,7 +6,7 @@ raytrace_range: 1.0
 robot_radius: 0.10 
 # kamu_robotu has 10 cm outer radius
 
-inflation_radius: 0.25
+inflation_radius: 0.05
 # setting the inflation radius at 0.25 meters means that the robot will treat all paths that stay 0.25 meters or more away from obstacles as having equal obstacle cost
 observation_sources: OKO_LIDAR
 
