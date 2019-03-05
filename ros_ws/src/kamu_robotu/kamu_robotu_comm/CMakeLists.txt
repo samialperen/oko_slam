@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   serial
   std_msgs
   sensor_msgs
+  geometry_msgs
   nav_msgs
   tf
 )
@@ -15,6 +16,7 @@ catkin_package(
     serial
     std_msgs
 	sensor_msgs
+	geometry_msgs
 	nav_msgs
 	tf
 )

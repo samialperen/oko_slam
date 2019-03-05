@@ -2,15 +2,21 @@
 #include <serial/serial.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Empty.h>
+#include <std_msgs/Float64.h>
 #include <string>
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
-
-
+#include <geometry_msgs/Twist.h>
+double v,w;
+void twistlistenerCallback(geometry_msgs::Twist cmd){
+    v = cmd.linear.x;
+    w = cmd.angular.z;
+}
 int main(int argc, char** argv){
   ros::init(argc, argv, "odometry_bridge");
   ros::NodeHandle n;
   ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
+  ros::Subscriber twist_sub = n.subscribe("/cmd_vel",100,twistlistenerCallback);
   tf::TransformBroadcaster odom_broadcaster;
   serial::Serial ser;
   
@@ -47,7 +53,7 @@ int main(int argc, char** argv){
 
   ros::Time current_time;
 
-  ros::Rate r(30);
+  ros::Rate r(100);
   while(n.ok()){
 
     ros::spinOnce();               // check for incoming messages
@@ -72,6 +78,9 @@ int main(int argc, char** argv){
 
 			i=0;
         }
+    // Send v and w to the robot here with serial
+    // and here
+    // and here
     
     //since all odometry is 6DOF we'll need a quaternion created from yaw
     geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(odometry_info[2]);
