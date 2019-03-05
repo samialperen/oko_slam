@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
   <model name='easy_map_scaled'>
+  <static>true</static>
     <link name='link_0'>
       <pose frame=''>0.04317 0.028473 0.003887 0 -0 0</pose>
       <inertial>

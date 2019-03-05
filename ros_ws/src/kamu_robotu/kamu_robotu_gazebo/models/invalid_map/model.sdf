@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
   <model name='invalid_map'>
+  <static>true</static>
     <link name='link_1'>
       <pose frame=''>-0.55087 0.028211 0 0 -0 0</pose>
       <inertial>

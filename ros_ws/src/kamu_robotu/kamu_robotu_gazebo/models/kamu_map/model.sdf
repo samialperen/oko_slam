@@ -1,6 +1,7 @@
 <?xml version='1.0'?>
 <sdf version='1.6'>
   <model name='kamu_map'>
+    <static>true</static>
     <link name='link_0'>
       <pose frame=''>0.028358 -0.003503 -0.02 0 -0 0</pose>
       <inertial>
