@@ -25,7 +25,7 @@
     <param name="srt" value="0.2"/>
     <param name="str" value="0.1"/>
     <param name="stt" value="0.2"/>
-    <param name="linearUpdate" value="1.0"/>
+    <param name="linearUpdate" value="0.1"/>
     <param name="angularUpdate" value="0.2"/>
     <param name="temporalUpdate" value="0.5"/>
     <param name="resampleThreshold" value="0.5"/>
@@ -34,7 +34,7 @@
     <param name="ymin" value="-10.0"/>
     <param name="xmax" value="10.0"/>
     <param name="ymax" value="10.0"/>
-    <param name="delta" value="0.015"/>
+    <param name="delta" value="0.01"/>
     <param name="llsamplerange" value="0.01"/>
     <param name="llsamplestep" value="0.01"/>
     <param name="lasamplerange" value="0.005"/>
