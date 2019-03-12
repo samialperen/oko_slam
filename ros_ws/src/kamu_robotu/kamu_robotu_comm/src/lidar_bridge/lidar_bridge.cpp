@@ -52,8 +52,8 @@ int main (int argc, char** argv){
     //ros::Subscriber write_sub = nh.subscribe("write", 1000, write_callback);
     //ros::Publisher read_pub = nh.advertise<std_msgs::String>("read", 1000);
 
-	unsigned int num_readings = 128;
-	double laser_frequency = 0.46; // this true for 32 readings 
+	unsigned int num_readings =     64;
+	double laser_frequency = 1; // this true for 64 readings 
 	double ranges[num_readings];
 	int count = 0 ; 
 
@@ -82,7 +82,17 @@ int main (int argc, char** argv){
     }
 
     ros::Rate loop_rate(5);
-	//ros::Rate r(1.0);
+	//populate the laser scan message 
+
+	sensor_msgs::LaserScan scan;
+
+	scan.header.frame_id = "base_scan";
+	scan.angle_min = 0.0;
+	scan.angle_max = 6.28318977356;
+	scan.angle_increment = 6.2832/num_readings; 
+	scan.time_increment = (1/laser_frequency)/(num_readings);
+	scan.range_min = 0.10000000149;
+	scan.range_max = 3.0;
     while(n.ok()){
 
         ros::spinOnce();
@@ -103,6 +113,16 @@ int main (int argc, char** argv){
 						ROS_INFO_STREAM(ranges[i]);
 
 					}
+					scan.ranges.resize(num_readings);
+	                for(f = 0 ; f<num_readings;f++){
+	
+		                scan.ranges[f] = ranges[f]/1000;
+
+	                }
+	                f=0;
+					ros::Time scan_time = ros::Time::now();
+					scan.header.stamp = scan_time; 
+					scan_pub.publish(scan);	
 				}
 
 			i=0;
@@ -111,30 +131,6 @@ int main (int argc, char** argv){
             //read_pub.publish(readable[0]);
         }
 
-		ros::Time scan_time = ros::Time::now();
-		//populate the laser scan message 
-
-		sensor_msgs::LaserScan scan;
-		scan.header.stamp = scan_time; 
-		scan.header.frame_id = "base_scan";
-		scan.angle_min = 0.0;
-		scan.angle_max = 6.28318977356;
-		scan.angle_increment = 6.283/num_readings; 
-		scan.time_increment = (1/laser_frequency)/(num_readings);
-		scan.range_min = 0.10000000149;
-		scan.range_max = 3.0;
-        
-
-
-		scan.ranges.resize(num_readings);
-		for(f = 0 ; f<num_readings;f++){
-		
-			scan.ranges[f] = ranges[f]/1000;
-
-		}
-		f=0;
-
-		scan_pub.publish(scan);
 		loop_rate.sleep();
 
 
