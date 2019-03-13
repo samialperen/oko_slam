@@ -10,7 +10,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -79,7 +79,6 @@ DMA_HandleTypeDef hdma_usart1_rx;
 DMA_HandleTypeDef hdma_usart1_tx;
 
 /* USER CODE BEGIN PV */
-/* Private variables ---------------------------------------------------------*/
 
 uint16_t counter = 0;
 VL53L0X_RangingMeasurementData_t measuredData;
@@ -102,8 +101,8 @@ static void MX_I2C2_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_TIM6_Init(void);
 static void MX_TIM7_Init(void);
+static void MX_NVIC_Init(void);
 /* USER CODE BEGIN PFP */
-/* Private function prototypes -----------------------------------------------*/
 
 /* USER CODE END PFP */
 
@@ -146,79 +145,47 @@ int main(void)
   MX_USART1_UART_Init();
   MX_TIM6_Init();
   MX_TIM7_Init();
+
+  /* Initialize interrupts */
+  MX_NVIC_Init();
   /* USER CODE BEGIN 2 */
 
   initKernel();
   startKernel(); // this is an infinite loop
 
-  /*LidarStatus_Typedef Lidar_Status = Lidar_OK;
-  uint8_t measurementDummy[22], i;
-
-	//HAL_TIM_Base_Start_IT(&htim6); // 1ms interrupt for general usage
-	HAL_TIM_Base_Start_IT(&htim7); // 1ms counter without interrupt
+	HAL_TIM_Base_Start(&htim7); // 1ms counter without interrupt
 	configureBluetooth(&huart1, 115200, false); // bluetooth module settings
 
-	setV_Encoder(VOLTAGE_OFF);
-	disableAllToFSensors();
 	setV_Bluetooth(VOLTAGE_ON);
-	HAL_Delay(100);
-	Lidar_Status |= configureVL53L0X(rightSensor_ID, 22000);
-	Lidar_Status |= VL53L0X_StartMeasurement(&rightSensor);
-
-	if(Lidar_Status != Lidar_OK)
-		RGB_RedLED(true);
-	else
-		RGB_GreenLED(true);
-
-	HAL_Delay(100);*/
+	setV_Encoder(VOLTAGE_ON); //just for testing purpose
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1) /* this while is for testing purposes, not used in actual code */
+
+	uint8_t prevPos_u = 0;
+
+  while (1)
   {
+	//readAbsolutePosition_byPolling();
+	//convertGrayCode2BinaryCode();
+	if(prevPos_u != absolutePosition_BinaryCoded)
+	{
+		prevPos_u = absolutePosition_BinaryCoded;
+		//send_uint(absolutePosition_GrayCoded);
+		//send_SPACE(1);
+		send_uint(absolutePosition_BinaryCoded);
+		send_CRLF();
+	}
+
+
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-
-	  /*for(i = 0; i < 20; i++)
-	  {
-		  //readVL53L0X(rightSensor_ID, (measurementDummy + i));
-		  measurementDummy[i] = i + 40;
-		  HAL_Delay(50);
-	  }
-	  measurementDummy[20] = 13;
-	  measurementDummy[21] = 10;
-	  bluetoothTransmissionSuccessful = false;
-	  HAL_UART_Transmit_DMA(&huart1, measurementDummy, 22); // start transmission via DMA
-	  while(!bluetoothTransmissionSuccessful);*/
-
-
-	  /*__HAL_TIM_SET_COUNTER(&htim7, 0);
-
-	  ToF_status = VL53L0X_GetMeasurementDataReady(&ToF_sensor, &dataStatus);
-	  while(dataStatus == 0)
-	  {
-		  ToF_status = VL53L0X_GetMeasurementDataReady(&ToF_sensor, &dataStatus);
-	  }
-	  //VL53L0X_ClearInterruptMask(&ToF_sensor, VL53L0X_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
-	  //VL53L0X_WrByte(&ToF_sensor, VL53L0X_REG_SYSTEM_INTERRUPT_CLEAR, VL53L0X_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
-
-	  ToF_status = VL53L0X_GetRangingMeasurementData(&ToF_sensor, &measuredData);// try clear after reading
-	  send_uint(__HAL_TIM_GET_COUNTER(&htim7));
-
-	  if(ToF_status == VL53L0X_ERROR_NONE)
-		  RGB_GreenLED(true);
-	  else
-		  RGB_RedLED(true);
-
-	  send_SPACE(1);
-	  send_uint(measuredData.RangeMilliMeter);
-	  send_CRLF(); // 13 10
-	  HAL_Delay(30);*/
   }
-
   /* USER CODE END 3 */
 }
 
@@ -232,7 +199,7 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  /**Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks 
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI|RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -246,7 +213,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /**Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks 
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1;
@@ -265,6 +232,20 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief NVIC Configuration.
+  * @retval None
+  */
+static void MX_NVIC_Init(void)
+{
+  /* EXTI0_1_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
+  /* EXTI2_3_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
 }
 
 /**
@@ -295,13 +276,13 @@ static void MX_I2C1_Init(void)
   {
     Error_Handler();
   }
-  /**Configure Analogue filter 
+  /** Configure Analogue filter 
   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c1, I2C_ANALOGFILTER_DISABLE) != HAL_OK)
   {
     Error_Handler();
   }
-  /**Configure Digital filter 
+  /** Configure Digital filter 
   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c1, 0) != HAL_OK)
   {
@@ -341,13 +322,13 @@ static void MX_I2C2_Init(void)
   {
     Error_Handler();
   }
-  /**Configure Analogue filter 
+  /** Configure Analogue filter 
   */
   if (HAL_I2CEx_ConfigAnalogFilter(&hi2c2, I2C_ANALOGFILTER_ENABLE) != HAL_OK)
   {
     Error_Handler();
   }
-  /**Configure Digital filter 
+  /** Configure Digital filter 
   */
   if (HAL_I2CEx_ConfigDigitalFilter(&hi2c2, 0) != HAL_OK)
   {
@@ -501,11 +482,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Encoder_In0_Pin Encoder_In1_Pin Encoder_In2_Pin Encoder_In3_Pin 
-                           Encoder_In4_Pin Encoder_In5_Pin Encoder_In6_Pin */
-  GPIO_InitStruct.Pin = Encoder_In0_Pin|Encoder_In1_Pin|Encoder_In2_Pin|Encoder_In3_Pin 
-                          |Encoder_In4_Pin|Encoder_In5_Pin|Encoder_In6_Pin;
+  /*Configure GPIO pins : Encoder_In0_Pin Encoder_In3_Pin Encoder_In4_Pin Encoder_In5_Pin 
+                           Encoder_In6_Pin */
+  GPIO_InitStruct.Pin = Encoder_In0_Pin|Encoder_In3_Pin|Encoder_In4_Pin|Encoder_In5_Pin 
+                          |Encoder_In6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Encoder_In1_Pin Encoder_In2_Pin VL53L0X_Interrupt2_Pin */
+  GPIO_InitStruct.Pin = Encoder_In1_Pin|Encoder_In2_Pin|VL53L0X_Interrupt2_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
@@ -532,12 +519,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : VL53L0X_Interrupt2_Pin */
-  GPIO_InitStruct.Pin = VL53L0X_Interrupt2_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(VL53L0X_Interrupt2_GPIO_Port, &GPIO_InitStruct);
-
   /*Configure GPIO pins : VL53L0X_Interrupt1_Pin VL53L0X_Interrupt0_Pin VL53L0X_Interrupt3_Pin */
   GPIO_InitStruct.Pin = VL53L0X_Interrupt1_Pin|VL53L0X_Interrupt0_Pin|VL53L0X_Interrupt3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
@@ -545,16 +526,12 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* EXTI interrupt init*/
-  HAL_NVIC_SetPriority(EXTI2_3_IRQn, 0, 0);
-  HAL_NVIC_EnableIRQ(EXTI2_3_IRQn);
-
   HAL_NVIC_SetPriority(EXTI4_15_IRQn, 0, 0);
   HAL_NVIC_EnableIRQ(EXTI4_15_IRQn);
 
 }
 
 /* USER CODE BEGIN 4 */
-
 
 /* USER CODE END 4 */
 
@@ -566,9 +543,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  while(1) 
-  {
-  }
+
   /* USER CODE END Error_Handler_Debug */
 }
 
@@ -584,7 +559,7 @@ void assert_failed(char *file, uint32_t line)
 { 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
-    ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+     tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */

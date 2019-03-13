@@ -27,6 +27,7 @@ void initKernel(void) // try to increase power consumption step by step
 	setV_Encoder(VOLTAGE_OFF);
 	disableAllToFSensors();
 	setV_Bluetooth(VOLTAGE_ON);
+	setV_Encoder(VOLTAGE_ON); //just for testing purpose
 	HAL_Delay(100);
 
 	/* after this point wait for bluetooth connection */
@@ -35,6 +36,7 @@ void initKernel(void) // try to increase power consumption step by step
 	enable_RGBThread();
 	while(!bluetoothConnection)
 	{
+		bluetoothConnection = true; //debug
 		RGBThread();
 		UART_ServiceThread();
 	}
@@ -51,16 +53,16 @@ void initKernel(void) // try to increase power consumption step by step
 	/* */
 
 	/* Last configurations */
-	Initiliazition_Status |= configureVL53L0X(frontSensor_ID, 22000);
-	Initiliazition_Status |= configureVL53L0X(backSensor_ID, 22000);
-	Initiliazition_Status |= configureVL53L0X(leftSensor_ID, 22000);
-	Initiliazition_Status |= configureVL53L0X(rightSensor_ID, 22000);
+	Initiliazition_Status |= configureVL53L0X(frontSensor_ID, 30000);
+	Initiliazition_Status |= configureVL53L0X(backSensor_ID, 30000);
+	Initiliazition_Status |= configureVL53L0X(leftSensor_ID, 30000);
+	Initiliazition_Status |= configureVL53L0X(rightSensor_ID, 30000);
 
 	setV_Encoder(VOLTAGE_ON);
 	Initiliazition_Status |= startVL53L0X_measuring();
 	/* */
 
-	if(false)//Initiliazition_Status != Lidar_OK)
+	if(Initiliazition_Status != Lidar_OK)
 	{
 		RGB_mode = RGB_Mode_Error;
 

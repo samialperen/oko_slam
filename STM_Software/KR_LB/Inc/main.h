@@ -11,7 +11,7 @@
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
-  * COPYRIGHT(c) 2018 STMicroelectronics
+  * COPYRIGHT(c) 2019 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -88,8 +88,10 @@ void Error_Handler(void);
 #define Encoder_In0_GPIO_Port GPIOA
 #define Encoder_In1_Pin GPIO_PIN_1
 #define Encoder_In1_GPIO_Port GPIOA
+#define Encoder_In1_EXTI_IRQn EXTI0_1_IRQn
 #define Encoder_In2_Pin GPIO_PIN_2
 #define Encoder_In2_GPIO_Port GPIOA
+#define Encoder_In2_EXTI_IRQn EXTI2_3_IRQn
 #define Encoder_In3_Pin GPIO_PIN_3
 #define Encoder_In3_GPIO_Port GPIOA
 #define Encoder_In4_Pin GPIO_PIN_4

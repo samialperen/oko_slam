@@ -60,8 +60,8 @@ LidarStatus_Typedef configureVL53L0X(uint8_t id, uint32_t timingBudget_us) //dir
 			frontSensor.comms_speed_khz = 400;
 
 			ToF_status |= VL53L0X_DataInit(&frontSensor);
-			ToF_status |= VL53L0X_SetDeviceAddress(&frontSensor, 0x53);
-			frontSensor.I2cDevAddr = 0x53;
+			ToF_status |= VL53L0X_SetDeviceAddress(&frontSensor, 0x54);
+			frontSensor.I2cDevAddr = 0x54; // 53 YAZMA AMIK (OGUZ)
 			ToF_status |= VL53L0X_SetDeviceMode(&frontSensor, VL53L0X_DEVICEMODE_CONTINUOUS_RANGING);
 			ToF_status |= VL53L0X_SetMeasurementTimingBudgetMicroSeconds(&frontSensor, timingBudget_us);
 			break;
@@ -75,8 +75,8 @@ LidarStatus_Typedef configureVL53L0X(uint8_t id, uint32_t timingBudget_us) //dir
 			backSensor.comms_speed_khz = 400;
 
 			ToF_status |= VL53L0X_DataInit(&backSensor);
-			ToF_status |= VL53L0X_SetDeviceAddress(&backSensor, 0x54);
-			backSensor.I2cDevAddr = 0x54;
+			ToF_status |= VL53L0X_SetDeviceAddress(&backSensor, 0x51);
+			backSensor.I2cDevAddr = 0x51;
 			ToF_status |= VL53L0X_SetDeviceMode(&backSensor, VL53L0X_DEVICEMODE_CONTINUOUS_RANGING);
 			ToF_status |= VL53L0X_SetMeasurementTimingBudgetMicroSeconds(&backSensor, timingBudget_us);
 			break;
@@ -154,10 +154,10 @@ LidarStatus_Typedef startVL53L0X_measuring(void)
 {
 	VL53L0X_Error ToF_status = VL53L0X_ERROR_NONE;
 
-	ToF_status |= VL53L0X_StartMeasurement(&frontSensor);
+	ToF_status |= VL53L0X_StartMeasurement(&rightSensor);
 	ToF_status |= VL53L0X_StartMeasurement(&backSensor);
 	ToF_status |= VL53L0X_StartMeasurement(&leftSensor);
-	ToF_status |= VL53L0X_StartMeasurement(&rightSensor);
+	ToF_status |= VL53L0X_StartMeasurement(&frontSensor);
 
 	if(ToF_status == VL53L0X_ERROR_NONE)
 		return Lidar_OK;
@@ -296,9 +296,8 @@ void RGB_ModeFunction(RGB_mode_Typedef Mode)
 
 void readAbsolutePosition_byPolling(void)
 {
-	absolutePosition_GrayCoded = ((GPIOA->IDR & (0x0000007E))>>1) | ((GPIOA->IDR & (0x00000001))<<6);	// mask PA7 because it is not connected
-									// GPIOA_IDR = 0x48000010
-	//absolutePosition_GrayCoded = (GPIOA->IDR & (0x0000007F));
+//	absolutePosition_GrayCoded = ((GPIOA->IDR & (0x0000007E))>>1) | ((GPIOA->IDR & (0x00000001))<<6);	// mask PA7 because it is not connected
+	absolutePosition_GrayCoded = ((GPIOA->IDR & (0x0000007E))>>1);
 
 }
 
