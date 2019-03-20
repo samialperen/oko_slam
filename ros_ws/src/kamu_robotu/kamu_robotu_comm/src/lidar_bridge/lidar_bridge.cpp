@@ -31,7 +31,7 @@ serial::Serial ser;
 float w=0,x=0,y=0,z=0;
 uint8_t dummy_8 = 0;
 int16_t dummy_16 = 0;
-float range[128];
+float range[64];
 int i = 0, f = 0;
 
 std::string readable;
@@ -52,7 +52,7 @@ int main (int argc, char** argv){
     //ros::Subscriber write_sub = nh.subscribe("write", 1000, write_callback);
     //ros::Publisher read_pub = nh.advertise<std_msgs::String>("read", 1000);
 
-	unsigned int num_readings =     64;
+	unsigned int num_readings = 64;
 	double laser_frequency = 1; // this true for 64 readings 
 	double ranges[num_readings];
 	int count = 0 ; 
@@ -81,7 +81,7 @@ int main (int argc, char** argv){
         return -1;
     }
 
-    ros::Rate loop_rate(5);
+    ros::Rate loop_rate(50);
 	//populate the laser scan message 
 
 	sensor_msgs::LaserScan scan;
@@ -91,7 +91,7 @@ int main (int argc, char** argv){
 	scan.angle_max = 6.28318977356;
 	scan.angle_increment = 6.2832/num_readings; 
 	scan.time_increment = (1/laser_frequency)/(num_readings);
-	scan.range_min = 0.10000000149;
+	scan.range_min = 0.0;
 	scan.range_max = 3.0;
     while(n.ok()){
 
