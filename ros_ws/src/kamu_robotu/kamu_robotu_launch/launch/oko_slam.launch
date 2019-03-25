@@ -2,7 +2,7 @@
 
 <launch>
   <arg name="slam_type" default="gmapping" doc="slam_type [hector_mapping, gmapping]"/>
-  <arg name="sim_time" default="true" doc="sim_time [true, false]"/>
+  <arg name="sim_time" default="false" doc="sim_time [true, false]"/>
   
   <arg name="geotiff_map_file_path" default="$(find hector_geotiff)/maps"/>
 
