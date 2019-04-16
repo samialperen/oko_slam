@@ -1,6 +1,6 @@
 /***
  * This example expects the serial port has a loopback on it.
- *
+ * 
  *  Author : Mustafa KILINC
  *  E-mail : mustafa.kilinc@ieee.metu.edu.tr
  * Alternatively, you could use an Arduino:
@@ -31,7 +31,7 @@ serial::Serial ser;
 float w=0,x=0,y=0,z=0;
 uint8_t dummy_8 = 0;
 int16_t dummy_16 = 0;
-float range[64];
+float range[128];
 int i = 0, f = 0;
 
 std::string readable;
@@ -46,16 +46,16 @@ int main (int argc, char** argv){
     //ros::NodeHandle nh;
 	ros::NodeHandle n;
 
-
+	
 	ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("scan",50);
 
     //ros::Subscriber write_sub = nh.subscribe("write", 1000, write_callback);
     //ros::Publisher read_pub = nh.advertise<std_msgs::String>("read", 1000);
 
-	unsigned int num_readings = 64;
-	double laser_frequency = 1; // this true for 64 readings
+	unsigned int num_readings = 128;
+	double laser_frequency = 0.46; // this true for 32 readings 
 	double ranges[num_readings];
-	int count = 0 ;
+	int count = 0 ; 
 
 
     try
@@ -63,7 +63,7 @@ int main (int argc, char** argv){
         ser.setPort("/dev/rfcomm0");
         ser.setBaudrate(115200);
 		serial::stopbits_t  stopbits;
-		stopbits = serial::stopbits_two;
+		stopbits = serial::stopbits_two;	
 		ser.setStopbits(stopbits);
         serial::Timeout to = serial::Timeout::simpleTimeout(1000);
         ser.setTimeout(to);
@@ -77,23 +77,12 @@ int main (int argc, char** argv){
 
     if(ser.isOpen()){
         ROS_INFO_STREAM("Serial Port initialized");
-        ser.flush();
     }else{
         return -1;
     }
 
-    ros::Rate loop_rate(50);
-	//populate the laser scan message
-
-	sensor_msgs::LaserScan scan;
-
-	scan.header.frame_id = "base_scan";
-	scan.angle_min = 0.7854;
-	scan.angle_max = 5.4978;
-	scan.angle_increment = 6.2832/num_readings;
-	scan.time_increment = (1/laser_frequency)/(num_readings);
-	scan.range_min = 0.092;
-	scan.range_max = 3.0;
+    ros::Rate loop_rate(5);
+	//ros::Rate r(1.0);
     while(n.ok()){
 
         ros::spinOnce();
@@ -101,29 +90,19 @@ int main (int argc, char** argv){
         if(ser.available()){
             ROS_INFO_STREAM("Reading from serial port");
             std_msgs::String result;
-            readable = ser.read(1);
-
+            readable = ser.readline(1);
+	
 
 				if(readable[0]==119) {
 					for(i=0;i<num_readings;i++){
 
-						readable = ser.read(2);
+						readable = ser.readline(2);
 						dummy_8 = readable[1];
 						dummy_16 = (readable[0]<<8|dummy_8);
 						ranges[i] = float(dummy_16/1.0);
 						ROS_INFO_STREAM(ranges[i]);
 
 					}
-					scan.ranges.resize(num_readings);
-	                for(f = 0 ; f<num_readings;f++){
-
-		                scan.ranges[f] = ranges[f]/1000;
-
-	                }
-	                f=0;
-					ros::Time scan_time = ros::Time::now();
-					scan.header.stamp = scan_time;
-					scan_pub.publish(scan);
 				}
 
 			i=0;
@@ -132,6 +111,30 @@ int main (int argc, char** argv){
             //read_pub.publish(readable[0]);
         }
 
+		ros::Time scan_time = ros::Time::now();
+		//populate the laser scan message 
+
+		sensor_msgs::LaserScan scan;
+		scan.header.stamp = scan_time; 
+		scan.header.frame_id = "base_scan";
+		scan.angle_min = 0.0;
+		scan.angle_max = 6.28318977356;
+		scan.angle_increment = 6.283/num_readings; 
+		scan.time_increment = (1/laser_frequency)/(num_readings);
+		scan.range_min = 0.10000000149;
+		scan.range_max = 3.0;
+        
+
+
+		scan.ranges.resize(num_readings);
+		for(f = 0 ; f<num_readings;f++){
+		
+			scan.ranges[f] = ranges[f]/1000;
+
+		}
+		f=0;
+
+		scan_pub.publish(scan);
 		loop_rate.sleep();
 
 
@@ -139,7 +142,7 @@ int main (int argc, char** argv){
 }
 
 
-// IMU part
+// IMU part 
 
 /*
 	if(readable[0]==119) {
@@ -150,8 +153,8 @@ int main (int argc, char** argv){
 	ROS_INFO_STREAM(w);
 	readable = ser.readline(1);
 	}
-
-
+	
+	
 	if(readable[0]==120) {
 	readable = ser.readline(2);
 	dummy_8 = readable[1];
@@ -161,7 +164,7 @@ int main (int argc, char** argv){
 	readable = ser.readline(1);
 	}
 
-
+	
 	if(readable[0]==121) {
 	readable = ser.readline(2);
 	dummy_8 = readable[1];
@@ -171,7 +174,7 @@ int main (int argc, char** argv){
 	readable = ser.readline(1);
 	}
 
-
+	
 	if(readable[0]==122) {
 	readable = ser.readline(2);
 	dummy_8 = readable[1];
@@ -181,3 +184,4 @@ int main (int argc, char** argv){
 	}
 
 	*/
+

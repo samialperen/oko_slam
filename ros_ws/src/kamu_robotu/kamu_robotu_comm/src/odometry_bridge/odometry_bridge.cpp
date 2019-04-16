@@ -7,33 +7,43 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
+#include "okoserial.h"
+
+
 double v,w;
+
+
 void twistlistenerCallback(geometry_msgs::Twist cmd){
     v = cmd.linear.x;
     w = cmd.angular.z;
 }
+
+unsigned int num_readings = 28;
+uint8_t dummy_8 = 0;
+int16_t dummy_16 = 0;
+int i = 0 ;
+
 int main(int argc, char** argv){
   ros::init(argc, argv, "odometry_bridge");
   ros::NodeHandle n;
   ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
   ros::Subscriber twist_sub = n.subscribe("/cmd_vel",100,twistlistenerCallback);
   tf::TransformBroadcaster odom_broadcaster;
-  serial::Serial ser;
+
+serial::Serial ser;
+std::string readable;
+
+
   
-  std::string readable;
-  unsigned int num_readings = 6;
-  uint8_t dummy_8 = 0;
-  int16_t dummy_16 = 0;
-  int i = 0;
+double odometry_info[num_readings]; // x,y,th,vx,vy,w
   
-  double odometry_info[6]; // x,y,th,vx,vy,w
   
   try // Connect to the port
     {
-        ser.setPort("/dev/ttyS0"); // miniuart port of the rpi
-        ser.setBaudrate(115200);
+        ser.setPort("/dev/rfcomm3"); // miniuart port of the rpi
+        ser.setBaudrate(9600);
 		serial::stopbits_t  stopbits;
-		stopbits = serial::stopbits_two;	
+		stopbits = serial::stopbits_one;	
 		ser.setStopbits(stopbits);
         serial::Timeout to = serial::Timeout::simpleTimeout(1000);
         ser.setTimeout(to);
@@ -41,7 +51,7 @@ int main(int argc, char** argv){
     }
     catch (serial::IOException& e)
     {
-        ROS_ERROR_STREAM("Unable to open port ");
+        ROS_ERROR_STREAM("Unable to open porttttt ");
         return -1;
     }
 
@@ -61,29 +71,26 @@ int main(int argc, char** argv){
         if(ser.available()){
             ROS_INFO_STREAM("Reading from serial port");
             std_msgs::String result;
-            readable = ser.readline(1);
-	
+            readable = ser.readline(28);
+		for(i=0;i<num_readings;i++){
+			dummy_8 = readable[i];
+			getSingleByte(dummy_8);
+			ROS_INFO("DATA %d : %x " , i , dummy_8);
+			
+		}
+		ROS_INFO("odom_mess.x :%f " , odom_mess.x);
+			ROS_INFO("odom_mess.y :%f " , odom_mess.y);
+			ROS_INFO("odom_mess.theta :%f " , odom_mess.theta);
+			ROS_INFO("odom_mess.vx :%f " , odom_mess.vx);
+			ROS_INFO("odom_mess.w :%f " , odom_mess.w);
 
-				if(readable[0]==119) {
-					for(i=0;i<num_readings;i++){
-
-						readable = ser.readline(2);
-						dummy_8 = readable[1];
-						dummy_16 = (readable[0]<<8|dummy_8);
-						odometry_info[i] = double(dummy_16/1.0);
-						ROS_INFO_STREAM(odometry_info[i]);
-
-					}
-				}
-
-			i=0;
         }
     // Send v and w to the robot here with serial
     // and here
     // and here
     
     //since all odometry is 6DOF we'll need a quaternion created from yaw
-    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(odometry_info[2]);
+    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(odom_mess.theta);
 
     //first, we'll publish the transform over tf
     geometry_msgs::TransformStamped odom_trans;
@@ -91,8 +98,8 @@ int main(int argc, char** argv){
     odom_trans.header.frame_id = "odom";
     odom_trans.child_frame_id = "base_link";
 
-    odom_trans.transform.translation.x = odometry_info[0];
-    odom_trans.transform.translation.y = odometry_info[1];
+    odom_trans.transform.translation.x = odom_mess.x/1000.0;
+    odom_trans.transform.translation.y = odom_mess.y/1000.0;
     odom_trans.transform.translation.z = 0.0;
     odom_trans.transform.rotation = odom_quat;
 
@@ -105,16 +112,16 @@ int main(int argc, char** argv){
     odom.header.frame_id = "odom";
 
     //set the position
-    odom.pose.pose.position.x = odometry_info[0];
-    odom.pose.pose.position.y = odometry_info[1];
+    odom.pose.pose.position.x = odom_mess.x/1000.0;
+    odom.pose.pose.position.y = odom_mess.y/1000.0;
     odom.pose.pose.position.z = 0.0;
     odom.pose.pose.orientation = odom_quat;
 
     //set the velocity
     odom.child_frame_id = "base_link";
-    odom.twist.twist.linear.x = odometry_info[3];
-    odom.twist.twist.linear.y = odometry_info[4];
-    odom.twist.twist.angular.z = odometry_info[5];
+    odom.twist.twist.linear.x = odom_mess.vx/1000.0;
+    odom.twist.twist.linear.y = 0.0;
+    odom.twist.twist.angular.z = odom_mess.w;
 
     //publish the message
     odom_pub.publish(odom);

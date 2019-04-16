@@ -1,35 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(kamu_robotu_comm)
 
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  serial
-  std_msgs
-  sensor_msgs
-  geometry_msgs
-  nav_msgs
-  tf
-)
+find_package(catkin REQUIRED COMPONENTS roscpp serial std_msgs sensor_msgs geometry_msgs nav_msgs tf )
 
-catkin_package(
-  CATKIN_DEPENDS
-    serial
-    std_msgs
-	sensor_msgs
-	geometry_msgs
-	nav_msgs
-	tf
-)
+catkin_package(LIBRARIES  ${PROJECT_NAME} CATKIN_DEPENDS serial std_msgs sensor_msgs geometry_msgs nav_msgs DEPENDS okoserial)
 
-include_directories(
-  ${catkin_INCLUDE_DIRS}
-)
+include_directories(include ${catkin_INCLUDE_DIRS})
 
-add_executable(lidar_bridge src/lidar_bridge/lidar_bridge.cpp)
-target_link_libraries(lidar_bridge ${catkin_LIBRARIES})
+add_library(okoserial src/okoserial.c)
 
-add_executable(odometry_bridge src/odometry_bridge/odometry_bridge.cpp)
-target_link_libraries(odometry_bridge ${catkin_LIBRARIES})
+add_executable(lidar_bridge src/lidar_bridge/lidar_bridge.cpp src/okoserial.c)
+target_link_libraries(lidar_bridge ${catkin_LIBRARIES} okoserial)
+
+add_executable(odometry_bridge src/odometry_bridge/odometry_bridge.cpp src/okoserial.c) 
+target_link_libraries(odometry_bridge ${catkin_LIBRARIES} okoserial)
 
 # This ensures that sensor_msgs' msg headers are built before your executable
 if(sensor_msgs_EXPORTED_TARGETS)
@@ -41,3 +25,8 @@ install(TARGETS lidar_bridge odometry_bridge
   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  PATTERN ".svn" EXCLUDE
+)
