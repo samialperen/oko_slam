@@ -8,14 +8,28 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
 #include "okoserial.h"
+#include "kamu_robotu_comm/kamu_cmd.h"
 
 
 double v,w;
-
-
+serial::Serial ser;
+std::string readable;
 void twistlistenerCallback(geometry_msgs::Twist cmd){
     v = cmd.linear.x;
     w = cmd.angular.z;
+}
+bool kamu_command_handler(kamu_robotu_comm::kamu_cmd::Request &req, kamu_robotu_comm::kamu_cmd::Response &res)
+{
+uint8_t data2send[6];
+data2send[0] = 0x55;
+data2send[1] = (uint8_t)req.cmd_type;
+data2send[2] = (uint8_t)req.cmd_param;
+data2send[3] = (uint8_t)req.cmd_enable;
+data2send[4] = 0;
+data2send[5] = 0;
+ser.write((const uint8_t *) data2send, 6);
+res.result = true;
+return true;
 }
 
 unsigned int num_readings = 28;
@@ -27,11 +41,9 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "odometry_bridge");
   ros::NodeHandle n;
   ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
-  ros::Subscriber twist_sub = n.subscribe("/cmd_vel",100,twistlistenerCallback);
+  ros::ServiceServer service = n.advertiseService("/kamu_cmd", kamu_command_handler);
+  ros::Subscriber twist_sub = n.subscribe("/cmd_vel",100, twistlistenerCallback);
   tf::TransformBroadcaster odom_broadcaster;
-
-serial::Serial ser;
-std::string readable;
 
 
   
@@ -40,7 +52,7 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
   
   try // Connect to the port
     {
-        ser.setPort("/dev/rfcomm3"); // miniuart port of the rpi
+        ser.setPort("/dev/rfcomm1"); // miniuart port of the rpi
         ser.setBaudrate(9600);
 		serial::stopbits_t  stopbits;
 		stopbits = serial::stopbits_one;	
@@ -63,12 +75,12 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
 
   ros::Time current_time;
 
-  ros::Rate r(100);
+  ros::Rate r(20);
   while(n.ok()){
 
     ros::spinOnce();               // check for incoming messages
     current_time = ros::Time::now();
-        if(ser.available()){
+        if(ser.available()>0){
             ROS_INFO_STREAM("Reading from serial port");
             std_msgs::String result;
             readable = ser.readline(28);

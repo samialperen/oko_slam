@@ -3,9 +3,18 @@ project(kamu_robotu_comm)
 
 find_package(catkin REQUIRED COMPONENTS roscpp serial std_msgs sensor_msgs geometry_msgs nav_msgs tf )
 
-catkin_package(LIBRARIES  ${PROJECT_NAME} CATKIN_DEPENDS serial std_msgs sensor_msgs geometry_msgs nav_msgs DEPENDS okoserial)
-
 include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_service_files(
+  FILES
+  kamu_cmd.srv
+)
+generate_messages(
+  DEPENDENCIES
+  std_msgs
+)
+
+catkin_package(LIBRARIES  ${PROJECT_NAME} CATKIN_DEPENDS serial std_msgs sensor_msgs geometry_msgs nav_msgs DEPENDS okoserial)
 
 add_library(okoserial src/okoserial.c)
 
@@ -30,3 +39,4 @@ install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
   PATTERN ".svn" EXCLUDE
 )
+
