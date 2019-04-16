@@ -7,7 +7,7 @@
 
 
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_scan"
-    args="0.0 0.0 0.0 180.0 00.0 0.0 /base_link /base_scan 10" />
+    args="0.0 0.0 0.0 0.0 00.0 0.0 /base_link /base_scan 10" />
     
   <!-- Gmapping -->
   <node pkg="gmapping" type="slam_gmapping" name="kamu_robotu_slam_gmapping" output="screen">
@@ -38,7 +38,7 @@
     <param name="ymin" value="-10.0"/>
     <param name="xmax" value="10.0"/>
     <param name="ymax" value="10.0"/>
-    <param name="delta" value="0.01"/>
+    <param name="delta" value="0.02"/>
     <param name="llsamplerange" value="0.01"/>
     <param name="llsamplestep" value="0.01"/>
     <param name="lasamplerange" value="0.005"/>
