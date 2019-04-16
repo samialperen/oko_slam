@@ -11,7 +11,7 @@
   <arg name="map_size" default="2048"/>
   
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser0"
-    args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /base_scan 10" />
+    args="0.0 0.0 0.0 90.0 00.0 0.0 /base_link /base_scan 10" />
     
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser1"
     args="0.0 0.0 0.0 0.0 0.0 0.0 /base_footprint /base_link 10" />
