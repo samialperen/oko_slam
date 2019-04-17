@@ -7,7 +7,7 @@
 
 
   <node pkg="tf" type="static_transform_publisher" name="base_link_to_scan"
-    args="0.0 0.0 0.0 0.0 00.0 0.0 /base_link /base_scan 10" />
+    args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /base_scan 10" />
     
   <!-- Gmapping -->
   <node pkg="gmapping" type="slam_gmapping" name="kamu_robotu_slam_gmapping" output="screen">

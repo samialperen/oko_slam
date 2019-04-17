@@ -88,8 +88,8 @@ int main (int argc, char** argv){
 	sensor_msgs::LaserScan scan;
 
 	scan.header.frame_id = "base_scan";
-	scan.angle_min = 0.7854;
-	scan.angle_max = 5.4978;
+	scan.angle_min = 0.7854+1.05;
+    scan.angle_max = 5.4978+1.05;
 	scan.angle_increment = 6.2832/num_readings;
 	scan.time_increment = (1/laser_frequency)/(num_readings);
 	scan.range_min = 0.092;
