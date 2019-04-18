@@ -14,6 +14,7 @@
 double v,w;
 serial::Serial ser;
 std::string readable;
+std::string eol="~~~~";
 void twistlistenerCallback(geometry_msgs::Twist cmd){
     v = cmd.linear.x;
     w = cmd.angular.z;
@@ -52,12 +53,12 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
   
   try // Connect to the port
     {
-        ser.setPort("/dev/rfcomm1"); // miniuart port of the rpi
+        ser.setPort("/dev/rfcomm1"); // miniuart port of the rpi, /dev/ttyS0
         ser.setBaudrate(9600);
 		serial::stopbits_t  stopbits;
 		stopbits = serial::stopbits_one;	
 		ser.setStopbits(stopbits);
-        serial::Timeout to = serial::Timeout::simpleTimeout(1000);
+        serial::Timeout to = serial::Timeout::simpleTimeout(100);
         ser.setTimeout(to);
         ser.open();
     }
@@ -74,7 +75,6 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
     }
 
   ros::Time current_time;
-
   ros::Rate r(20);
   while(n.ok()){
 
@@ -83,7 +83,7 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
         if(ser.available()>0){
             ROS_INFO_STREAM("Reading from serial port");
             std_msgs::String result;
-            readable = ser.readline(28);
+            readable = ser.readline(50,eol);
 		for(i=0;i<num_readings;i++){
 			dummy_8 = readable[i];
 			getSingleByte(dummy_8);
@@ -91,10 +91,10 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
 			
 		}
 		ROS_INFO("odom_mess.x :%f " , odom_mess.x);
-			ROS_INFO("odom_mess.y :%f " , odom_mess.y);
-			ROS_INFO("odom_mess.theta :%f " , odom_mess.theta);
-			ROS_INFO("odom_mess.vx :%f " , odom_mess.vx);
-			ROS_INFO("odom_mess.w :%f " , odom_mess.w);
+		ROS_INFO("odom_mess.y :%f " , odom_mess.y);
+		ROS_INFO("odom_mess.theta :%f " , odom_mess.theta);
+		ROS_INFO("odom_mess.vx :%f " , odom_mess.vx);
+		ROS_INFO("odom_mess.w :%f " , odom_mess.w);
 
         }
     // Send v and w to the robot here with serial
