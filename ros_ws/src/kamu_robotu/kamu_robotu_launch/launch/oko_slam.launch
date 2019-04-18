@@ -3,10 +3,10 @@
 <launch>
   <arg name="slam_type" default="gmapping" doc="slam_type [hector_mapping, gmapping]"/>
   <arg name="sim_time" default="false" doc="sim_time [true, false]"/>
-  
-  <group if="$(arg sim_time)"> # check here later and implement ifnot
+  if="$(arg sim_time)" # if sim_time true, open rviz
+     <include file="$(find kamu_robotu_launch)/launch/rviz.launch"> </include>
+  unless="$(arg sim_time)" # if sim_time false, launch communication nodes.
      <include file="$(find kamu_robotu_comm)/launch/comm.launch"> </include>
-  </group>
   
   <arg name="geotiff_map_file_path" default="$(find hector_geotiff)/maps"/>
 
