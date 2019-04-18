@@ -9,7 +9,7 @@ from std_srvs.srv import *
 
 import math
 
-active_ = False
+active_ = True
 
 # robot state variables
 position_ = Point()
@@ -24,10 +24,13 @@ state_ = 0
 desired_position_ = Point()
 desired_position_.x = rospy.get_param('des_pos_x')
 desired_position_.y = rospy.get_param('des_pos_y')
+#desired_position_.x = -3
+#desired_position_.y = 7
 desired_position_.z = 0
 
 # Precision parameters ()
-yaw_precision_ = 5 * (math.pi / 180) #5 degree tolerance
+#yaw_precision_ = 5 * (math.pi / 180) #5 degree tolerance
+yaw_precision_ = 5 * (math.pi / 90)
 position_precision_ = 0.02 # 2cm
 linear_velocity_ = 0.2
 angular_velocity_ = 0.15
@@ -77,12 +80,12 @@ def fix_yaw(des_pos):
     global yaw_, pub, yaw_precision_, state_, angular_velocity_
     desired_yaw = math.atan2(des_pos.y - position_.y, des_pos.x - position_.x)
     err_yaw = normalize_angle(desired_yaw - yaw_)
-    
+    err_yaw = desired_yaw - yaw_
     rospy.loginfo(err_yaw)
     
     twist_msg = Twist()
     if math.fabs(err_yaw) > yaw_precision_:
-        twist_msg.angular.z = angular_velocity_ if err_yaw > 0 else -angular_velocity_
+        twist_msg.angular.z = -angular_velocity_ if err_yaw > 0 else angular_velocity_
     
     pub.publish(twist_msg)
     
