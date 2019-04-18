@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-# This launch file calls all communication nodes
 <launch>
 
   <node name="lidar_bridge" pkg="kamu_robotu_comm" type="lidar_bridge" respawn="false" output="screen"></node>
