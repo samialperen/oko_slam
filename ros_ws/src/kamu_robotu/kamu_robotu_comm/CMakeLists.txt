@@ -24,6 +24,9 @@ target_link_libraries(lidar_bridge ${catkin_LIBRARIES} okoserial)
 add_executable(odometry_bridge src/odometry_bridge/odometry_bridge.cpp src/okoserial.c) 
 target_link_libraries(odometry_bridge ${catkin_LIBRARIES} okoserial)
 
+add_executable(kamu_robotu_teleop src/kamu_robotu_teleop.cpp)
+target_link_libraries(kamu_robotu_teleop ${catkin_LIBRARIES})
+
 # This ensures that sensor_msgs' msg headers are built before your executable
 if(sensor_msgs_EXPORTED_TARGETS)
   add_dependencies(lidar_bridge ${sensor_msgs_EXPORTED_TARGETS})

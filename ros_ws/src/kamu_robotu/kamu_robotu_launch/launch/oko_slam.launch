@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="slam_type" default="gmapping" doc="slam_type [hector_mapping, gmapping]"/>
-  <arg name="sim_time" default="false" doc="sim_time [true, false]"/>
+  <arg name="sim_time" default="true" doc="sim_time [true, false]"/>
 
   <param name="/use_sim_time" value="$(arg sim_time)"/>
 
