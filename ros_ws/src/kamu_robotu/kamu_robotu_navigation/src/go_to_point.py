@@ -9,7 +9,7 @@ from std_srvs.srv import *
 
 import math
 
-active_ = True
+active_ = False
 
 # robot state variables
 position_ = Point()

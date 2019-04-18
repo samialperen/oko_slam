@@ -12,7 +12,7 @@ from std_srvs.srv import *
 import math
 
 ## Global variables
-active_ = False
+active_ = True
 pub_ = None #Since we are using publisher in the functions as well we need to 
 # make it global
 
@@ -120,7 +120,7 @@ def take_action():
 
 def find_wall():
     msg = Twist()
-    msg.linear.x = linear_velocity_
+    msg.linear.x = -linear_velocity_
     msg.angular.z = -angular_velocity_
     return msg
 
@@ -133,7 +133,7 @@ def follow_the_wall():
     global regions_
     
     msg = Twist()
-    msg.linear.x = linear_velocity_
+    msg.linear.x = -linear_velocity_
     return msg
 
 def main():
@@ -156,10 +156,13 @@ def main():
         msg = Twist()
         if state_ == 0:
             msg = find_wall()
+            print "Find wall Bitch!"
         elif state_ == 1:
             msg = turn_left()
+            print "Turn Left Bitch!"
         elif state_ == 2:
             msg = follow_the_wall()
+            print "Follow the Wall Bitch!"
             pass
         else:
             rospy.logerr('Unknown state! GG WP :(')
