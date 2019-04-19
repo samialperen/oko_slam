@@ -16,7 +16,7 @@ active_ = True
 pub_ = None #Since we are using publisher in the functions as well we need to 
 # make it global
 
-linear_velocity_ = 0.2
+linear_velocity_ = 0.1
 angular_velocity_ = 0.15
 
 regions_ = {
@@ -43,6 +43,7 @@ def wall_follower_switch(req):
 
 
 def callback_laser(msg):
+    global regions_
     # Our laser publishes 64 point per rotation
     # Let's divide these 64 point to total_region_number different region
     # LIDAR rotates counter-clockwise
@@ -54,10 +55,10 @@ def callback_laser(msg):
     total_region_number = 4 #East, North, West, South
     # Which regions corresponds to which side will be found later.
     regions_ = { 
-      'east': min(min(msg.ranges[0:15]), MAX_LIDAR_RANGE), 
-      'north': min(min(msg.ranges[16:31]), MAX_LIDAR_RANGE), 
-      'west': min(min(msg.ranges[32:47]), MAX_LIDAR_RANGE), 
-      'south': min(min(msg.ranges[48:63]), MAX_LIDAR_RANGE)
+      'east': min(min(msg.ranges[6:21]), MAX_LIDAR_RANGE), 
+      'north': min(min(msg.ranges[22:37]), MAX_LIDAR_RANGE), 
+      'west': min(min(msg.ranges[38:53]), MAX_LIDAR_RANGE), 
+      'south': min(min(msg.ranges[54:63],msg.ranges[0:5]), MAX_LIDAR_RANGE)
      }
     
     take_action()
@@ -76,57 +77,52 @@ def take_action():
     angular_z = 0
     state_description = ''
     
-    max_dist2robot = 0.50 #If detected object is far away from this value, we 
+    max_dist2robot = 0.30 #If detected object is far away from this value, we 
     # don't consider it
     
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
     if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
         state_description = 'case 1 - nothing'
-        linear_x = linear_velocity_
-        angular_z = 0
+        change_state(0)
     elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
         state_description = 'case 2 - north'
-        linear_x = 0
-        angular_z = angular_velocity_
+        change_state(1)
     elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 3 - east'
-        linear_x = 0
-        angular_z = angular_velocity_
+        change_state(2)
     elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot:
         state_description = 'case 4 - west'
-        linear_x = 0
-        angular_z = -angular_velocity_
+        change_state(0)
     elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 5 - north and east'
-        linear_x = 0
-        angular_z = angular_velocity_
+        change_state(1)
     elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot:
         state_description = 'case 6 - north and west'
-        linear_x = 0
-        angular_z = -angular_velocity_
+        change_state(1)
     elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 7 - north and west and east'
-        linear_x = 0
-        angular_z = angular_velocity_
+        change_state(1)
     elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 8 - west and east'
-        linear_x = linear_velocity_
-        angular_z = 0
+        change_state(0)
     else:
         state_description = 'Unknown Case GG WP!'
         rospy.loginfo(regions)
+        
+    rospy.loginfo(state_description)
+    rospy.loginfo(regions)
       
 
 def find_wall():
     msg = Twist()
     msg.linear.x = -linear_velocity_
-    msg.angular.z = -angular_velocity_
+    msg.angular.z = angular_velocity_
     return msg
 
 def turn_left():
     msg = Twist()
-    msg.angular.z = angular_velocity_
+    msg.angular.z = -angular_velocity_
     return msg
 
 def follow_the_wall():
