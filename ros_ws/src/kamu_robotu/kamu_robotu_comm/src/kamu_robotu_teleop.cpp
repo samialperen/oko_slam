@@ -5,6 +5,7 @@
 
 #include <sstream>
 
+int velocity = 30; 
 int getch() //Function to take user input from the keyboard
 {
   static struct termios oldt, newt;
@@ -36,18 +37,56 @@ int main(int argc, char **argv)
     switch (keyboard_input) {
         case 'w':
             srv.request.cmd_type = 1;
-            srv.request.cmd_param = 20;
+            srv.request.cmd_param = velocity;
             srv.request.cmd_enable = 1;
             client.call(srv);
             ROS_INFO("W");
             break;
-        default:
+	case 'a':
+            srv.request.cmd_type = 3;
+            srv.request.cmd_param = velocity;
+            srv.request.cmd_enable = 1;
+            client.call(srv);
+            ROS_INFO("a");
+            break;
+	case 's':
+            srv.request.cmd_type = 2;
+            srv.request.cmd_param = velocity;
+            srv.request.cmd_enable = 1;
+            client.call(srv);
+            ROS_INFO("s");
+            break;
+	case 'd':
+            srv.request.cmd_type = 4;
+            srv.request.cmd_param = velocity;
+            srv.request.cmd_enable = 1;
+            client.call(srv);
+            ROS_INFO("d");
+            break;
+	case 'x':
             srv.request.cmd_type = 1;
-            srv.request.cmd_param = 20;
+            srv.request.cmd_param = velocity;
             srv.request.cmd_enable = 0;
             client.call(srv);
-            ROS_INFO("DEF");
-            break;        
+		
+	    srv.request.cmd_type = 2;
+            srv.request.cmd_param = velocity;
+            srv.request.cmd_enable = 0;
+            client.call(srv);
+
+	    srv.request.cmd_type = 3;
+            srv.request.cmd_param = velocity;
+            srv.request.cmd_enable = 0;
+            client.call(srv);
+
+	    srv.request.cmd_type = 4;
+            srv.request.cmd_param = velocity;
+            srv.request.cmd_enable = 0;
+            client.call(srv);
+
+            ROS_INFO("x");
+            break;
+             
         
     }
     
