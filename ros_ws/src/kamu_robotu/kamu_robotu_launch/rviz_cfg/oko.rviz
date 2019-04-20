@@ -7,6 +7,8 @@ Panels:
         - /Status1
         - /TF1
         - /TF1/Frames1
+        - /Odometry1
+        - /Odometry1/Shape1
       Splitter Ratio: 0.5
     Tree Height: 775
   - Class: rviz/Selection
@@ -223,6 +225,40 @@ Visualization Manager:
                 {}
       Update Interval: 0
       Value: true
+    - Angle Tolerance: 0.100000001
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.300000012
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 100
+      Name: Odometry
+      Position Tolerance: 0.100000001
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.100000001
+        Color: 255; 25; 0
+        Head Length: 0.00499999989
+        Head Radius: 0.00999999978
+        Shaft Length: 0.0299999993
+        Shaft Radius: 0.00999999978
+        Value: Arrow
+      Topic: /odom
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -248,7 +284,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/XYOrbit
-      Distance: 4.97404528
+      Distance: 3.72579408
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1
@@ -263,10 +299,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.00999999978
-      Pitch: 1.14479637
+      Pitch: 0.969796002
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz)
-      Yaw: 5.39891481
+      Yaw: 4.3489151
     Saved: ~
 Window Geometry:
   Displays:
