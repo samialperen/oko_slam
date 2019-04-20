@@ -11,7 +11,8 @@
 #include "kamu_robotu_comm/kamu_cmd.h"
 
 
-double v,w;
+float v,w;
+uint8_t vel_count=0;
 serial::Serial ser;
 std::string readable;
 std::string eol="~~~~";
@@ -22,6 +23,7 @@ void twistlistenerCallback(geometry_msgs::Twist cmd){
 bool kamu_command_handler(kamu_robotu_comm::kamu_cmd::Request &req, kamu_robotu_comm::kamu_cmd::Response &res)
 {
 uint8_t data2send[6];
+
 data2send[0] = 0x55;
 data2send[1] = (uint8_t)req.cmd_type;
 data2send[2] = (uint8_t)req.cmd_param;
@@ -53,7 +55,7 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
   
   try // Connect to the port
     {
-        ser.setPort("/dev/rfcomm1"); // miniuart port of the rpi, /dev/ttyS0
+        ser.setPort("/dev/ttyS0"); // miniuart port of the rpi, /dev/ttyS0
         ser.setBaudrate(9600);
 		serial::stopbits_t  stopbits;
 		stopbits = serial::stopbits_one;	
@@ -87,7 +89,7 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
 		for(i=0;i<num_readings;i++){
 			dummy_8 = readable[i];
 			getSingleByte(dummy_8);
-			ROS_INFO("DATA %d : %x " , i , dummy_8);
+	//		ROS_INFO("DATA %d : %x " , i , dummy_8);
 			
 		}
 		ROS_INFO("odom_mess.x :%f " , odom_mess.x);
@@ -95,8 +97,15 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
 		ROS_INFO("odom_mess.theta :%f " , odom_mess.theta);
 		ROS_INFO("odom_mess.vx :%f " , odom_mess.vx);
 		ROS_INFO("odom_mess.w :%f " , odom_mess.w);
+		
 
         }
+	if(vel_count == 10){
+		sendVelocitycmd(&v,&w);
+		ser.write(data_buffer,20);
+		vel_count = 0;
+	}
+	vel_count++;
     // Send v and w to the robot here with serial
     // and here
     // and here

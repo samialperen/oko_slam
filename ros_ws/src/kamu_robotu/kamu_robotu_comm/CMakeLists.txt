@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(kamu_robotu_comm)
 
-find_package(catkin REQUIRED COMPONENTS roscpp serial std_msgs sensor_msgs geometry_msgs nav_msgs tf )
+find_package(catkin REQUIRED COMPONENTS roscpp serial std_msgs sensor_msgs geometry_msgs nav_msgs tf message_generation )
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 
