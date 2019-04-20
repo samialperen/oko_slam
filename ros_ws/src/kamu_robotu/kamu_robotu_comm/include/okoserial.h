@@ -23,6 +23,7 @@ extern "C" {
 #define RASPI_SERIAL_HANDLER	&huart3
 
 extern uint8_t Bluetooth_Data_Buffer[32];
+extern uint8_t data_buffer[20];
 extern volatile bool newBluetoothDataArrived;
 
 enum bluetooth_command_types
@@ -130,8 +131,8 @@ extern laserscan_message laserscan_mess;
 
 void getSingleByte(uint8_t  byte);
 void initializeOdometryMessage(odometry_message * odom);
-
-
+void initializeVelocitycmdMessage(velocitycmd_message * vel_cmd_mess);
+void sendVelocitycmd(float *vx, float *w);
 
 
 

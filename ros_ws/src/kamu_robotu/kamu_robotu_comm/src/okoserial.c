@@ -9,14 +9,18 @@
 #include <stdio.h>
 
 
+
 uint8_t integer_buffer[2];
 uint8_t float_buffer[4];
+uint8_t data_buffer[20];
 uint8_t state = waiting_heading;
 preliminary_message prelim_mess;
 velocitycmd_message vel_cmd_mess;
 pidparams_message pidparam_mess;
 odometry_message odom_mess;
 laserscan_message laserscan_mess;
+
+
 uint8_t data_index=0;
 
 uint8_t Bluetooth_Data_Buffer[32];
@@ -272,6 +276,36 @@ void initializeOdometryMessage(odometry_message * odom_mess)
 	odom_mess->premess.message_type = odometry;
 	odom_mess->premess.error_code = none;
 
+}
+
+void initializeVelocitycmdMessage(velocitycmd_message * vel_cmd_mess)
+{
+        vel_cmd_mess->premess.heading[0] = 0xFF;
+        vel_cmd_mess->premess.heading[1] = 0xFF;
+        vel_cmd_mess->premess.heading[2] = 0xFD;
+        vel_cmd_mess->premess.message_type = velocitycmd;
+        vel_cmd_mess->premess.error_code = none;
+	vel_cmd_mess->premess.extra_info_1 = none;
+	vel_cmd_mess->premess.extra_info_2 = none;
+	vel_cmd_mess->premess.extra_info_3 = none;
+	
+
+}
+
+void sendVelocitycmd(float *vx, float *w)
+{
+	initializeVelocitycmdMessage(&vel_cmd_mess);
+	vel_cmd_mess.vx = *vx;
+	vel_cmd_mess.w = *w;
+	
+	memcpy(data_buffer,&vel_cmd_mess,prelim_length+velocitycmd_length);
+	data_buffer[16]=0x7E;
+	data_buffer[17]=0x7E;
+	data_buffer[18]=0x7E;
+	data_buffer[19]=0x7E;
+	
+
+	
 }
 
 
