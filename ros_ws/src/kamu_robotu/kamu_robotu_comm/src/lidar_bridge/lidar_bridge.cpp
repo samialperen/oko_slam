@@ -108,8 +108,8 @@ int main (int argc, char** argv){
 					for(i=0;i<num_readings;i++){
 
 						readable = ser.read(2);
-						dummy_8 = readable[1];
-						dummy_16 = (readable[0]<<8|dummy_8);
+						dummy_8 = readable[0];
+						dummy_16 = (readable[1]<<8|dummy_8);
 						ranges[i] = float(dummy_16/1.0);
 						ROS_INFO_STREAM(ranges[i]);
 
