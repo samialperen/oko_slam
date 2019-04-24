@@ -163,7 +163,8 @@ int main(int argc, char **argv)
 		
 		sensor_msgs::Imu msg;
 		msg.header.stamp = ros::Time::now();
-		msg.header.frame_id = "imu"; // No frame 
+		msg.header.frame_id = "imu_link"; // No frame 
+		//msg.child_frame_id = "imu_link";
 		
 
 		// Read gyroscope values 

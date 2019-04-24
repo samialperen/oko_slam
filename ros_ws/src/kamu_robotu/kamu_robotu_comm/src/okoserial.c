@@ -22,6 +22,7 @@ laserscan_message laserscan_mess;
 
 
 uint8_t data_index=0;
+uint8_t k=0;
 
 uint8_t Bluetooth_Data_Buffer[32];
 volatile bool newBluetoothDataArrived = false;
@@ -36,7 +37,7 @@ volatile bool newBluetoothDataArrived = false;
 
 void getSingleByte(uint8_t  byte)
 {
-	printf("STATE : %d \n " ,  state);
+	
 	switch(state){
 		case waiting_heading:
 			prelim_mess.heading[0] = byte;
@@ -263,7 +264,31 @@ void getSingleByte(uint8_t  byte)
 			}
 			else state = waiting_heading;
 			break;
+		case laserscan_coming:
+			if(k<laserscan_length/2)
+			{
+				if(data_index ==0)
+				{
+					integer_buffer[data_index++] = byte;
+				}
+				else if(data_index==1)
+				{
+					integer_buffer[data_index++] = byte;
+					memcpy(&(laserscan_mess.data[k]),integer_buffer,2);
+					printf("laserscan.%d : %d \n " , k , laserscan_mess.data[k]);
+					data_index = 0;
+					k++;
+				}
 
+				else state = waiting_heading;
+			}
+			else if(k == laserscan_length/2)
+{
+			k=0;
+			state = waiting_heading; // omit xor for now
+}
+			break;
+		
 	
 			
 	}
