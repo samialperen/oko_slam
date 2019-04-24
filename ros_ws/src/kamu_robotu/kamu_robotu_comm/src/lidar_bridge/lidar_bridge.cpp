@@ -49,8 +49,8 @@ int main (int argc, char** argv){
 	ros::NodeHandle n;
 	ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("scan",50);
 
-	unsigned int num_readings = 136;
-	double laser_frequency = 4; // this true for 64 readings
+	unsigned int num_readings = 64;
+	double laser_frequency = 2.4; // this true for 64 readings
 	double ranges[num_readings];
 	int count = 0 ;
 
@@ -100,7 +100,7 @@ int main (int argc, char** argv){
             		ROS_INFO_STREAM("Reading from serial port");
             		std_msgs::String result;
             		readable = ser.readline(150,eol);
-			for(i=0;i<num_readings;i++)
+			for(i=0;i<136;i++)
 			{
 				dummy_8 = readable[i];
 				getSingleByte(dummy_8);
