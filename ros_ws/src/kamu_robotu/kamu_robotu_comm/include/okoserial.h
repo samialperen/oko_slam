@@ -24,6 +24,8 @@ extern "C" {
 
 extern uint8_t Bluetooth_Data_Buffer[32];
 extern uint8_t data_buffer[20];
+extern uint8_t k;
+
 extern volatile bool newBluetoothDataArrived;
 
 enum bluetooth_command_types
@@ -107,6 +109,7 @@ typedef struct
 	float vx;
 	float w;
 }odometry_message;
+
 
 typedef struct
 {
