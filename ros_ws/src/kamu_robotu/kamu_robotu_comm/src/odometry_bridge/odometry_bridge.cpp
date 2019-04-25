@@ -149,4 +149,5 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
     odom_pub.publish(odom);
     r.sleep();
   }
+  ser.close();
 }
