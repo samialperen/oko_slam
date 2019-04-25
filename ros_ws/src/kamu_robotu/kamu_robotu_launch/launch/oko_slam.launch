@@ -8,7 +8,6 @@
   <group unless="$(arg sim_time)">
     <include file="$(find kamu_robotu_comm)/launch/comm.launch">
     </include>
-   <!-- <node name="kamu_robotu_exploration" pkg="kamu_robotu_navigation" type="follow_wall.py" respawn="true" output="screen"></node> -->
   </group>
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder $(find kamu_robotu_gazebo)/urdf/kamu_robotu.xacro" />

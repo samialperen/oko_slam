@@ -16,8 +16,8 @@ active_ = True
 pub_ = None #Since we are using publisher in the functions as well we need to 
 # make it global
 
-linear_velocity_ = 0.1
-angular_velocity_ = 0.15
+linear_velocity_ = 0.06
+angular_velocity_ = 0.4
 
 regions_ = {
         'east': 0,
@@ -31,6 +31,7 @@ state_dict_ = {
     0: 'find the wall',
     1: 'turn left',
     2: 'follow the wall',
+    3: 'turn right',
 }
 
 def wall_follower_switch(req):
@@ -55,10 +56,10 @@ def callback_laser(msg):
     total_region_number = 4 #East, North, West, South
     # Which regions corresponds to which side will be found later.
     regions_ = { 
-      'east': min(min(msg.ranges[6:21]), MAX_LIDAR_RANGE), 
-      'north': min(min(msg.ranges[22:37]), MAX_LIDAR_RANGE), 
-      'west': min(min(msg.ranges[38:53]), MAX_LIDAR_RANGE), 
-      'south': min(min(msg.ranges[54:63],msg.ranges[0:5]), MAX_LIDAR_RANGE)
+      'north': min(min(msg.ranges[14:18]), MAX_LIDAR_RANGE), 
+      'west': min(min(msg.ranges[30:34]), MAX_LIDAR_RANGE), 
+      'south': min(min(msg.ranges[46:50]), MAX_LIDAR_RANGE), 
+      'east': min(min( min(msg.ranges[62:63]) ,min(msg.ranges[0:2]) ), MAX_LIDAR_RANGE)
      }
     
     take_action()
@@ -93,16 +94,16 @@ def take_action():
         change_state(2)
     elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot:
         state_description = 'case 4 - west'
-        change_state(0)
+        change_state(2)
     elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 5 - north and east'
         change_state(1)
     elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot:
         state_description = 'case 6 - north and west'
-        change_state(1)
+        change_state(3)
     elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 7 - north and west and east'
-        change_state(1)
+        change_state(3)
     elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 8 - west and east'
         change_state(0)
@@ -116,11 +117,16 @@ def take_action():
 
 def find_wall():
     msg = Twist()
-    msg.linear.x = -linear_velocity_
-    msg.angular.z = angular_velocity_
+    msg.linear.x = linear_velocity_
+    #msg.angular.z = angular_velocity_
     return msg
 
 def turn_left():
+    msg = Twist()
+    msg.angular.z = angular_velocity_
+    return msg
+
+def turn_right():
     msg = Twist()
     msg.angular.z = -angular_velocity_
     return msg
@@ -129,7 +135,7 @@ def follow_the_wall():
     global regions_
     
     msg = Twist()
-    msg.linear.x = -linear_velocity_
+    msg.linear.x = linear_velocity_
     return msg
 
 def main():
@@ -156,6 +162,9 @@ def main():
         elif state_ == 1:
             msg = turn_left()
             print "Turn Left Bitch!"
+	elif state_ == 3:
+            msg = turn_right()
+            print "Turn Right Bitch!"
         elif state_ == 2:
             msg = follow_the_wall()
             print "Follow the Wall Bitch!"
