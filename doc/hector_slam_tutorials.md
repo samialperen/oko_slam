@@ -124,7 +124,9 @@ If everything is okay, you should be able to see Rviz output like below:
 <center> Hector SLAM Output for Turtlebot3_scan2.bag </center>
 
 **Important NOTE:** Hector_slam package needs specific transform tree(tf) configuration to work properly. If you can not see any output in rviz like above, you may need to adjust tf tree. In our case, required transformations are done by robot_state_publisher in launch files.
-You can check our [launch files](). For more information about tf tree configuration for hector slam, one can check [official hector_slam tutorial](http://wiki.ros.org/hector_slam/Tutorials/SettingUpForYourRobot).
+You can check our [launch file oko_slam.launch](/ros_ws/src/kamu_robotu/kamu_robotu_launch/launch/oko_slam.launch) and [launch file oko_hector_mapping.launch](/ros_ws/src/kamu_robotu/kamu_robotu_launch/launch/oko_hector_mapping.launch). 
+
+For more information about tf tree configuration for hector slam, one can check [official hector_slam tutorial](http://wiki.ros.org/hector_slam/Tutorials/SettingUpForYourRobot).
 
 Let's launch hector_slam with our launch file. Our oko_slam.launch file calls oko_hector_mapping.launch file with some arguments.
 ```
