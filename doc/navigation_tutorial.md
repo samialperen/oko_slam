@@ -1,4 +1,6 @@
-# Move Autonomously While Extracting Map of the Environment with SLAM
+# ROS NAVIGATION STACK INSTALLATION GUIDE & TUTORIALS
+
+## Installation
 
 ### Frontier Exploration Tutorial
 * First start the simulation environment.
