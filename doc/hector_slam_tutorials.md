@@ -1,8 +1,27 @@
-# HECTOR SLAM TUTORIALS
+# HECTOR SLAM INSTALLATION GUIDE & TUTORIALS
 
-### Prerequisites
+[Hector SLAM](http://wiki.ros.org/hector_slam) is a mapping algorithm which only uses laser scan information to extract the map of the environment.
+
+## Prerequisites
 * Ubuntu 16.04
 * ROS Kinetic
+
+## Installation
+First install turtlebot3 ROS package.
+```
+$ sudo apt-get install ros-kinetic-turtlebot3
+```
+
+Then, install hector-slam using apt package manager.
+```
+$ sudo apt-get install ros-kinetic-hector-slam
+```
+
+**NOTE:** Hector_slam is compatible with only ROS kinetic and indigo distributions according to the [hector_slam ROS wiki](http://wiki.ros.org/hector_slam)
+
+That's all for the installation. You can move on the next section.
+
+## Tutorials
 
 ### Tutorial 1: Run Hector SLAM with Turlebot3 in Gazebo
 For more information please visit the [reference source](http://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/#ros-packages-for-gazebo). 
@@ -132,6 +151,8 @@ Let's launch hector_slam with our launch file. Our oko_slam.launch file calls ok
 ```
 $ roslaunch kamu_robotu_launch oko_slam.launch sim_time:=true slam_type:=hector_mapping
 ```
+
+Then play the rosbag file again.
 
 Correct TF tree configuration for our case can be seen below:
 ![Hector SLAM Transform Tree Configuration](/doc/images/hector_slam_tutorials/5.png)
