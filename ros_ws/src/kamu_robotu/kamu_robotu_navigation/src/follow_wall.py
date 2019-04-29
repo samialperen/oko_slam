@@ -60,8 +60,8 @@ def callback_laser(msg):
       'west': min(min(msg.ranges[31:34]), MAX_LIDAR_RANGE), 
       'south': min(min(msg.ranges[46:50]), MAX_LIDAR_RANGE), 
       'east': min(min( min(msg.ranges[62:63]) ,min(msg.ranges[0:2]) ), MAX_LIDAR_RANGE),
-      'n-e': min(min(msg.ranges[6:10]), MAX_LIDAR_RANGE),
-      'n-w': min(min(msg.ranges[22:26]), MAX_LIDAR_RANGE)
+      'n-e': min(min(msg.ranges[3:13]), MAX_LIDAR_RANGE),
+      'n-w': min(min(msg.ranges[19:30]), MAX_LIDAR_RANGE)
      }
     #regions_ = { 
     #  'south': min(min(msg.ranges[14:18]), MAX_LIDAR_RANGE), 
