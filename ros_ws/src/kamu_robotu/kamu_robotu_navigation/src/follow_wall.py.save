@@ -24,6 +24,8 @@ regions_ = {
         'north': 0,
         'west': 0,
         'south': 0,
+	'north-west': 0,
+	'north-east': 0,
 }
 
 state_ = 0 #Start from find the wall state
@@ -57,20 +59,13 @@ def callback_laser(msg):
     # Which regions corresponds to which side will be found later.
     regions_ = { 
       'north': min(min(msg.ranges[14:18]), MAX_LIDAR_RANGE), 
-      'west': min(min(msg.ranges[31:34]), MAX_LIDAR_RANGE), 
+      'west': min(min(msg.ranges[30:34]), MAX_LIDAR_RANGE), 
       'south': min(min(msg.ranges[46:50]), MAX_LIDAR_RANGE), 
       'east': min(min( min(msg.ranges[62:63]) ,min(msg.ranges[0:2]) ), MAX_LIDAR_RANGE),
-      'n-e': min(min(msg.ranges[6:10]), MAX_LIDAR_RANGE),
-      'n-w': min(min(msg.ranges[22:26]), MAX_LIDAR_RANGE)
-     }
-    #regions_ = { 
-    #  'south': min(min(msg.ranges[14:18]), MAX_LIDAR_RANGE), 
-    #  'east': min(min(msg.ranges[31:34]), MAX_LIDAR_RANGE), 
-    #  'north': min(min(msg.ranges[46:50]), MAX_LIDAR_RANGE), 
-    #  'west': min(min( min(msg.ranges[62:63]) ,min(msg.ranges[0:2]) ), MAX_LIDAR_RANGE),
-    #  'n-e': min(min(msg.ranges[38:42]), MAX_LIDAR_RANGE),
-    #  'n-w': min(min(msg.ranges[54:56]), MAX_LIDAR_RANGE)
-    # }
+      'north-west': min(min(msg.ranges[38:42]), MAX_LIDAR_RANGE),     
+      'north-east': min(min(msg.ranges[22:26]), MAX_LIDAR_RANGE)
+}
+    
     take_action()
 
 def change_state(state):
@@ -88,39 +83,42 @@ def take_action():
     state_description = ''
     
     max_dist2robot = 0.30 #If detected object is far away from this value, we 
-    min_dist2robot = 0.092
     # don't consider it
+    max_dist2robot2obj = 0.20
     
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
-    if regions['n-w'] < max_dist2robot and regions['n-e'] > max_dist2robot and regions['n-w'] > min_dist2robot:
-	change_state(3)
-    elif regions['n-w'] > max_dist2robot and regions['n-e'] < max_dist2robot and regions['n-e'] > min_dist2robot :
-	change_state(1)
-    elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
-        state_description = 'case 1 - nothing'
+    if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
+	  'north-west': min(min(msg.ranges[22:26]), MAX_LIDAR_RANGE),
+	  'north-east': min(min(msg.ranges[6:10]), MAX_LIDAR_RANGE)        state_description = 'case 1 - nothing'
         change_state(0)
-    elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > min_dist2robot:
+    elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
         state_description = 'case 2 - north'
         change_state(1)
-    elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot:
+    elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 3 - east'
         change_state(2)
-    elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot:
+    elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot:
         state_description = 'case 4 - west'
         change_state(2)
-    elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['north'] > min_dist2robot:
+    elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 5 - north and east'
         change_state(1)
-    elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
+    elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot:
         state_description = 'case 6 - north and west'
         change_state(3)
-    elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
+    elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 7 - north and west and east'
         change_state(3)
-    elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot:
+    elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot:
         state_description = 'case 8 - west and east'
         change_state(0)
+    elif regions['north-west'] < max_dist2robot2obj and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > max_dist2robot:
+        state_description = 'case 9 - west and east'
+        change_state(3)
+    elif regions['north-east'] < max_dist2robot2obj and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > max_dist2robot:
+        state_description = 'case 10 - west and east'
+        change_state(1)
     else:
         state_description = 'Unknown Case GG WP!'
         rospy.loginfo(regions)
@@ -163,7 +161,7 @@ def main():
     
     srv = rospy.Service('wall_follower_switch', SetBool, wall_follower_switch)
     
-    rate = rospy.Rate(5)
+    rate = rospy.Rate(20)
     while not rospy.is_shutdown():
         if not active_:
             rate.sleep()
@@ -172,16 +170,16 @@ def main():
         msg = Twist()
         if state_ == 0:
             msg = find_wall()
-            #print "Find wall Bitch!"
+            print "Find wall Bitch!"
         elif state_ == 1:
             msg = turn_left()
-            #print "Turn Left Bitch!"
+            print "Turn Left Bitch!"
 	elif state_ == 3:
             msg = turn_right()
-            #print "Turn Right Bitch!"
+            print "Turn Right Bitch!"
         elif state_ == 2:
             msg = follow_the_wall()
-            #print "Follow the Wall Bitch!"
+            print "Follow the Wall Bitch!"
             pass
         else:
             rospy.logerr('Unknown state! GG WP :(')
