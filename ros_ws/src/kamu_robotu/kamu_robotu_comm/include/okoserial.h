@@ -52,7 +52,7 @@ enum message_types
 };
 enum message_lengths
 {
-	laserscan_length = 128, // 64 integer
+	laserscan_length = 128*2, // 64 integer
 	odometry_length = 20, // 5 float each one 4 byte
 	velocitycmd_length = 8, // 2 float each one 4 byte
 	pidparams_length = 12, // 3 float each one 4 byte
@@ -91,7 +91,7 @@ typedef struct
 	uint8_t extra_info_1;
 	uint8_t extra_info_2;
 	uint8_t extra_info_3;
-	
+
 } preliminary_message;
 
 typedef struct

@@ -33,7 +33,7 @@ std::string eol="~~~~";
 float w=0,x=0,y=0,z=0;
 uint8_t dummy_8 = 0;
 int16_t dummy_16 = 0;
-float range[64];
+float range[128];
 int i = 0, f = 0;
 
 std::string readable;
@@ -49,8 +49,8 @@ int main (int argc, char** argv){
 	ros::NodeHandle n;
 	ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("scan",50);
 
-	unsigned int num_readings = 64;
-	double laser_frequency = 2.4; // this true for 64 readings
+	unsigned int num_readings = 128;
+	double laser_frequency = 1; // this true for 64 readings
 	double ranges[num_readings];
 	int count = 0 ;
 
@@ -109,8 +109,8 @@ int main (int argc, char** argv){
 			}
 				
 		
-			scan.ranges.resize(64);
-			for(f = 0 ; f<64;f++)
+			scan.ranges.resize(128);
+			for(f = 0 ; f<128;f++)
 			{
 
 				scan.ranges[f] = laserscan_mess.data[f]/1000.0;

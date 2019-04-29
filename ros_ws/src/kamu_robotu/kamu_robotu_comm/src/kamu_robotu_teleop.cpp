@@ -2,8 +2,10 @@
 #include "std_msgs/String.h"
 #include <termios.h>
 #include "kamu_robotu_comm/kamu_cmd.h"
-
+#include <serial/serial.h>
 #include <sstream>
+
+serial::Serial ser;
 
 int velocity = 30; 
 int getch() //Function to take user input from the keyboard
@@ -20,6 +22,20 @@ int getch() //Function to take user input from the keyboard
   return c;
 }
 
+bool kamu_command_handler(kamu_robotu_comm::kamu_cmd::Request &req, kamu_robotu_comm::kamu_cmd::Response &res)
+{
+uint8_t data2send[6];
+
+data2send[0] = 0x55;
+data2send[1] = (uint8_t)req.cmd_type;
+data2send[2] = (uint8_t)req.cmd_param;
+data2send[3] = (uint8_t)req.cmd_enable;
+data2send[4] = 0;
+data2send[5] = 0;
+ser.write((const uint8_t *) data2send, 6);
+res.result = true;
+return true;
+}
 
 int main(int argc, char **argv)
 {  
@@ -27,12 +43,33 @@ int main(int argc, char **argv)
  
   ros::NodeHandle n;
 
-  ros::ServiceClient client = n.serviceClient<kamu_robotu_comm::kamu_cmd>("/kamu_cmd");
-  kamu_robotu_comm::kamu_cmd srv;
+  ros::ServiceServer service = n.advertiseService("/kamu_cmd", kamu_command_handler);
+  //ros::ServiceClient client = n.serviceClient<kamu_robotu_comm::kamu_cmd>("/kamu_cmd");
+  //kamu_robotu_comm::kamu_cmd srv;
+
+  try // Connect to the port
+  {       
+      ser.setPort("/dev/rfcomm1"); // miniuart port of the rpi, /dev/ttyS0
+      ser.setBaudrate(9600);
+      serial::stopbits_t  stopbits;
+      stopbits = serial::stopbits_one;	
+      ser.setStopbits(stopbits);
+      serial::Timeout to = serial::Timeout::simpleTimeout(100);
+      ser.setTimeout(to);
+      ser.open();
+  }
+  catch (serial::IOException& e)
+  {
+      ROS_ERROR_STREAM("Unable to open porttttt ");
+      return -1;
+  }
 
   ros::Rate loop_rate(10);
+
   while (ros::ok())
   {
+    ROS_INFO("bambam");
+    /*
     int keyboard_input = getch();
     switch (keyboard_input) {
         case 'w':
@@ -88,7 +125,7 @@ int main(int argc, char **argv)
             break;
              
         
-    }
+    }*/
     
    
     ros::spinOnce();
@@ -96,6 +133,6 @@ int main(int argc, char **argv)
 
   }
 
-
+  ser.close();
   return 0;
 }
