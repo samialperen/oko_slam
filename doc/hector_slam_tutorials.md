@@ -1,6 +1,6 @@
 # HECTOR SLAM INSTALLATION GUIDE & TUTORIALS
 
-[Hector SLAM](http://wiki.ros.org/hector_slam) is a mapping algorithm which only uses laser scan information to extract the map of the environment.
+* [Hector SLAM](http://wiki.ros.org/hector_slam) is a mapping algorithm which only uses laser scan information to extract the map of the environment.
 
 ## Prerequisites
 * Ubuntu 16.04

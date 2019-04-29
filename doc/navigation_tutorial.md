@@ -1,5 +1,13 @@
 # ROS NAVIGATION STACK INSTALLATION GUIDE & TUTORIALS
 
+* Before this tutorial, please visit [HECTOR SLAM INSTALLATION GUIDE & TUTORIALS](/doc/hector_slam_tutorials.md)
+* Before this tutorial, please visit [GMAPPING INSTALLATION GUIDE & TUTORIALS](/doc/gmapping_tutorial.md)
+* Before this tutorial, please visit [Cartographer_ROS SLAM INSTALLATION GUIDE & TUTORIALS](/doc/cartographer_slam_tutorial.md)
+
+[ROS Navigation Stack](http://wiki.ros.org/navigation) takes in information from odometry, sensor streams, and a goal pose and outputs safe velocity commands that are sent to a mobile base.
+
+
+
 ## Installation
 
 ### Frontier Exploration Tutorial
