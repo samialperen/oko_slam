@@ -10,14 +10,15 @@ from tf import transformations
 from std_srvs.srv import *
 
 import math
+import numpy as np
 
 ## Global variables
 active_ = True
 pub_ = None #Since we are using publisher in the functions as well we need to 
 # make it global
 
-linear_velocity_ = 0.06
-angular_velocity_ = 0.4
+linear_velocity_ = 0.03
+angular_velocity_ = 0.2
 
 regions_ = {
         'east': 0,
@@ -45,6 +46,11 @@ def wall_follower_switch(req):
 
 def callback_laser(msg):
     global regions_
+
+    print np.mean(msg.ranges[14:18])
+    print ('dsdedead')
+    print min(msg.ranges[14:18],3)
+
     # Our laser publishes 64 point per rotation
     # Let's divide these 64 point to total_region_number different region
     # LIDAR rotates counter-clockwise
@@ -53,24 +59,24 @@ def callback_laser(msg):
     # has the closest object/wall 
     # To eliminate Inf measurement, we used min function  
     MAX_LIDAR_RANGE = 3 #in meter
-    total_region_number = 4 #East, North, West, South
+    total_region_number = 6 #East, North, West, South
     # Which regions corresponds to which side will be found later.
     regions_ = { 
-      'north': min(min(msg.ranges[14:18]), MAX_LIDAR_RANGE), 
-      'west': min(min(msg.ranges[31:34]), MAX_LIDAR_RANGE), 
-      'south': min(min(msg.ranges[46:50]), MAX_LIDAR_RANGE), 
-      'east': min(min( min(msg.ranges[62:63]) ,min(msg.ranges[0:2]) ), MAX_LIDAR_RANGE),
-      'n-e': min(min(msg.ranges[3:13]), MAX_LIDAR_RANGE),
-      'n-w': min(min(msg.ranges[19:30]), MAX_LIDAR_RANGE)
+      'north': np.mean(msg.ranges[14:18]),
+      'west': np.mean(msg.ranges[31:34]),
+      'south': np.mean(msg.ranges[46:50]),
+      'east': min(min(msg.ranges[62:63]) ,min(msg.ranges[0:2])),
+      'n-e': np.mean(msg.ranges[6:10]),
+      'n-w': np.mean(msg.ranges[22:26])
      }
-    #regions_ = { 
-    #  'south': min(min(msg.ranges[14:18]), MAX_LIDAR_RANGE), 
-    #  'east': min(min(msg.ranges[31:34]), MAX_LIDAR_RANGE), 
-    #  'north': min(min(msg.ranges[46:50]), MAX_LIDAR_RANGE), 
-    #  'west': min(min( min(msg.ranges[62:63]) ,min(msg.ranges[0:2]) ), MAX_LIDAR_RANGE),
-    #  'n-e': min(min(msg.ranges[38:42]), MAX_LIDAR_RANGE),
-    #  'n-w': min(min(msg.ranges[54:56]), MAX_LIDAR_RANGE)
-    # }
+#    regions_ = { 
+#      'south': min(min(msg.ranges[14:18]), MAX_LIDAR_RANGE), 
+#      'east': min(min(msg.ranges[31:34]), MAX_LIDAR_RANGE), 
+#      'north': min(min(msg.ranges[46:50]), MAX_LIDAR_RANGE), 
+#      'west': min(min( min(msg.ranges[62:63]) ,min(msg.ranges[0:2]) ), MAX_LIDAR_RANGE),
+#      'n-e': min(min(msg.ranges[38:42]), MAX_LIDAR_RANGE),
+#      'n-w': min(min(msg.ranges[54:56]), MAX_LIDAR_RANGE)
+#     }
     take_action()
 
 def change_state(state):
@@ -111,7 +117,7 @@ def take_action():
             change_state(0)
         elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > min_dist2robot:
             state_description = 'case 2 - north'
-            change_state(1)
+            change_state(3)
         elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot:
             state_description = 'case 3 - east'
             change_state(2)
