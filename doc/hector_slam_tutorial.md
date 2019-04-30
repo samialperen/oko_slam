@@ -5,9 +5,10 @@
 ## Prerequisites
 * Ubuntu 16.04
 * ROS Kinetic
+* Gazebo
 
 ## Installation
-First install turtlebot3 ROS package.
+First install turtlebot3 ROS package. (optional)
 ```
 $ sudo apt-get install ros-kinetic-turtlebot3
 ```

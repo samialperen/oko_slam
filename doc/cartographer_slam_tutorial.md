@@ -1,6 +1,6 @@
 # Cartographer_ROS SLAM INSTALLATION GUIDE & TUTORIALS
 
-* Before this tutorial, please visit [HECTOR SLAM INSTALLATION GUIDE & TUTORIALS](/doc/hector_slam_tutorials.md)
+* Before this tutorial, please visit [HECTOR SLAM INSTALLATION GUIDE & TUTORIALS](/doc/hector_slam_tutorial.md)
 * Before this tutorial, please visit [GMAPPING INSTALLATION GUIDE & TUTORIALS](/doc/gmapping_tutorial.md)
 
 ## Prerequisites

@@ -1,13 +1,14 @@
 # GMAPPING INSTALLATION GUIDE & TUTORIALS
 
-Before this tutorial, please visit [HECTOR SLAM INSTALLATION GUIDE & TUTORIALS](/doc/hector_slam_tutorials.md)
+Before this tutorial, please visit [HECTOR SLAM INSTALLATION GUIDE & TUTORIALS](/doc/hector_slam_tutorial.md)
 
 [Gmapping](http://wiki.ros.org/gmapping) is a mapping algorithm which uses laser scan and odometry information to extract a map of the environment.
 
 ## Prerequisites
 * Ubuntu 16.04
 * ROS Kinetic
-* Turtlebot3 ROS Kinetic Package
+* Turtlebot3 ROS Kinetic Package (optional)
+* Gazebo
 
 ## Installation
 Install gmapping using apt package manager.
