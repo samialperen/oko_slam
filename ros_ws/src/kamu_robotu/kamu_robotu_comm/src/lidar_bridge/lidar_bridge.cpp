@@ -59,9 +59,9 @@ int main (int argc, char** argv){
     	{
        		ser.setPort("/dev/rfcomm0");
         	ser.setBaudrate(115200);
-		serial::stopbits_t  stopbits;
-		stopbits = serial::stopbits_two;
-		ser.setStopbits(stopbits);
+		    serial::stopbits_t  stopbits;
+		    stopbits = serial::stopbits_two;
+		    ser.setStopbits(stopbits);
         	serial::Timeout to = serial::Timeout::simpleTimeout(1000);
         	ser.setTimeout(to);
         	ser.open();
@@ -85,8 +85,8 @@ int main (int argc, char** argv){
 	sensor_msgs::LaserScan scan;
 
 	scan.header.frame_id = "base_scan";
-	scan.angle_min = -1.572;//2.3562;
-        scan.angle_max = 6.2832 -1.572;//8.6394;
+	scan.angle_min = 0;//-1.572;//2.3562;
+    scan.angle_max = 6.2832;// -1.572;//8.6394;
 	scan.angle_increment = 6.2832/num_readings;
 	scan.time_increment = (1/laser_frequency)/(num_readings);
 	scan.range_min = 0.092;
@@ -99,8 +99,8 @@ int main (int argc, char** argv){
 		{
             		ROS_INFO_STREAM("Reading from serial port");
             		std_msgs::String result;
-            		readable = ser.readline(150,eol);
-			for(i=0;i<136;i++)
+            		readable = ser.readline(280,eol);
+			for(i=0;i<2*num_readings+8;i++)
 			{
 				dummy_8 = readable[i];
 				getSingleByte(dummy_8);
