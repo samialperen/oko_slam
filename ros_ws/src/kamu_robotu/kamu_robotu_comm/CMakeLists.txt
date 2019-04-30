@@ -9,6 +9,7 @@ add_service_files(
   FILES
   kamu_cmd.srv
 )
+
 generate_messages(
   DEPENDENCIES
   std_msgs
@@ -26,11 +27,15 @@ target_link_libraries(odometry_bridge ${catkin_LIBRARIES} okoserial)
 
 add_executable(kamu_robotu_teleop src/kamu_robotu_teleop.cpp)
 target_link_libraries(kamu_robotu_teleop ${catkin_LIBRARIES})
+add_dependencies( kamu_robotu_teleop ${PROJECT_NAME}_generate_messages_cpp )
 
 # This ensures that sensor_msgs' msg headers are built before your executable
 if(sensor_msgs_EXPORTED_TARGETS)
   add_dependencies(lidar_bridge ${sensor_msgs_EXPORTED_TARGETS})
 endif()
+
+
+
 
 # Mark executables and/or libraries for installation
 install(TARGETS lidar_bridge odometry_bridge

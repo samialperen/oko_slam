@@ -9,7 +9,6 @@
 #include <nav_msgs/Odometry.h>
 #include <geometry_msgs/Twist.h>
 #include "okoserial.h"
-#include "kamu_robotu_comm/kamu_cmd.h"
 
 
 float v,w;
@@ -21,20 +20,6 @@ void twistlistenerCallback(geometry_msgs::Twist cmd){
     v = cmd.linear.x;
     w = cmd.angular.z;
 }
-bool kamu_command_handler(kamu_robotu_comm::kamu_cmd::Request &req, kamu_robotu_comm::kamu_cmd::Response &res)
-{
-uint8_t data2send[6];
-
-data2send[0] = 0x55;
-data2send[1] = (uint8_t)req.cmd_type;
-data2send[2] = (uint8_t)req.cmd_param;
-data2send[3] = (uint8_t)req.cmd_enable;
-data2send[4] = 0;
-data2send[5] = 0;
-ser.write((const uint8_t *) data2send, 6);
-res.result = true;
-return true;
-}
 
 unsigned int num_readings = 28;
 uint8_t dummy_8 = 0;
@@ -45,7 +30,6 @@ int main(int argc, char** argv){
   ros::init(argc, argv, "odometry_bridge");
   ros::NodeHandle n;
   ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
-  ros::ServiceServer service = n.advertiseService("/kamu_cmd", kamu_command_handler);
   ros::Subscriber twist_sub = n.subscribe("/cmd_vel",100, twistlistenerCallback);
   tf::TransformBroadcaster odom_broadcaster;
 
