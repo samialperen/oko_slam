@@ -110,3 +110,5 @@ of frontier_exploration
 $ roslaunch explore_lite explore.launch
 ```
 
+### Tutorial 4: Run Our Own Autonomous Navigation Package
+
