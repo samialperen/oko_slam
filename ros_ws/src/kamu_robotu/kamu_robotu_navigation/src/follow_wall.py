@@ -18,7 +18,7 @@ pub_ = None #Since we are using publisher in the functions as well we need to
 # make it global
 
 linear_velocity_ = 0.03
-angular_velocity_ = 0.4
+angular_velocity_ = 0.25
 
 regions_ = {
         'east': 0,
