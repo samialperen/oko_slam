@@ -1,13 +1,14 @@
 # GMAPPING INSTALLATION GUIDE & TUTORIALS
 
-Before this tutorial, please visit [HECTOR SLAM INSTALLATION GUIDE & TUTORIALS](/doc/hector_slam_tutorials.md)
+Before this tutorial, please visit [HECTOR SLAM INSTALLATION GUIDE & TUTORIALS](/doc/hector_slam_tutorial.md)
 
 [Gmapping](http://wiki.ros.org/gmapping) is a mapping algorithm which uses laser scan and odometry information to extract a map of the environment.
 
 ## Prerequisites
 * Ubuntu 16.04
 * ROS Kinetic
-* Turtlebot3 ROS Kinetic Package
+* Turtlebot3 ROS Kinetic Package (optional)
+* Gazebo
 
 ## Installation
 Install gmapping using apt package manager.
@@ -82,6 +83,12 @@ $ cd launch
 $ gedit turtlebot3_gmapping.launch
 ```
 In here you can adjust gmapping parameters as you wish. You can see [this tutorial](http://emanual.robotis.com/docs/en/platform/turtlebot3/slam/#tuning-guide) to understand how to tune gmapping for your application.
+
+**IMPORTANT NOTE:** If you get a transform tree error states that there is no transform between map and base_scan, then you may need to add the following to the corresponding gmapping launch file:
+```
+<node pkg="tf" type="static_transform_publisher" name="base_link_to_scan"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 /base_footprint /base_scan 10" />
+```
 
 ### Tutorial 3: Run gmapping with your own Data and without Gazebo
 For more information please see [slam_gmapping tutorial](http://wiki.ros.org/cn/slam_gmapping/Tutorials/MappingFromLoggedData).
