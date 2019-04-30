@@ -18,7 +18,7 @@ pub_ = None #Since we are using publisher in the functions as well we need to
 # make it global
 
 linear_velocity_ = 0.03
-angular_velocity_ = 0.2
+angular_velocity_ = 0.4
 
 regions_ = {
         'east': 0,
@@ -47,36 +47,46 @@ def wall_follower_switch(req):
 def callback_laser(msg):
     global regions_
 
-    print np.mean(msg.ranges[14:18])
-    print ('dsdedead')
-    print min(msg.ranges[14:18],3)
-
-    # Our laser publishes 64 point per rotation
-    # Let's divide these 64 point to total_region_number different region
+    # Our laser publishes 128 point per rotation
+    # Let's divide these 128 point to total_region_number different region
     # LIDAR rotates counter-clockwise
     # Let's start from the absolute right direction region and rotate cclockwise    
     # By taking mean value in reach region, we want to find out which region
     # has the closest object/wall 
-    # To eliminate Inf measurement, we used min function  
+    # To eliminate Inf measurement, we used mean function  
+
     MAX_LIDAR_RANGE = 3 #in meter
     total_region_number = 6 #East, North, West, South
-    # Which regions corresponds to which side will be found later.
-    regions_ = { 
-      'north': np.mean(msg.ranges[14:18]),
-      'west': np.mean(msg.ranges[31:34]),
-      'south': np.mean(msg.ranges[46:50]),
-      'east': min(min(msg.ranges[62:63]) ,min(msg.ranges[0:2])),
-      'n-e': np.mean(msg.ranges[6:10]),
-      'n-w': np.mean(msg.ranges[22:26])
-     }
+
+#    east_array = msg.ranges[124:127] + msg.ranges[0:3]
+    north_array = msg.ranges[124:127] + msg.ranges[0:3]
+
+    north_east_west = np.mean(msg.ranges[115:118])
+    north_east = np.mean(msg.ranges[110:114])
+    north_east_east = np.mean(msg.ranges[106:109])
+
+    north_west_west = np.mean(msg.ranges[19:22])
+    north_west = np.mean(msg.ranges[14:15])
+    north_west_east = np.mean(msg.ranges[10:13])
+
+
 #    regions_ = { 
-#      'south': min(min(msg.ranges[14:18]), MAX_LIDAR_RANGE), 
-#      'east': min(min(msg.ranges[31:34]), MAX_LIDAR_RANGE), 
-#      'north': min(min(msg.ranges[46:50]), MAX_LIDAR_RANGE), 
-#      'west': min(min( min(msg.ranges[62:63]) ,min(msg.ranges[0:2]) ), MAX_LIDAR_RANGE),
-#      'n-e': min(min(msg.ranges[38:42]), MAX_LIDAR_RANGE),
-#      'n-w': min(min(msg.ranges[54:56]), MAX_LIDAR_RANGE)
+#      'north': np.mean(msg.ranges[28:36]),
+#      'west': np.mean(msg.ranges[60:68]),
+#      'south': np.mean(msg.ranges[92:100]),
+#      'east': np.mean(east_array),
+#      'n-e': np.mean(msg.ranges[10:22]),
+#      'n-w': np.mean(msg.ranges[42:54])
 #     }
+    regions_ = {
+      'south': np.mean(msg.ranges[60:68]),
+      'east':  np.mean(msg.ranges[97:102]),
+      'west': np.mean(msg.ranges[23:38]),
+      'north': np.mean(north_array),
+      'n-e': min(north_east_east, north_east, north_east_west),
+      'n-w': min(north_west_east, north_west, north_west_west),
+     }
+
     take_action()
 
 def change_state(state):
@@ -92,24 +102,23 @@ def take_action():
     linear_x = 0
     angular_z = 0
     state_description = ''
-    
-    max_dist2robot = 0.30 #If detected object is far away from this value, we 
+
+    max_dist2robot = 0.30
     min_dist2robot = 0.092
-    # don't consider it
-    
+    max_dist2obj = 0.25
+    min_dist2obj = 0.092
+
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
 
-    
-    
-    if regions['n-w'] < max_dist2robot and regions['n-e'] > max_dist2robot and regions['n-w'] > min_dist2robot:
-        state_description = 'case 9'
+    if regions['n-w'] < max_dist2obj and regions['n-e'] > max_dist2obj and regions['n-w'] > min_dist2obj:
+        state_description = 'case 9 nw'
 	change_state(3)
-    elif regions['n-w'] > max_dist2robot and regions['n-e'] < max_dist2robot and regions['n-e'] > min_dist2robot :
-        state_description = 'case 10'
+    elif regions['n-w'] > max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-e'] > min_dist2obj :
+        state_description = 'case 10 ne'
 	change_state(1)
-    elif regions['n-w'] < max_dist2robot and regions['n-e'] < max_dist2robot and regions['n-w'] > min_dist2robot and regions['n-e'] > min_dist2robot:
-        state_description = 'case 11'
+    elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
+        state_description = 'case 11 ne nw'
         change_state(1)
     else:
         if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
@@ -147,17 +156,19 @@ def take_action():
 def find_wall():
     msg = Twist()
     msg.linear.x = linear_velocity_
-    #msg.angular.z = angular_velocity_
+    msg.angular.z = 0
     return msg
 
 def turn_left():
     msg = Twist()
     msg.angular.z = angular_velocity_
+    msg.linear.x = 0
     return msg
 
 def turn_right():
     msg = Twist()
     msg.angular.z = -angular_velocity_
+    msg.linear.x = 0
     return msg
 
 def follow_the_wall():
@@ -165,7 +176,13 @@ def follow_the_wall():
     
     msg = Twist()
     msg.linear.x = linear_velocity_
+    msg.angular.z = 0
     return msg
+def sd_hook():
+    msg = Twist()
+    msg.linear.x = 0
+    msg.angular.z = 0
+    pub_.publish(msg)
 
 def main():
     global pub_, active_
@@ -177,6 +194,8 @@ def main():
     sub = rospy.Subscriber('/scan', LaserScan, callback_laser)
     
     srv = rospy.Service('wall_follower_switch', SetBool, wall_follower_switch)
+
+    rospy.on_shutdown(sd_hook)
     
     rate = rospy.Rate(5)
     while not rospy.is_shutdown():
