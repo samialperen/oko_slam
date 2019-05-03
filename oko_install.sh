@@ -11,8 +11,14 @@ if [ $input == "raspberry" ]; then
 	
     echo "#####################"
     echo "Installing ROS Serial"
-	sudo apt-get install ros-kinetic-serial -y
-	
+#	sudo apt-get install ros-kinetic-serial -y
+	cd ros_ws/src
+	git clone https://github.com/wjwwood/serial.git
+	cd serial
+	make
+	make test
+	make doc
+	cd ../../..
     echo "#####################"
 	echo "Installing Gmapping"
 	sudo apt-get install ros-kinetic-gmapping -y
