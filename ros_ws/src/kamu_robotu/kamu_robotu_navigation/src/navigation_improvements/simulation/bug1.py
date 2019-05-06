@@ -1,6 +1,5 @@
 #! /usr/bin/env python
 
-# import ros stuff
 import rospy
 # import ros message
 from geometry_msgs.msg import Point
@@ -9,7 +8,6 @@ from nav_msgs.msg import Odometry
 from tf import transformations
 from gazebo_msgs.msg import ModelState
 from gazebo_msgs.srv import SetModelState
-# import ros service
 from std_srvs.srv import *
 
 import math
