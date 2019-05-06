@@ -33,7 +33,7 @@ desired_position_.z = 0
 yaw_precision_ = 5 * (math.pi / 90)
 position_precision_ = 0.02 # 2cm
 linear_velocity_ = 0.2
-angular_velocity_ = 0.15
+angular_velocity_ = 0.2
 
 # publishers
 pub = None
@@ -131,7 +131,7 @@ def main():
     
     srv = rospy.Service('go_to_point_switch', SetBool, go_to_point_switch)
     
-    rate = rospy.Rate(20)
+    rate = rospy.Rate(5)
     while not rospy.is_shutdown(): #Work only if _active is set True
         if not active_:
             continue
