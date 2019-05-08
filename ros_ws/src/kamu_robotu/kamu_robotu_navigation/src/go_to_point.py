@@ -9,7 +9,7 @@ from std_srvs.srv import *
 
 import math
 
-active_ = False
+active_ = True
 
 # robot state variables
 position_ = Point()
@@ -22,10 +22,10 @@ state_ = 0
 
 # goal position
 desired_position_ = Point()
-desired_position_.x = rospy.get_param('des_pos_x')
-desired_position_.y = rospy.get_param('des_pos_y')
-#desired_position_.x = -3
-#desired_position_.y = 7
+#desired_position_.x = rospy.get_param('des_pos_x')
+#desired_position_.y = rospy.get_param('des_pos_y')
+desired_position_.x = -3
+desired_position_.y = 7
 desired_position_.z = 0
 
 # Precision parameters ()
@@ -95,7 +95,7 @@ def fix_yaw(des_pos):
         change_state(1)
 
 def go_straight_ahead(des_pos):
-    global yaw_, pub, yaw_precision_, state_, position_precision_, linear_velocity_
+    global yaw_, pub, yaw_precision_, state_, position_precision_, linear_velocity_, angular_velocity_
     desired_yaw = math.atan2(des_pos.y - position_.y, des_pos.x - position_.x)
     err_yaw = desired_yaw - yaw_
     err_pos = math.sqrt(pow(des_pos.y - position_.y, 2) + pow(des_pos.x - position_.x, 2))

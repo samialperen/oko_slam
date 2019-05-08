@@ -14,6 +14,7 @@ active_ = True
 # robot state variables
 position_ = Point()
 yaw_ = 0
+
 # State Machine for Go to Point
 state_ = 0
 # State 0 = Fix heading 
@@ -24,13 +25,12 @@ state_ = 0
 desired_position_ = Point()
 #desired_position_.x = rospy.get_param('des_pos_x')
 #desired_position_.y = rospy.get_param('des_pos_y')
-desired_position_.x = 3
-desired_position_.y = 4
+desired_position_.x = -5
+desired_position_.y = 5
 desired_position_.z = 0
 
 # Precision parameters ()
-#yaw_precision_ = 5 * (math.pi / 180) #5 degree tolerance
-yaw_precision_ = 2 * (math.pi / 90)
+yaw_precision_ = 5 * (math.pi / 180)
 dist_precision_ = 0.02 # 2cm
 linear_velocity_ = 0.03
 angular_velocity_ = 0.2
@@ -39,7 +39,7 @@ angular_velocity_ = 0.2
 pub = None
 
 # service callbacks
-def go_to_point_switch(req):
+def go_point_switch(req):
     global active_
     active_ = req.data
     res = SetBoolResponse()
@@ -84,7 +84,7 @@ def fix_yaw(des_pos):
     
     twist_msg = Twist()
     if math.fabs(err_yaw) > yaw_precision_:
-        twist_msg.angular.z = angular_velocity_ if err_yaw > 0 else -angular_velocity_
+        twist_msg.angular.z = -angular_velocity_ if err_yaw > 0 else angular_velocity_
     
     pub.publish(twist_msg)
     
@@ -102,7 +102,7 @@ def go_straight_ahead(des_pos):
     if err_pos > dist_precision_:
         twist_msg = Twist()
         twist_msg.linear.x = linear_velocity_
-        twist_msg.angular.z = angular_velocity_ if err_yaw > 0 else -angular_velocity
+        #twist_msg.angular.z = angular_velocity_ if err_yaw > 0 else -angular_velocity
         pub.publish(twist_msg)
     else:
         print 'Position error: [%s]' % err_pos
@@ -128,7 +128,7 @@ def main():
     
     sub_odom = rospy.Subscriber('/odom', Odometry, callback_odom)
     
-    srv = rospy.Service('go_point_switch', SetBool, go_to_point_switch)
+    srv = rospy.Service('go_point_switch', SetBool, go_point_switch)
     
     rate = rospy.Rate(5)
     while not rospy.is_shutdown():
