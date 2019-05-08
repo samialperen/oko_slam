@@ -10,10 +10,10 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   genmsg
   sensor_msgs
-  cv_bridge
-  image_transport
+#  cv_bridge
+#  image_transport
   message_generation
-  OpenCV
+#  OpenCV
 )
 
 ## Generate added messages and services with any dependencies listed here
@@ -36,8 +36,8 @@ include_directories(
 )
 
 
-add_executable(map_analyzer src/image_processing.cpp)
-target_link_libraries(map_analyzer ${catkin_LIBRARIES} ${OpenCV_LIBS})
+#add_executable(map_analyzer src/image_processing.cpp)
+#target_link_libraries(map_analyzer ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 
 #add_executable(binary_converter src/binary_converter.cpp src/binary_converter_node.cpp src/ParseArg.cpp)
