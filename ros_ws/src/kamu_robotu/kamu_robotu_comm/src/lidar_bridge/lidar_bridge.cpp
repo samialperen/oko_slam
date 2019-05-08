@@ -50,7 +50,7 @@ int main (int argc, char** argv){
 	ros::Publisher scan_pub = n.advertise<sensor_msgs::LaserScan>("scan",50);
 
 	unsigned int num_readings = 128;
-	double laser_frequency = 1; // this true for 64 readings
+	double laser_frequency = 1.2; // this true for 64 readings
 	double ranges[num_readings];
 	int count = 0 ;
 
@@ -86,7 +86,7 @@ int main (int argc, char** argv){
 
 	scan.header.frame_id = "base_scan";
 	scan.angle_min = 0;//-1.572;//2.3562;
-    scan.angle_max = 6.2832;// -1.572;//8.6394;
+        scan.angle_max = 6.2832;// -1.572;//8.6394;
 	scan.angle_increment = 6.2832/num_readings;
 	scan.time_increment = (1/laser_frequency)/(num_readings);
 	scan.range_min = 0.092;
