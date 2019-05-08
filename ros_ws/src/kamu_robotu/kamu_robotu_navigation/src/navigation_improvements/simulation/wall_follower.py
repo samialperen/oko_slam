@@ -24,6 +24,8 @@ regions_ = {
         'north': 0,
         'west': 0,
         'south': 0,
+        'n-w': 0, #North West
+        'n-e': 0, #North East
 }
 
 state_ = 0
@@ -55,19 +57,30 @@ def callback_laser(msg):
 
     MAX_LIDAR_RANGE = 3 #in meter
     total_region_number = 6 #East, North, West, South
+#### Simulation
+    regions_ = { 
+      'east': min(min(msg.ranges[0:31]), MAX_LIDAR_RANGE), 
+      'north': min(min(msg.ranges[32:63]), MAX_LIDAR_RANGE), 
+      'west': min(min(msg.ranges[64:95]), MAX_LIDAR_RANGE), 
+      'south': min(min(msg.ranges[96:127]), MAX_LIDAR_RANGE)
+      #'n-e': min(min(msg.ranges[96:127]), MAX_LIDAR_RANGE),
+     }
+     
+     
 
+###### Real World
 #    east_array = msg.ranges[124:127] + msg.ranges[0:3]
-    north_array = msg.ranges[124:127] + msg.ranges[0:3]
+#    north_array = msg.ranges[124:127] + msg.ranges[0:3]
+#
+#    north_east_west = np.mean(msg.ranges[115:118])
+#    north_east = np.mean(msg.ranges[110:114])
+#    north_east_east = np.mean(msg.ranges[106:109])
 
-    north_east_west = np.mean(msg.ranges[115:118])
-    north_east = np.mean(msg.ranges[110:114])
-    north_east_east = np.mean(msg.ranges[106:109])
+#    north_west_west = np.mean(msg.ranges[19:22])
+#    north_west = np.mean(msg.ranges[14:15])
+#    north_west_east = np.mean(msg.ranges[10:13])
 
-    north_west_west = np.mean(msg.ranges[19:22])
-    north_west = np.mean(msg.ranges[14:15])
-    north_west_east = np.mean(msg.ranges[10:13])
-
-
+## Regions when we use cable electricity
 #    regions_ = { 
 #      'north': np.mean(msg.ranges[28:36]),
 #      'west': np.mean(msg.ranges[60:68]),
@@ -76,14 +89,15 @@ def callback_laser(msg):
 #      'n-e': np.mean(msg.ranges[10:22]),
 #      'n-w': np.mean(msg.ranges[42:54])
 #     }
-    regions_ = {
-      'south': np.mean(msg.ranges[60:68]),
-      'east':  np.mean(msg.ranges[97:102]),
-      'west': np.mean(msg.ranges[23:38]),
-      'north': np.mean(north_array),
-      'n-e': min(north_east_east, north_east, north_east_west),
-      'n-w': min(north_west_east, north_west, north_west_west),
-     }
+## Regions when we use lipo battery 
+#    regions_ = {
+#      'south': np.mean(msg.ranges[60:68]),
+#      'east':  np.mean(msg.ranges[97:102]),
+#      'west': np.mean(msg.ranges[23:38]),
+#      'north': np.mean(north_array),
+#      'n-e': min(north_east_east, north_east, north_east_west),
+#      'n-w': min(north_west_east, north_west, north_west_west),
+#     }
 
     take_action()
     
@@ -109,46 +123,46 @@ def take_action():
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
 
-    if regions['n-w'] < max_dist2obj and regions['n-e'] > max_dist2obj and regions['n-w'] > min_dist2obj:
-        state_description = 'case 9 nw'
-	change_state(3)
-    elif regions['n-w'] > max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-e'] > min_dist2obj :
-        state_description = 'case 10 ne'
-	change_state(1)
-    elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
-        state_description = 'case 11 ne nw'
-        change_state(1)
-    else:
-        if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
-            state_description = 'case 1 - nothing'
-            change_state(0)
-        elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > min_dist2robot:
-            state_description = 'case 2 - north'
-            change_state(3)
-        elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot:
-            state_description = 'case 3 - east'
-            change_state(2)
-        elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot:
-            state_description = 'case 4 - west'
-            change_state(2)
-        elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['north'] > min_dist2robot:
-            state_description = 'case 5 - north and east'
-            change_state(1)
-        elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
-            state_description = 'case 6 - north and west'
-            change_state(3)
-        elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
-            state_description = 'case 7 - north and west and east'
-            change_state(3)
-        elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot:
-            state_description = 'case 8 - west and east'
-            change_state(0)
-        else:
-            state_description = 'Unknown Case GG WP!'
-            rospy.loginfo(regions)
+#    if regions['n-w'] < max_dist2obj and regions['n-e'] > max_dist2obj and regions['n-w'] > min_dist2obj:
+#        state_description = 'case 9 nw'
+#	change_state(3)
+#    elif regions['n-w'] > max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-e'] > min_dist2obj :
+#        state_description = 'case 10 ne'
+#	change_state(1)
+#    elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
+#        state_description = 'case 11 ne nw'
+#        change_state(1)
+#    else:
+#        if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
+#            state_description = 'case 1 - nothing'
+#            change_state(0)
+#        elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > min_dist2robot:
+#            state_description = 'case 2 - north'
+#            change_state(3)
+#        elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot:
+#            state_description = 'case 3 - east'
+#            change_state(2)
+#        elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot:
+#            state_description = 'case 4 - west'
+#            change_state(2)
+#        elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['north'] > min_dist2robot:
+#            state_description = 'case 5 - north and east'
+#            change_state(1)
+#        elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
+#            state_description = 'case 6 - north and west'
+#            change_state(3)
+#        elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
+#            state_description = 'case 7 - north and west and east'
+#            change_state(3)
+#        elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot:
+#            state_description = 'case 8 - west and east'
+#            change_state(0)
+#        else:
+#            state_description = 'Unknown Case GG WP!'
+#            rospy.loginfo(regions)
         
-    rospy.loginfo(state_description)
-    rospy.loginfo(regions)
+    #rospy.loginfo(state_description)
+    #rospy.loginfo(regions)
 
 def find_wall():
     msg = Twist()
@@ -176,7 +190,8 @@ def follow_the_wall():
     msg.angular.z = 0
     return msg
     
-def sd_hook():
+# Stop sending commands when you shut down the node    
+def sd_hook(): 
     msg = Twist()
     msg.linear.x = 0
     msg.angular.z = 0
@@ -218,7 +233,7 @@ def main():
         else:
             rospy.logerr('Unknown state! GG WP :(')
         
-        pub_.publish(msg)
+        #pub_.publish(msg)
         
         rate.sleep()
 
