@@ -52,7 +52,7 @@ If you don't see any error, then you can go further. If you see error, try to fi
 
 * For our case launch oko_cartographer.launch. It calls [kamu_robotu.lua](/ros_ws/src/kamu_robotu/kamu_robotu_launch/params/kamu_robotu.lua) file which you need to copy to /home/user/cartog_ws/install_isolated/share/cartographer_ros/configuration_files directory. 
 ```
-$ cd oko_slam/ros_ws/bagfiles/kamu_robotu.lua /home/user/cartog_ws/install_isolated/share/cartographer_ros/configuration_files
+$ cp oko_slam/ros_ws/src/kamu_robotu/kamu_robotu_launch/params/kamu_robotu.lua /home/$USER/cartog_ws/install_isolated/share/cartographer_ros/configuration_files
 $ roslaunch kamu_robotu_launch oko_slam.launch slam_type:=cartographer
 ```
 
