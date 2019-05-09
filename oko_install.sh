@@ -27,7 +27,10 @@ if [ $input == "raspberry" ]; then
 	echo "#####################"	
 	echo "Installing Hector-SLAM"
 	sudo apt-get install ros-kinetic-hector-slam -y
-	
+
+	echo "#####################"
+        echo "Installing opencv"
+        sudo apt-get install ros-kinetic-opencv3
 		
 elif [ $input == "pc" ]; then
 	sudo apt update
@@ -71,6 +74,9 @@ elif [ $input == "pc" ]; then
 	echo "Installing Explore-Lite"
 	sudo apt-get install ros-kinetic-explore-lite -y 
 		
+        echo "#####################"
+	echo "Installing opencv"
+	sudo apt-get install ros-kinetic-opencv3 
 else 
 	echo "Nothing was installed!"
 	echo "You need to enter input: raspberry or pc"
