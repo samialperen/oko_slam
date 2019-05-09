@@ -29,22 +29,21 @@ if [ $input == "raspberry" ]; then
 	sudo apt-get install ros-kinetic-hector-slam -y
 
 	echo "#####################"
-        echo "Installing opencv"
-        sudo apt-get install ros-kinetic-opencv3
+    echo "Installing opencv"
+    sudo apt-get install ros-kinetic-opencv3
 		
 elif [ $input == "pc" ]; then
 	sudo apt update
 	
 	echo "#####################"
     echo "Installing ROS Serial"
-#	sudo apt-get install ros-kinetic-serial -y
-	cd ros_ws/src
-	git clone https://github.com/wjwwood/serial.git
-	cd serial
-	make
-	make test
-	make doc
-	cd ../../..
+#	cd ros_ws/src
+#	git clone https://github.com/wjwwood/serial.git
+#	cd serial
+#	make
+#	make test
+#	make doc
+#	cd ../../..
 
 	echo "#####################"	
 	echo "Installing Gmapping"
@@ -74,7 +73,7 @@ elif [ $input == "pc" ]; then
 	echo "Installing Explore-Lite"
 	sudo apt-get install ros-kinetic-explore-lite -y 
 		
-        echo "#####################"
+    echo "#####################"
 	echo "Installing opencv"
 	sudo apt-get install ros-kinetic-opencv3 
 else 
