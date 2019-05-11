@@ -52,7 +52,7 @@ enum message_types
 	odometry,
 	velocitycmd,
 	pidparams,
-    guicmd
+        guicmd
 };
 enum message_lengths
 {
@@ -61,7 +61,7 @@ enum message_lengths
 	velocitycmd_length = 8, // 2 float each one 4 byte
 	pidparams_length = 12, // 3 float each one 4 byte
 	prelim_length = 8,
-    guicmd_length = 8
+        guicmd_length = 8
 };
 enum error_codes
 {
@@ -85,7 +85,7 @@ enum serial_state
 	odometry_coming,
 	velocitycmd_coming,
 	pidparams_coming,
-    guicmd_coming,
+        guicmd_coming,
 	data_came
 };
 

@@ -1,8 +1,11 @@
 #!/bin/bash
+#	Author: Mustafa KILINÇ
+#	E-mail: mustafa.kilinc@ieee.metu.edu.tr
 
-
+# reconnect to the wifi 
 #nmcli d connect wlan0
 
+# Get your current ip address
 sleep 1
   
   hostname -I >> ~/RaspiShare/ip.txt
@@ -10,8 +13,7 @@ sleep 1
 
 echo  'kamurobotu' | sudo -S  rclone copy -v ~/RaspiShare/ ozkardesler: 
 
- 
-
+# you can also sync you shared file with the command below  
 #echo  'kamurobotu' | sudo -S   rclone sync ozkardesler: ~/RaspiShare
 
 sleep 4
@@ -19,16 +21,38 @@ sleep 4
 echo  'kamurobotu' | sudo -S  rclone copy -v ~/Documents/oko_slam/ros_ws/saved_maps ozkardesler:
 
 
+# Source ROS_WORKSPACE
+
+source /opt/ros/kinetic/setup.bash
+source /home/ozkardesler/Documents/oko_slam/ros_ws/devel/setup.bash
+source /home/ozkardesler/cartog_ws/devel_isolated/setup.bash
+
+
+
+# ROS MASTER ip update
+export ROS_HOSTNAME=10.42.0.1
+export ROS_MASTER_URI=http://10.42.0.1:11311
+
+
+
+# How to get ip from txt file for ROS_MASTER_URI 
+
 #file="/home/ozkardesler/RaspiShare/ip.txt"
-
 #sed -i 's/[[:space:]]*$//' $file
-
-
 #tag=$( tail -n 1 $file  )
-
 #export ROS_MASTER_URI=http://$tag:11311
 #export ROS_HOSTNAME=$tag
 
-export ROS_HOSTNAME=10.42.0.1
-export ROS_MASTER_URI=http://10.42.0.1:11311
+# Take a picture of the current updated slam result 
+# get date and time for the file name 
+currentdate=$(date +"%Y-%m-%d")
+currenttime=$(date +"%T")
+
+#Cartographer 
+
+mkdir /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate 
+
+rosrun carto_map_server carto_map_saver -f /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/$currenttime
+
+convert /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/$currenttime.pgm  /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/$currenttime.png
 
