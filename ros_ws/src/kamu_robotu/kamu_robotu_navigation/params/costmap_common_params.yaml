@@ -1,0 +1,18 @@
+obstacle_range: 0.5
+# obstancle_range is 0.5 meters, which means that the robot will only update its map with information about obstacles that are within 0.5 meters of the base
+raytrace_range: 0.25
+# raytrace_range is 1.0 meters, which means that the robot will attempt to clear out space in front of it up to 1.0 meters away given a sensor reading.
+#footprint: [[x0, y0], [x1, y1], ... [xn, yn]]
+robot_radius: 0.10 
+# kamu_robotu has 10 cm outer radius
+
+inflation_radius: 0.025
+# setting the inflation radius at 0.25 meters means that the robot will treat all paths that stay 0.25 meters or more away from obstacles as having equal obstacle cost
+observation_sources: OKO_LIDAR
+
+OKO_LIDAR: {sensor_frame: base_scan, data_type: LaserScan, topic: scan, marking: true, clearing: true}
+# OKO_LIDAR publishes into /scan topic with frame name: base_scan
+# base_scan is the tf frame that contains LIDAR
+# The "marking" and "clearing" parameters determine whether the sensor will be used to add obstacle information to the costmap, clear obstacle information from the costmap, or do both.
+
+

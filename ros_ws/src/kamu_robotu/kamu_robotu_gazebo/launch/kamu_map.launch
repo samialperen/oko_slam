@@ -1,0 +1,14 @@
+<launch>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find kamu_robotu_gazebo)/worlds/kamu_map.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+  
+  <arg name="robot" default="kamu_robotu" doc="choose one of the robots [kamu_robotu, turtlebot3]"/>
+  <include file="$(find kamu_robotu_gazebo)/launch/spawn_$(arg robot).launch"/>
+
+</launch>

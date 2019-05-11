@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+
+<launch>
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find kamu_robotu_gazebo)/urdf/kamu_robotu.xacro" />
+  <node pkg="rviz" type="rviz" name="rviz2"
+    args="-d $(find kamu_robotu_launch)/rviz_cfg/oko.rviz"/> 
+
+</launch>

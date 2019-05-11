@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package>
+  <name>kamu_robotu_comm</name>
+  <version>0.0.1</version>
+  <description>Example package for using http://wjwwood.io/serial/ library and obtaining laser scan data from a bluetooth module and obtaining odometry from serial</description>
+
+  <author email="mustafa.kilinc@ieee.metu.edu.tr">Mustafa KILINC</author>
+
+  <maintainer email="mustafa.kilinc@ieee.metu.edu.tr">Mustafa KILINC</maintainer>
+  <maintainer email="oguz.ozdemir@ieee.metu.edu.tr">Oguz Ozdemir</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>serial</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>nav_msgs</build_depend>  
+  <build_depend>tf</build_depend>
+  <build_depend>message_generation</build_depend>
+  <run_depend>serial</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>nav_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>message_runtime</run_depend>
+</package>

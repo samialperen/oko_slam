@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package>
+  <name>kamu_robotu_navigation</name>
+  <version>0.3.5</version>
+  <description>
+    kamu_robotu_navigation contains necessary files for kamu_robotu_navigation
+  </description>
+
+  <!-- One maintainer tag required, multiple allowed, one person per tag --> 
+  <maintainer email="oguz.ozdemir@ieee.metu.edu.tr">Oguz Ozdemir</maintainer>
+  <maintainer email="sami.akgun@ieee.metu.edu.tr">Sami Alperen Akgun</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <run_depend>navigation</run_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+ 
+
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- You can specify that this package is a metapackage here: -->
+    <!-- <metapackage/> -->
+
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>
