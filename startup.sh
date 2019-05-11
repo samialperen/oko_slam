@@ -1,29 +1,15 @@
-#!/bin/sh
+#!/bin/bash
+
+# write your ip address of the raspberry pi here
+export ROS_HOSTNAME=10.42.0.1
+export ROS_MASTER_URI=http://10.42.0.1:11311
+
+# Gmapping 
+source /opt/ros/kinetic/setup.bash
+source /home/ozkardesler/Documents/oko_slam/ros_ws/devel/setup.bash
+
+#roslaunch kamu_robotu_launch oko_slam.launch 
 
 
-sleep 10
-
-#nmcli d connect wlan0
-
-sleep 3
-  
-  hostname -I >> ~/RaspiShare/ip.txt
-  iwgetid  >> ~/RaspiShare/ssid.txt
-
-echo  'kamurobotu' | sudo -S  rclone copy -v ~/RaspiShare/ ozkardesler: 
 
  
-
-#echo  'kamurobotu' | sudo -S   rclone sync ozkardesler: ~/RaspiShare
-
-sleep 4
-
-file="/home/ozkardesler/RaspiShare/ip.txt"
-
-sed -i 's/[[:space:]]*$//' $file
-
-
-tag=$( tail -n 1 $file  )
-
-export ROS_MASTER_URI=http://$tag:11311
-export ROS_HOSTNAME=$tag

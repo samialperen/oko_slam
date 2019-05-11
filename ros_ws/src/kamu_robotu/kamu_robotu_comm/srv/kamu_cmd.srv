@@ -1,5 +1,6 @@
 int8 cmd_type
 int8 cmd_param
+int8[6] cmd_otherparams
 int8 cmd_enable
 ---
 bool result
