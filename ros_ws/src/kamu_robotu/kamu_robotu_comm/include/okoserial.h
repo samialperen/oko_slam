@@ -61,7 +61,7 @@ enum message_lengths
 	velocitycmd_length = 8, // 2 float each one 4 byte
 	pidparams_length = 12, // 3 float each one 4 byte
 	prelim_length = 8,
-    guicmd_length = 2
+    guicmd_length = 8
 };
 enum error_codes
 {
@@ -137,6 +137,7 @@ typedef struct
 	preliminary_message premess;
     uint8_t guicmd_type;
     uint8_t guicmd_param;
+    uint8_t guicmd_otherparams[6];
 }guicmd_message;
 
 extern preliminary_message prelim_mess;

@@ -34,9 +34,6 @@ guicmd_mess.premess.heading[1] = 0xFF;
 guicmd_mess.premess.heading[2] = 0xFD;
 guicmd_mess.premess.message_type = guicmd;
 guicmd_mess.premess.error_code = none;
-guicmd_mess.premess.extra_info_1 = none;
-guicmd_mess.premess.extra_info_2 = none;
-guicmd_mess.premess.extra_info_3 = none;
 guicmd_mess.guicmd_type = (uint8_t)req.cmd_type;
 guicmd_mess.guicmd_param = (uint8_t)req.cmd_param;
 memcpy(guicmd_buffer,&guicmd_mess,prelim_length+guicmd_length);
@@ -87,12 +84,15 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
   
   kamu_robotu_comm::kamu_cmd::Request initial_req;
   kamu_robotu_comm::kamu_cmd::Response initial_res;
-  initial_req.cmd_type = Odom_Reset_Cmd; //
+  
+  initial_req.cmd_type = Odom_Reset_Cmd;
   initial_req.cmd_param = 0; // Odom reset does not require any param
-  gui_command_handler(initial_req,initial_res); // initially, reset odometry
-  initial_req.cmd_type = AutoManuel_Cmd; //
-  initial_req.cmd_param = 0; // activate Auto mode
-  gui_command_handler(initial_req,initial_res); // initially, reset odometry
+  gui_command_handler(initial_req,initial_res); // Initially, reset odometry
+  
+  initial_req.cmd_type = AutoManuel_Cmd;
+  initial_req.cmd_param = 0; // Activate Auto mode
+  gui_command_handler(initial_req,initial_res);
+  
   ros::Time current_time;
   ros::Rate r(20);
   while(n.ok()){
@@ -167,6 +167,6 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
   }
   initial_req.cmd_type = AutoManuel_Cmd; //
   initial_req.cmd_param = 1; // deactivate Auto mode
-  gui_command_handler(initial_req,initial_res); // initially, reset odometry
+  gui_command_handler(initial_req,initial_res);
   ser.close();
 }
