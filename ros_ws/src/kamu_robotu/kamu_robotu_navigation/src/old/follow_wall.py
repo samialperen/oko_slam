@@ -61,17 +61,13 @@ def callback_laser(msg):
 #    east_array = msg.ranges[124:127] + msg.ranges[0:3]
     north_array = msg.ranges[124:127] + msg.ranges[0:3]
 
-	north_east_west_west = np.mean(msg.ranges[119:123])
     north_east_west = np.mean(msg.ranges[115:118])
     north_east = np.mean(msg.ranges[110:114])
     north_east_east = np.mean(msg.ranges[106:109])
-	north_east_east_east = np.mean(msg.ranges[103:105])
 
-	north_west_west_west = np.mean(msg.ranges[23:26])
     north_west_west = np.mean(msg.ranges[19:22])
-    north_west = np.mean(msg.ranges[13:18])
-    north_west_east = np.mean(msg.ranges[9:12])
-	north_west_east_east = np.mean(msg.ranges[4:8])
+    north_west = np.mean(msg.ranges[14:15])
+    north_west_east = np.mean(msg.ranges[10:13])
 
 
 #    regions_ = { 
@@ -83,12 +79,12 @@ def callback_laser(msg):
 #      'n-w': np.mean(msg.ranges[42:54])
 #     }
     regions_ = {
-	  'north': np.mean(north_array),
-      'west': np.mean(msg.ranges[26:32]),
       'south': np.mean(msg.ranges[60:68]),
-      'east':  np.mean(msg.ranges[96:102]),
-      'n-w': min(north_west_east_east, north_west_east, north_west, north_west_west, north_west_west_west),
-      'n-e': min(north_east_east_east, north_east_east, north_east, north_east_west, north_east_west_west),
+      'east':  np.mean(msg.ranges[97:102]),
+      'west': np.mean(msg.ranges[23:38]),
+      'north': np.mean(north_array),
+      'n-e': min(north_east_east, north_east, north_east_west),
+      'n-w': min(north_west_east, north_west, north_west_west),
      }
 
     take_action()
@@ -107,9 +103,9 @@ def take_action():
     angular_z = 0
     state_description = ''
 
-    max_dist2robot = 0.20
+    max_dist2robot = 0.30
     min_dist2robot = 0.092
-    max_dist2obj = 0.20
+    max_dist2obj = 0.25
     min_dist2obj = 0.092
 
     # If there exists an object only north then turn left --> Case 2
@@ -210,16 +206,16 @@ def main():
         msg = Twist()
         if state_ == 0:
             msg = find_wall()
-            #print "Find wall"
+            #print "Find wall Bitch!"
         elif state_ == 1:
             msg = turn_left()
-            #print "Turn Left"
-	    elif state_ == 3:
+            #print "Turn Left Bitch!"
+        elif state_ == 3:
             msg = turn_right()
-            #print "Turn Right Bitch"
+            #print "Turn Right Bitch!"
         elif state_ == 2:
             msg = follow_the_wall()
-            #print "Follow the Wall Bitch"
+            #print "Follow the Wall Bitch!"
             pass
         else:
             rospy.logerr('Unknown state! GG WP :(')
