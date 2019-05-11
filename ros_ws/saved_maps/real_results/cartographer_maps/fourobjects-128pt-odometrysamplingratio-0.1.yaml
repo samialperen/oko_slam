@@ -1,7 +1,0 @@
-image: fourobjects-128pt-odometrysamplingratio-0.1.pgm
-resolution: 0.010000
-origin: [-1.238667, -1.000044, 0.000000]
-negate: 0
-occupied_thresh: 0.65
-free_thresh: 0.196
-
