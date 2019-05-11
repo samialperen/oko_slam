@@ -61,7 +61,7 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
   
   try // Connect to the port
     {
-        ser.setPort("/dev/pts/22"); // miniuart port of the rpi, /dev/ttyS0
+        ser.setPort("/dev/ttyS0"); // miniuart port of the rpi, /dev/ttyS0
         ser.setBaudrate(9600);
 		serial::stopbits_t  stopbits;
 		stopbits = serial::stopbits_one;	
