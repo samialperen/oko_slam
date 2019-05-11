@@ -39,7 +39,10 @@ enum bluetooth_command_types
 	Kp_cmd = 			0x07,
 	Kd_cmd = 			0x08,
 	Ki_cmd = 			0x09,
-	Step_Freq_cmd =		0x0A
+	Step_Freq_cmd =		0x0A,
+	Step_En_Dis_Cmd	=	0x0B,
+	Odom_Reset_Cmd = 	0x0C,
+	AutoManuel_Cmd =	0x0D
 };
 
 enum message_types
@@ -48,7 +51,8 @@ enum message_types
 	laserscan,
 	odometry,
 	velocitycmd,
-	pidparams
+	pidparams,
+    guicmd
 };
 enum message_lengths
 {
@@ -56,7 +60,8 @@ enum message_lengths
 	odometry_length = 20, // 5 float each one 4 byte
 	velocitycmd_length = 8, // 2 float each one 4 byte
 	pidparams_length = 12, // 3 float each one 4 byte
-	prelim_length = 8
+	prelim_length = 8,
+    guicmd_length = 2
 };
 enum error_codes
 {
@@ -80,6 +85,7 @@ enum serial_state
 	odometry_coming,
 	velocitycmd_coming,
 	pidparams_coming,
+    guicmd_coming,
 	data_came
 };
 
@@ -126,11 +132,19 @@ typedef struct
 	float kd;
 }pidparams_message;
 
+typedef struct
+{
+	preliminary_message premess;
+    uint8_t guicmd_type;
+    uint8_t guicmd_param;
+}guicmd_message;
+
 extern preliminary_message prelim_mess;
 extern velocitycmd_message vel_cmd_mess;
 extern pidparams_message pidparam_mess;
 extern odometry_message odom_mess;
 extern laserscan_message laserscan_mess;
+extern guicmd_message guicmd_mess;
 
 void getSingleByte(uint8_t  byte);
 void initializeOdometryMessage(odometry_message * odom);

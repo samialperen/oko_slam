@@ -19,6 +19,8 @@ velocitycmd_message vel_cmd_mess;
 pidparams_message pidparam_mess;
 odometry_message odom_mess;
 laserscan_message laserscan_mess;
+guicmd_message guicmd_mess;
+
 
 
 uint8_t data_index=0;
@@ -37,7 +39,7 @@ volatile bool newBluetoothDataArrived = false;
 
 void getSingleByte(uint8_t  byte)
 {
-	
+
 	switch(state){
 		case waiting_heading:
 			prelim_mess.heading[0] = byte;
@@ -75,7 +77,7 @@ void getSingleByte(uint8_t  byte)
 				state = datatype_came;
 
 			}
-			
+
 			else if(prelim_mess.message_type==laserscan)
 			{
 				state = datatype_came;
@@ -94,7 +96,7 @@ void getSingleByte(uint8_t  byte)
 
 			else state = waiting_heading;
 			break;
-		case datatype_came: 
+		case datatype_came:
 			prelim_mess.error_code = byte;
 			if(prelim_mess.error_code==none)
 			{
@@ -132,7 +134,7 @@ void getSingleByte(uint8_t  byte)
 					state = pidparams_coming;
 					memcpy(&(pidparam_mess.premess),&prelim_mess,sizeof(prelim_mess));
 				}
-				else if(prelim_mess.message_type==laserscan) 
+				else if(prelim_mess.message_type==laserscan)
 				{
 					state = laserscan_coming;
 					memcpy(&(laserscan_mess.premess),&prelim_mess,sizeof(prelim_mess));
@@ -207,7 +209,7 @@ void getSingleByte(uint8_t  byte)
 			}
 			break;
 		case odometry_coming:
-		
+
 			if(data_index <3)
 			{
 				float_buffer[data_index++] = byte;
@@ -260,7 +262,7 @@ void getSingleByte(uint8_t  byte)
 				data_index = 0;
 				state = data_came;
 				state = waiting_heading; // omit xor for now
-			
+
 			}
 			else state = waiting_heading;
 			break;
@@ -283,14 +285,11 @@ void getSingleByte(uint8_t  byte)
 				else state = waiting_heading;
 			}
 			else if(k == laserscan_length/2)
-{
+            {
 			k=0;
 			state = waiting_heading; // omit xor for now
-}
+            }
 			break;
-		
-	
-			
 	}
 }
 void initializeOdometryMessage(odometry_message * odom_mess)
@@ -310,11 +309,9 @@ void initializeVelocitycmdMessage(velocitycmd_message * vel_cmd_mess)
         vel_cmd_mess->premess.heading[2] = 0xFD;
         vel_cmd_mess->premess.message_type = velocitycmd;
         vel_cmd_mess->premess.error_code = none;
-	vel_cmd_mess->premess.extra_info_1 = none;
-	vel_cmd_mess->premess.extra_info_2 = none;
-	vel_cmd_mess->premess.extra_info_3 = none;
-	
-
+	    vel_cmd_mess->premess.extra_info_1 = none;
+	    vel_cmd_mess->premess.extra_info_2 = none;
+	    vel_cmd_mess->premess.extra_info_3 = none;
 }
 
 void sendVelocitycmd(float *vx, float *w)
@@ -322,15 +319,12 @@ void sendVelocitycmd(float *vx, float *w)
 	initializeVelocitycmdMessage(&vel_cmd_mess);
 	vel_cmd_mess.vx = *vx;
 	vel_cmd_mess.w = *w;
-	
+
 	memcpy(data_buffer,&vel_cmd_mess,prelim_length+velocitycmd_length);
 	data_buffer[16]=0x7E;
 	data_buffer[17]=0x7E;
 	data_buffer[18]=0x7E;
 	data_buffer[19]=0x7E;
-	
-
-	
 }
 
 
@@ -338,9 +332,3 @@ void sendVelocitycmd(float *vx, float *w)
 #ifdef __cplusplus
   }
 #endif
-
-
-
-
-
-
