@@ -210,7 +210,7 @@ def main():
         elif state_ == 1:
             msg = turn_left()
             #print "Turn Left Bitch!"
-	elif state_ == 3:
+        elif state_ == 3:
             msg = turn_right()
             #print "Turn Right Bitch!"
         elif state_ == 2:

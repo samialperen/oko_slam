@@ -59,46 +59,12 @@ def callback_laser(msg):
     total_region_number = 6 #East, North, West, South
 #### Simulation
     regions_ = { 
-      'east': min(min(msg.ranges[0:31]), MAX_LIDAR_RANGE), 
-      'north': min(min(msg.ranges[32:63]), MAX_LIDAR_RANGE), 
-      'west': min(min(msg.ranges[64:95]), MAX_LIDAR_RANGE), 
-      'south': min(min(msg.ranges[96:127]), MAX_LIDAR_RANGE)
-      #'n-e': min(min(msg.ranges[96:127]), MAX_LIDAR_RANGE),
+      'north': min(min(msg.ranges[0:15]), min(msg.ranges[112:127]), MAX_LIDAR_RANGE), 
+      'west': min(min(msg.ranges[16:47]), MAX_LIDAR_RANGE), 
+      'south': min(min(msg.ranges[48:79]), MAX_LIDAR_RANGE), 
+      'east': min(min(msg.ranges[80:111]), MAX_LIDAR_RANGE)
      }
      
-     
-
-###### Real World
-#    east_array = msg.ranges[124:127] + msg.ranges[0:3]
-#    north_array = msg.ranges[124:127] + msg.ranges[0:3]
-#
-#    north_east_west = np.mean(msg.ranges[115:118])
-#    north_east = np.mean(msg.ranges[110:114])
-#    north_east_east = np.mean(msg.ranges[106:109])
-
-#    north_west_west = np.mean(msg.ranges[19:22])
-#    north_west = np.mean(msg.ranges[14:15])
-#    north_west_east = np.mean(msg.ranges[10:13])
-
-## Regions when we use cable electricity
-#    regions_ = { 
-#      'north': np.mean(msg.ranges[28:36]),
-#      'west': np.mean(msg.ranges[60:68]),
-#      'south': np.mean(msg.ranges[92:100]),
-#      'east': np.mean(east_array),
-#      'n-e': np.mean(msg.ranges[10:22]),
-#      'n-w': np.mean(msg.ranges[42:54])
-#     }
-## Regions when we use lipo battery 
-#    regions_ = {
-#      'south': np.mean(msg.ranges[60:68]),
-#      'east':  np.mean(msg.ranges[97:102]),
-#      'west': np.mean(msg.ranges[23:38]),
-#      'north': np.mean(north_array),
-#      'n-e': min(north_east_east, north_east, north_east_west),
-#      'n-w': min(north_west_east, north_west, north_west_west),
-#     }
-
     take_action()
     
 def change_state(state):
@@ -107,62 +73,53 @@ def change_state(state):
         print 'Wall follower - [%s] - %s' % (state, state_dict_[state])
         state_ = state
 
+
+##### Take action for simulation
 def take_action():
-    global regions_, linear_velocity_, angular_velocity_
+    global linear_velocity_, angular_velocity_, regions_
     regions = regions_
     msg = Twist()
     linear_x = 0
     angular_z = 0
+    
+    max_dist2robot = 0.25 #If detected object is far away from this value, we 
+    # don't consider it
     state_description = ''
-
-    max_dist2robot = 0.30
-    min_dist2robot = 0.092
-    max_dist2obj = 0.25
-    min_dist2obj = 0.092
-
+    
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
+    if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
+        state_description = 'case 1 - nothing'
+        change_state(0)
+    elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
+        state_description = 'case 2 - north'
+        change_state(3)
+    elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot:
+        state_description = 'case 3 - east'
+        change_state(2)
+    elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot:
+        state_description = 'case 4 - west'
+        change_state(2)
+    elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot:
+        state_description = 'case 5 - north and east'
+        change_state(1)
+    elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot:
+        state_description = 'case 6 - north and west'
+        change_state(3)
+    elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot:
+        state_description = 'case 7 - north and west and east'
+        change_state(3)
+    elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot:
+        state_description = 'case 8 - west and east'
+        change_state(0)
+    else:
+        state_description = 'Undefined Case GG WP!'
+        rospy.loginfo(regions)
 
-#    if regions['n-w'] < max_dist2obj and regions['n-e'] > max_dist2obj and regions['n-w'] > min_dist2obj:
-#        state_description = 'case 9 nw'
-#	change_state(3)
-#    elif regions['n-w'] > max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-e'] > min_dist2obj :
-#        state_description = 'case 10 ne'
-#	change_state(1)
-#    elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
-#        state_description = 'case 11 ne nw'
-#        change_state(1)
-#    else:
-#        if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
-#            state_description = 'case 1 - nothing'
-#            change_state(0)
-#        elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > min_dist2robot:
-#            state_description = 'case 2 - north'
-#            change_state(3)
-#        elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot:
-#            state_description = 'case 3 - east'
-#            change_state(2)
-#        elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot:
-#            state_description = 'case 4 - west'
-#            change_state(2)
-#        elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['north'] > min_dist2robot:
-#            state_description = 'case 5 - north and east'
-#            change_state(1)
-#        elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
-#            state_description = 'case 6 - north and west'
-#            change_state(3)
-#        elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
-#            state_description = 'case 7 - north and west and east'
-#            change_state(3)
-#        elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot:
-#            state_description = 'case 8 - west and east'
-#            change_state(0)
-#        else:
-#            state_description = 'Unknown Case GG WP!'
-#            rospy.loginfo(regions)
-        
-    #rospy.loginfo(state_description)
-    #rospy.loginfo(regions)
+    rospy.loginfo(state_description)
+    rospy.loginfo(regions)
+
+
 
 def find_wall():
     msg = Twist()
@@ -172,13 +129,13 @@ def find_wall():
 
 def turn_left():
     msg = Twist()
-    msg.angular.z = angular_velocity_
+    msg.angular.z = -angular_velocity_
     msg.linear.x = 0
     return msg
 
 def turn_right():
     msg = Twist()
-    msg.angular.z = -angular_velocity_
+    msg.angular.z = angular_velocity_
     msg.linear.x = 0
     return msg
 
@@ -223,7 +180,7 @@ def main():
         elif state_ == 1:
             msg = turn_left()
             #print "Turn Left Bitch!"
-	elif state_ == 3:
+        elif state_ == 3:
             msg = turn_right()
             #print "Turn Right Bitch!"
         elif state_ == 2:
@@ -233,7 +190,7 @@ def main():
         else:
             rospy.logerr('Unknown state! GG WP :(')
         
-        #pub_.publish(msg)
+        pub_.publish(msg)
         
         rate.sleep()
 
