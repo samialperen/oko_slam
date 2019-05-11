@@ -8,5 +8,5 @@ local_costmap:
   #Setting the "rolling_window" parameter to true means that the costmap will remain centered around the robot as the robot moves through the world
   width: 2.0
   height: 2.0
-  resolution: 0.01
+  resolution: 0.02
   #The "width," "height," and "resolution" parameters set the width (meters), height (meters), and resolution (meters/cell) of the costmap. Note that its fine for the resolution of this grid to be different than the resolution of your static map, but most of the time we tend to set them equally.

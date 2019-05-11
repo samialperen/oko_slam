@@ -11,12 +11,4 @@
 
   <include file="$(find kamu_robotu_launch)/launch/oko_$(arg slam_type).launch"/>
 
-<node name="lidar_bridge" pkg="kamu_robotu_comm" type="lidar_bridge" respawn="true" output="screen"></node>
-  <node name="odometry_bridge" pkg="kamu_robotu_comm" type="odometry_bridge" respawn="true" output="screen"></node>
-
- <include file="$(find explore_lite)/launch/explore.launch"/>
-
-<include file="$(find kamu_robotu_navigation)/launch/move_base.launch"/>
-
-
 </launch>

@@ -1,4 +1,4 @@
-obstacle_range: 0.5
+obstacle_range: 0.1
 # obstancle_range is 0.5 meters, which means that the robot will only update its map with information about obstacles that are within 0.5 meters of the base
 raytrace_range: 0.25
 # raytrace_range is 1.0 meters, which means that the robot will attempt to clear out space in front of it up to 1.0 meters away given a sensor reading.
