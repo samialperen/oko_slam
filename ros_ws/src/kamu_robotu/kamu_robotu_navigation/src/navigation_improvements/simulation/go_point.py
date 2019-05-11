@@ -9,7 +9,7 @@ from std_srvs.srv import *
 
 import math
 
-active_ = True
+active_ = False
 
 # robot state variables
 position_ = Point()
@@ -25,8 +25,8 @@ state_ = 0
 desired_position_ = Point()
 #desired_position_.x = rospy.get_param('des_pos_x')
 #desired_position_.y = rospy.get_param('des_pos_y')
-desired_position_.x = -5
-desired_position_.y = 5
+desired_position_.x = -0.25
+desired_position_.y = -0.3
 desired_position_.z = 0
 
 # Precision parameters ()

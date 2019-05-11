@@ -65,34 +65,12 @@ def callback_laser(msg):
 
     MAX_LIDAR_RANGE = 3 #in meter
     total_region_number = 6 #East, North, West, South
-
-#    east_array = msg.ranges[124:127] + msg.ranges[0:3]
-    north_array = msg.ranges[124:127] + msg.ranges[0:3]
-
-    north_east_west = np.mean(msg.ranges[115:118])
-    north_east = np.mean(msg.ranges[110:114])
-    north_east_east = np.mean(msg.ranges[106:109])
-
-    north_west_west = np.mean(msg.ranges[19:22])
-    north_west = np.mean(msg.ranges[14:15])
-    north_west_east = np.mean(msg.ranges[10:13])
-
-
-#    regions_ = { 
-#      'north': np.mean(msg.ranges[28:36]),
-#      'west': np.mean(msg.ranges[60:68]),
-#      'south': np.mean(msg.ranges[92:100]),
-#      'east': np.mean(east_array),
-#      'n-e': np.mean(msg.ranges[10:22]),
-#      'n-w': np.mean(msg.ranges[42:54])
-#     }
-    regions_ = {
-      'south': np.mean(msg.ranges[60:68]),
-      'east':  np.mean(msg.ranges[97:102]),
-      'west': np.mean(msg.ranges[23:38]),
-      'north': np.mean(north_array),
-      'n-e': min(north_east_east, north_east, north_east_west),
-      'n-w': min(north_west_east, north_west, north_west_west),
+#### Simulation
+    regions_ = { 
+      'north': min(min(msg.ranges[0:15]), min(msg.ranges[112:127]), MAX_LIDAR_RANGE), 
+      'west': min(min(msg.ranges[16:47]), MAX_LIDAR_RANGE), 
+      'south': min(min(msg.ranges[48:79]), MAX_LIDAR_RANGE), 
+      'east': min(min(msg.ranges[80:111]), MAX_LIDAR_RANGE)
      }
 
 
@@ -131,35 +109,36 @@ def main():
     
     rospy.init_node('bug1')
     
-    sub_laser = rospy.Subscriber('/scan', LaserScan, clbk_laser)
+    sub_laser = rospy.Subscriber('/scan', LaserScan, callback_laser)
     sub_odom = rospy.Subscriber('/odom', Odometry, clbk_odom)
     
-    rospy.wait_for_service('/go_to_point_switch')
+    rospy.wait_for_service('/go_point_switch')
     rospy.wait_for_service('/wall_follower_switch')
     rospy.wait_for_service('/gazebo/set_model_state')
     
-    srv_client_go_to_point_ = rospy.ServiceProxy('/go_to_point_switch', SetBool)
+    srv_client_go_to_point_ = rospy.ServiceProxy('/go_point_switch', SetBool)
     srv_client_wall_follower_ = rospy.ServiceProxy('/wall_follower_switch', SetBool)
     srv_client_set_model_state = rospy.ServiceProxy('/gazebo/set_model_state', SetModelState)
     
     # set robot position
     model_state = ModelState()
-    model_state.model_name = 'm2wr'
+    model_state.model_name = 'kamu_robotu'
     model_state.pose.position.x = initial_position_.x
     model_state.pose.position.y = initial_position_.y
     resp = srv_client_set_model_state(model_state)
     
     # initialize going to the point
     change_state(0)
+    max_dist2robot = 0.25
     
-    rate_hz = 20
+    rate_hz = 5
     rate = rospy.Rate(rate_hz)
     while not rospy.is_shutdown():
         if regions_ == None:
             continue
         
         if state_ == 0:
-            if regions_['front'] > 0.15 and regions_['front'] < 1:
+            if regions_['north'] > 0.092 and regions_['north'] < max_dist2robot:
                 circumnavigate_closest_point_ = position_
                 circumnavigate_starting_point_ = position_
                 change_state(1)
