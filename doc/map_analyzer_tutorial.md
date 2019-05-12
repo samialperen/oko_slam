@@ -45,4 +45,8 @@ Install libraries (takes very long time!)
 $ sudo make install
 ```
 
+You need to change OpenCV_DIR environment variable to specify OpenCV location. Add the following to CMakeLists.txt 
+```
+$ set( OpenCV_DIR "~/your_desired_location/opencv/build" )
+```
 
