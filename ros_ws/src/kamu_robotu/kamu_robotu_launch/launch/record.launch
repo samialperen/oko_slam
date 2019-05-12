@@ -1,6 +1,6 @@
 <launch>
     <arg name="bagname" default="false" doc="bagname [true, false]"/>
     <node pkg="rosbag" type="record" name="oko_bag"
-              args="-O $(find kamu_robotu_launch)/../../../saved_maps/$(arg bagname) /odom /tf /scan"
+              args="-O $(find kamu_robotu_launch)/../../../saved_maps/current_results/$(arg bagname) /odom /tf /scan"
     />
 </launch>
