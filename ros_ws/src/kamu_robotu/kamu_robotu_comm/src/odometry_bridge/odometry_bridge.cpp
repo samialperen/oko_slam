@@ -167,6 +167,6 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
   }
   initial_req.cmd_type = AutoManuel_Cmd; //
   initial_req.cmd_param = 1; // deactivate Auto mode
-  gui_command_handler(initial_req,initial_res);
+  //gui_command_handler(initial_req,initial_res);
   ser.close();
 }
