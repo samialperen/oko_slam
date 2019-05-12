@@ -61,19 +61,20 @@ def callback_laser(msg):
     msg.ranges = np.array(msg.ranges)
     msg.ranges[msg.ranges<0.093] = np.nan
 #    east_array = msg.ranges[124:127] + msg.ranges[0:3]
-    north_array = msg.ranges[124:127] + msg.ranges[0:3]
+    north_array1 = msg.ranges[121:127]
+    north_array2 = msg.ranges[0:6]
 
-    north_east_west_west = np.nanmean(msg.ranges[119:123])
-    north_east_west = np.nanmean(msg.ranges[115:118])
-    north_east = np.nanmean(msg.ranges[110:114])
-    north_east_east = np.nanmean(msg.ranges[106:109])
-    north_east_east_east = np.nanmean(msg.ranges[103:105])
+#    north_east_west_west = np.nanmean(msg.ranges[119:120])
+#    north_east_west = np.nanmean(msg.ranges[115:118])
+    north_east = np.nanmean(msg.ranges[110:120])
+#    north_east_east = np.nanmean(msg.ranges[106:109])
+#    north_east_east_east = np.nanmean(msg.ranges[103:105])
 
-    north_west_west_west = np.nanmean(msg.ranges[23:26])
-    north_west_west = np.nanmean(msg.ranges[19:22])
-    north_west = np.nanmean(msg.ranges[13:18])
-    north_west_east = np.nanmean(msg.ranges[9:12])
-    north_west_east_east = np.nanmean(msg.ranges[4:8])
+ #   north_west_west_west = np.nanmean(msg.ranges[22:22])
+#    north_west_west = np.nanmean(msg.ranges[19:22])
+    north_west = np.nanmean(msg.ranges[7:18])
+#    north_west_east = np.nanmean(msg.ranges[9:12])
+#    north_west_east_east = np.nanmean(msg.ranges[7:8])
 
 
 #    regions_ = {
@@ -85,12 +86,12 @@ def callback_laser(msg):
 #      'n-w': np.nanmean(msg.ranges[42:54])
 #     }
     regions_ = {
-      'north': np.nanmean(north_array),
-      'west': np.nanmean(msg.ranges[26:32]),
+      'north': min(np.nanmin(north_array1),np.nanmin(north_array2)),
+      'west': np.nanmean(msg.ranges[19:32]),
       'south': np.nanmean(msg.ranges[60:68]),
-      'east':  np.nanmean(msg.ranges[96:102]),
-      'n-w': min(north_west_east_east, north_west_east, north_west, north_west_west, north_west_west_west),
-      'n-e': min(north_east_east_east, north_east_east, north_east, north_east_west, north_east_west_west),
+      'east':  np.nanmean(msg.ranges[96:109]),
+      'n-w': np.nanmin(north_west), #(north_west_east_east, north_west_east, north_west, north_west_west, north_west_west_west),
+      'n-e': np.nanmin(north_east) #(north_east_east_east, north_east_east, north_east, north_east_west, north_east_west_west),
      }
 
     take_action()
@@ -109,15 +110,18 @@ def take_action():
     angular_z = 0
     state_description = ''
 
-    max_dist2robot = 0.15
+    max_dist2robot = 0.25
     min_dist2robot = 0.092
-    max_dist2obj = 0.2
+    max_dist2obj = 0.25
     min_dist2obj = 0.092
 
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
-
-    if regions['n-w'] < max_dist2obj and regions['n-e'] > max_dist2obj and regions['n-w'] > min_dist2obj:
+    
+    if regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > min_dist2robot:
+            state_description = 'case 2 - north'
+            change_state(3)
+    elif regions['n-w'] < max_dist2obj and regions['n-e'] > max_dist2obj and regions['n-w'] > min_dist2obj:
         state_description = 'case 9 nw'
 	change_state(3)
     elif regions['n-w'] > max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-e'] > min_dist2obj :
@@ -125,7 +129,7 @@ def take_action():
 	change_state(1)
     elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
         state_description = 'case 11 ne nw'
-        change_state(1)
+        change_state(3)
     else:
         if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
             state_description = 'case 1 - nothing'
