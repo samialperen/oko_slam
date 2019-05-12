@@ -8,9 +8,6 @@
   <param name="robot_description" command="$(find xacro)/xacro --inorder $(find kamu_robotu_gazebo)/urdf/kamu_robotu.xacro" />
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" output="screen"></node>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"></node>
-<node name="lidar_bridge" pkg="kamu_robotu_comm" type="lidar_bridge" respawn="true" output="screen"></node>
-  <node name="odometry_bridge" pkg="kamu_robotu_comm" type="odometry_bridge" respawn="true" output="screen"></node>
-<node name="follow_wall" pkg="kamu_robotu_navigation" type="follow_wall.py" respawn="true" output="screen"></node>
 
   <include file="$(find kamu_robotu_launch)/launch/oko_$(arg slam_type).launch"/>
 

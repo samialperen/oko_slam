@@ -2,6 +2,8 @@
 
 ## Installation
 ### Installation Using Apt Manager (Recommended)
+I followed two different source which are [stack-overflow](https://stackoverflow.com/questions/44060544/how-can-i-install-opencv-python-or-c-in-ubuntu/44060753#44060753) and [ROS Q&A](https://answers.ros.org/question/56686/opencv-cmake-error/).
+
 Install OpenCV 3.3.1
 ```
 $ sudo apt-get install libopencv-dev python-opencv
