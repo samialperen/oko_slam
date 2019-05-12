@@ -1,7 +1,0 @@
-image: /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-2019-05-12/17:38:05.pgm
-resolution: 0.010000
-origin: [-0.350000, -0.200000, 0.000000]
-negate: 0
-occupied_thresh: 0.65
-free_thresh: 0.196
-
