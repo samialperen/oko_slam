@@ -49,7 +49,7 @@ currentdate=$(date +"%Y-%m-%d")
 currenttime=$(date +"%T")
 
 #Cartographer 
-index = $(cat /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/index.txt)
+index=$(cat /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/index.txt)
 
 mkdir /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/test-$index
 
