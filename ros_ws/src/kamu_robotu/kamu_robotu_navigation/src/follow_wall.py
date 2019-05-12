@@ -55,39 +55,40 @@ def callback_laser(msg):
     # By taking mean value in reach region, we want to find out which region
     # has the closest object/wall
     # To eliminate Inf measurement, we used mean function
-
+    # Yet another alternative for eliminating ones smaller than 0.092 m = np.mean(filter(lambda k : k > 0.092, x))
     MAX_LIDAR_RANGE = 3 #in meter
     total_region_number = 6 #East, North, West, South
-
+    msg.ranges = np.array(msg.ranges)
+    msg.ranges[msg.ranges<0.093] = np.nan
 #    east_array = msg.ranges[124:127] + msg.ranges[0:3]
     north_array = msg.ranges[124:127] + msg.ranges[0:3]
 
-    north_east_west_west = np.mean(msg.ranges[119:123])
-    north_east_west = np.mean(msg.ranges[115:118])
-    north_east = np.mean(msg.ranges[110:114])
-    north_east_east = np.mean(msg.ranges[106:109])
-    north_east_east_east = np.mean(msg.ranges[103:105])
+    north_east_west_west = np.nanmean(msg.ranges[119:123])
+    north_east_west = np.nanmean(msg.ranges[115:118])
+    north_east = np.nanmean(msg.ranges[110:114])
+    north_east_east = np.nanmean(msg.ranges[106:109])
+    north_east_east_east = np.nanmean(msg.ranges[103:105])
 
-    north_west_west_west = np.mean(msg.ranges[23:26])
-    north_west_west = np.mean(msg.ranges[19:22])
-    north_west = np.mean(msg.ranges[13:18])
-    north_west_east = np.mean(msg.ranges[9:12])
-    north_west_east_east = np.mean(msg.ranges[4:8])
+    north_west_west_west = np.nanmean(msg.ranges[23:26])
+    north_west_west = np.nanmean(msg.ranges[19:22])
+    north_west = np.nanmean(msg.ranges[13:18])
+    north_west_east = np.nanmean(msg.ranges[9:12])
+    north_west_east_east = np.nanmean(msg.ranges[4:8])
 
 
 #    regions_ = {
-#      'north': np.mean(msg.ranges[28:36]),
-#      'west': np.mean(msg.ranges[60:68]),
-#      'south': np.mean(msg.ranges[92:100]),
-#      'east': np.mean(east_array),
-#      'n-e': np.mean(msg.ranges[10:22]),
-#      'n-w': np.mean(msg.ranges[42:54])
+#      'north': np.nanmean(msg.ranges[28:36]),
+#      'west': np.nanmean(msg.ranges[60:68]),
+#      'south': np.nanmean(msg.ranges[92:100]),
+#      'east': np.nanmean(east_array),
+#      'n-e': np.nanmean(msg.ranges[10:22]),
+#      'n-w': np.nanmean(msg.ranges[42:54])
 #     }
     regions_ = {
-      'north': np.mean(north_array),
-      'west': np.mean(msg.ranges[26:32]),
-      'south': np.mean(msg.ranges[60:68]),
-      'east':  np.mean(msg.ranges[96:102]),
+      'north': np.nanmean(north_array),
+      'west': np.nanmean(msg.ranges[26:32]),
+      'south': np.nanmean(msg.ranges[60:68]),
+      'east':  np.nanmean(msg.ranges[96:102]),
       'n-w': min(north_west_east_east, north_west_east, north_west, north_west_west, north_west_west_west),
       'n-e': min(north_east_east_east, north_east_east, north_east, north_east_west, north_east_west_west),
      }
