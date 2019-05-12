@@ -5,6 +5,7 @@
 #include <std_msgs/String.h>
 // OpenCV
 #include <opencv2/opencv.hpp>
+//#include <opencv2/highgui/highgui.hpp>
 
 // File system and regular C++ headers
 #include <string>
@@ -38,7 +39,11 @@ int main(int argc, char** argv)
 
 
     std::string current_dir = GetCurrentWorkingDir();
-    std::string read_dir = current_dir + "/saved_maps/" + map_name + ".pgm";
+    std::string read_dir = current_dir + "/saved_maps/current_results/" + map_name + ".pgm";
+    
+    //std::cout << "OpenCV version : " << CV_VERSION << std::endl;
+
+    
     ////// Read saved map_name.pgm in oko_slam/ros_ws/saved_maps
     cv::Mat input_map_image, input_map_image_gs;
     input_map_image = cv::imread(read_dir);
