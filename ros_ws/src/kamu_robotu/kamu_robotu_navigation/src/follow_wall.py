@@ -190,9 +190,9 @@ def sd_hook():
 
 def main():
     global pub_, active_
-    
     rospy.init_node('follow_wall')
     
+
     pub_ = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
     
     sub = rospy.Subscriber('/scan', LaserScan, callback_laser)
@@ -201,6 +201,9 @@ def main():
 
     rospy.on_shutdown(sd_hook)
     
+    current_duration = rospy.get_time()
+    d = rospy.Duration.from_sec(60.1)
+    desired_duration = current_duration + d.to_sec()
     rate = rospy.Rate(5)
     while not rospy.is_shutdown():
         if not active_:
@@ -226,8 +229,13 @@ def main():
         
         pub_.publish(msg)
         
-        rate.sleep()
+        
 
+	if current_duration >= desired_duration:
+	    rospy.signal_shutdown('Good bye')
+
+        current_duration = rospy.get_time()
+        rate.sleep()
 if __name__ == '__main__':
     main()
     

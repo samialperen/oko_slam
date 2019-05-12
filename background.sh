@@ -55,4 +55,4 @@ mkdir /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/car
 rosrun carto_map_server carto_map_saver -f /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/$currenttime
 
 convert /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/$currenttime.pgm  /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/$currenttime.png
-
+rm /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/$currenttime.pgm
