@@ -3,6 +3,7 @@
 # right side of the robot
 
 import rospy
+import os
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -14,7 +15,7 @@ import numpy as np
 
 ## Global variables
 active_ = True
-pub_ = None #Since we are using publisher in the functions as well we need to 
+pub_ = None #Since we are using publisher in the functions as well we need to
 # make it global
 
 linear_velocity_ = 0.03
@@ -50,10 +51,10 @@ def callback_laser(msg):
     # Our laser publishes 128 point per rotation
     # Let's divide these 128 point to total_region_number different region
     # LIDAR rotates counter-clockwise
-    # Let's start from the absolute right direction region and rotate cclockwise    
+    # Let's start from the absolute right direction region and rotate cclockwise
     # By taking mean value in reach region, we want to find out which region
-    # has the closest object/wall 
-    # To eliminate Inf measurement, we used mean function  
+    # has the closest object/wall
+    # To eliminate Inf measurement, we used mean function
 
     MAX_LIDAR_RANGE = 3 #in meter
     total_region_number = 6 #East, North, West, South
@@ -74,7 +75,7 @@ def callback_laser(msg):
     north_west_east_east = np.mean(msg.ranges[4:8])
 
 
-#    regions_ = { 
+#    regions_ = {
 #      'north': np.mean(msg.ranges[28:36]),
 #      'west': np.mean(msg.ranges[60:68]),
 #      'south': np.mean(msg.ranges[92:100]),
@@ -152,10 +153,10 @@ def take_action():
         else:
             state_description = 'Unknown Case GG WP!'
             rospy.loginfo(regions)
-        
+
     rospy.loginfo(state_description)
     rospy.loginfo(regions)
-      
+
 
 def find_wall():
     msg = Twist()
@@ -177,7 +178,7 @@ def turn_right():
 
 def follow_the_wall():
     global regions_
-    
+
     msg = Twist()
     msg.linear.x = linear_velocity_
     msg.angular.z = 0
@@ -191,25 +192,26 @@ def sd_hook():
 def main():
     global pub_, active_
     rospy.init_node('follow_wall')
-    
+
 
     pub_ = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
-    
+
     sub = rospy.Subscriber('/scan', LaserScan, callback_laser)
-    
+
     srv = rospy.Service('wall_follower_switch', SetBool, wall_follower_switch)
 
     rospy.on_shutdown(sd_hook)
-    
+
     current_duration = rospy.get_time()
+    print "current_duration = " + str(current_duration)
     d = rospy.Duration.from_sec(60.0*12)
     desired_duration = current_duration + d.to_sec()
+    print "desired_duration = " + str(desired_duration)
     rate = rospy.Rate(5)
     while not rospy.is_shutdown():
         if not active_:
             rate.sleep()
             continue
-        
         msg = Twist()
         if state_ == 0:
             msg = find_wall()
@@ -217,7 +219,7 @@ def main():
         elif state_ == 1:
             msg = turn_left()
             #print "Turn Left"
-	elif state_ == 3:
+        elif state_ == 3:
             msg = turn_right()
             #print "Turn Right Bitch"
         elif state_ == 2:
@@ -226,16 +228,14 @@ def main():
             pass
         else:
             rospy.logerr('Unknown state! GG WP :(')
-        
         pub_.publish(msg)
-        
-        
-
-	if current_duration >= desired_duration:
-	    rospy.signal_shutdown('Good bye')
-
+        if current_duration >= desired_duration:
+            try:
+                os.system("rosnode kill /oko_bag")
+                rospy.signal_shutdown('Good bye')
+            except Exception as e:
+                pass
         current_duration = rospy.get_time()
         rate.sleep()
 if __name__ == '__main__':
     main()
-    
