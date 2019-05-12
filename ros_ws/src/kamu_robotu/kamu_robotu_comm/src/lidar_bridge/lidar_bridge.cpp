@@ -90,7 +90,7 @@ int main (int argc, char** argv){
 	scan.angle_increment = 6.2832/num_readings;
 	scan.time_increment = (1/laser_frequency)/(num_readings);
 	scan.range_min = 0.092;
-	scan.range_max = 3.0;
+	scan.range_max = 0.80;
     	while(n.ok()){
 
         	ros::spinOnce();

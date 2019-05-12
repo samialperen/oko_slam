@@ -61,17 +61,17 @@ def callback_laser(msg):
 #    east_array = msg.ranges[124:127] + msg.ranges[0:3]
     north_array = msg.ranges[124:127] + msg.ranges[0:3]
 
-	north_east_west_west = np.mean(msg.ranges[119:123])
+    north_east_west_west = np.mean(msg.ranges[119:123])
     north_east_west = np.mean(msg.ranges[115:118])
     north_east = np.mean(msg.ranges[110:114])
     north_east_east = np.mean(msg.ranges[106:109])
-	north_east_east_east = np.mean(msg.ranges[103:105])
+    north_east_east_east = np.mean(msg.ranges[103:105])
 
-	north_west_west_west = np.mean(msg.ranges[23:26])
+    north_west_west_west = np.mean(msg.ranges[23:26])
     north_west_west = np.mean(msg.ranges[19:22])
     north_west = np.mean(msg.ranges[13:18])
     north_west_east = np.mean(msg.ranges[9:12])
-	north_west_east_east = np.mean(msg.ranges[4:8])
+    north_west_east_east = np.mean(msg.ranges[4:8])
 
 
 #    regions_ = { 
@@ -83,7 +83,7 @@ def callback_laser(msg):
 #      'n-w': np.mean(msg.ranges[42:54])
 #     }
     regions_ = {
-	  'north': np.mean(north_array),
+      'north': np.mean(north_array),
       'west': np.mean(msg.ranges[26:32]),
       'south': np.mean(msg.ranges[60:68]),
       'east':  np.mean(msg.ranges[96:102]),
@@ -107,9 +107,9 @@ def take_action():
     angular_z = 0
     state_description = ''
 
-    max_dist2robot = 0.20
+    max_dist2robot = 0.15
     min_dist2robot = 0.092
-    max_dist2obj = 0.20
+    max_dist2obj = 0.2
     min_dist2obj = 0.092
 
     # If there exists an object only north then turn left --> Case 2
@@ -214,7 +214,7 @@ def main():
         elif state_ == 1:
             msg = turn_left()
             #print "Turn Left"
-	    elif state_ == 3:
+	elif state_ == 3:
             msg = turn_right()
             #print "Turn Right Bitch"
         elif state_ == 2:

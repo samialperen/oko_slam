@@ -63,9 +63,9 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
     {
         ser.setPort("/dev/ttyS0"); // miniuart port of the rpi, /dev/ttyS0
         ser.setBaudrate(9600);
-		serial::stopbits_t  stopbits;
-		stopbits = serial::stopbits_one;	
-		ser.setStopbits(stopbits);
+	serial::stopbits_t  stopbits;
+	stopbits = serial::stopbits_one;	
+	ser.setStopbits(stopbits);
         serial::Timeout to = serial::Timeout::simpleTimeout(100);
         ser.setTimeout(to);
         ser.open();
@@ -87,11 +87,11 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
   
   initial_req.cmd_type = Odom_Reset_Cmd;
   initial_req.cmd_param = 0; // Odom reset does not require any param
-  gui_command_handler(initial_req,initial_res); // Initially, reset odometry
+//  gui_command_handler(initial_req,initial_res); // Initially, reset odometry
   
   initial_req.cmd_type = AutoManuel_Cmd;
   initial_req.cmd_param = 0; // Activate Auto mode
-  gui_command_handler(initial_req,initial_res);
+//  gui_command_handler(initial_req,initial_res);
   
   ros::Time current_time;
   ros::Rate r(20);
