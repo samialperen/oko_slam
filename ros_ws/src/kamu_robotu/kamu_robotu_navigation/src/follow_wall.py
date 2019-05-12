@@ -202,7 +202,7 @@ def main():
     rospy.on_shutdown(sd_hook)
     
     current_duration = rospy.get_time()
-    d = rospy.Duration.from_sec(60.1)
+    d = rospy.Duration.from_sec(60.0*12)
     desired_duration = current_duration + d.to_sec()
     rate = rospy.Rate(5)
     while not rospy.is_shutdown():
