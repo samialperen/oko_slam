@@ -2,7 +2,7 @@
 <launch>
   <arg name="slam_type" default="gmapping" doc="slam_type [hector_mapping, gmapping,cartographer]"/>
   <arg name="sim_time" default="false" doc="sim_time [true, false]"/>
-
+  <arg name="bagname"  default="defaultname" doc="this name will be used to create bag file under saved maps"/>
   <param name="/use_sim_time" value="$(arg sim_time)"/>
 
   <param name="robot_description" command="$(find xacro)/xacro --inorder $(find kamu_robotu_gazebo)/urdf/kamu_robotu.xacro" />
@@ -12,5 +12,8 @@
   <node name="follow_wall" pkg="kamu_robotu_navigation" type="follow_wall.py" respawn="false" output="screen"></node>
 
   <include file="$(find kamu_robotu_launch)/launch/oko_$(arg slam_type).launch"/>
+  <include file="$(find kamu_robotu_launch)/launch/record.launch">
+     <arg name="bagname" value="$(arg bagname)"/>
+  </include>
 
 </launch>

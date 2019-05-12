@@ -20,4 +20,4 @@ echo $((index+1)) > /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/curre
 
 # cartographer
 
-roslaunch kamu_robotu_launch oko.launch slam_type:=cartographer sim_time:=false
+roslaunch kamu_robotu_launch oko.launch slam_type:=cartographer sim_time:=false bagname:=carto-$currentdate/test-$index/test-$index.bag
