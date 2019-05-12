@@ -17,6 +17,10 @@
 #include <sys/stat.h>
 // GetCurrentDir
 #include <unistd.h> 
+
+#include <yaml-cpp/yaml.h>
+
+
 #define GetCurrentDir getcwd
 // Function Prototypes
 std::string GetCurrentWorkingDir(void);
@@ -37,9 +41,17 @@ int main(int argc, char** argv)
         ROS_ERROR("Failed to get param 'map_name'");
     }
 
-
     std::string current_dir = GetCurrentWorkingDir();
+    std::string read_direc =  current_dir + "/saved_maps/current_results/" + map_name + ".yaml";
+     
+     
+    //std::cout << read_direc << std::endl; 
+    // Read yaml files
+    //YAML::Node config = YAML::LoadFile(read_direc);
+
     std::string read_dir = current_dir + "/saved_maps/current_results/" + map_name + ".pgm";
+    
+    
     
     //std::cout << "OpenCV version : " << CV_VERSION << std::endl;
 

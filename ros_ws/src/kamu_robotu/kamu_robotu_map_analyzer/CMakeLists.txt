@@ -4,9 +4,6 @@ project(kamu_robotu_map_analyzer)
 ## Compile as C++11, supported in ROS Kinetic and newer
 add_compile_options(-std=c++11)
 
-
-#set( OpenCV_DIR "~/Programs/Bachelor_Project/opencv/build" )
-
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
@@ -16,7 +13,6 @@ find_package(catkin REQUIRED COMPONENTS
   cv_bridge
   image_transport
   message_generation
-  OpenCV
 )
 find_package(OpenCV REQUIRED)
 
@@ -42,3 +38,10 @@ include_directories(
 
 add_executable(map_analyzer src/image_processing.cpp)
 target_link_libraries(map_analyzer ${catkin_LIBRARIES} ${OpenCV_LIBS})
+
+
+#add_executable(binary_converter src/binary_converter.cpp src/binary_converter_node.cpp src/ParseArg.cpp)
+#target_link_libraries(binary_converter ${catkin_LIBRARIES} ${OpenCV_LIBS})
+
+#add_executable(image_processing src/image_processing.cpp src/ParseArg.cpp)
+#target_link_libraries(image_processing ${catkin_LIBRARIES} ${OpenCV_LIBS})
