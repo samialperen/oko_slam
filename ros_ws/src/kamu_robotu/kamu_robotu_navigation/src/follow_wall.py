@@ -117,18 +117,21 @@ def take_action():
 
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
-    
+
     if regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > min_dist2robot:
             state_description = 'case 2 - north'
             change_state(3)
     elif regions['n-w'] < max_dist2obj and regions['n-e'] > max_dist2obj and regions['n-w'] > min_dist2obj:
         state_description = 'case 9 nw'
-	change_state(3)
+        change_state(3)
     elif regions['n-w'] > max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-e'] > min_dist2obj :
         state_description = 'case 10 ne'
-	change_state(1)
-    elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
+        change_state(1)
+    elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['north'] > max_dist2robot and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
         state_description = 'case 11 ne nw'
+        change_state(0)
+    elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['north'] < max_dist2robot and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
+        state_description = 'case 11 ne nw n'
         change_state(3)
     else:
         if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
