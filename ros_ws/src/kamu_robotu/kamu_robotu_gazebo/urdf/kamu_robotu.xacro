@@ -3,9 +3,9 @@
   
   <xacro:arg name="laser_visual" default="false"/>
   <xacro:arg name="imu_visual"   default="false"/>
-  <xacro:property name="wheel_radius" value="0.024" />
+  <xacro:property name="wheel_radius" value="0.02634" />
   <xacro:property name="wheel_length" value="0.01" />
-  <xacro:property name="wheel_seperation" value="0.2" />
+  <xacro:property name="wheel_seperation" value="0.192" />
   <xacro:property name="chasis_height" value="0.115" />
     
   <material name="black">
@@ -174,7 +174,7 @@
   
   <!--   Joint for right wheel  -->
   <joint name="wheel_right_joint" type="continuous">
-    <origin rpy="0 0 0" xyz="0 -${wheel_seperation/2} -${chasis_height/2}"/>
+    <origin rpy="0 0 0" xyz="0 ${wheel_seperation/2} -${chasis_height/2}"/>
     <child link="wheel_right_link" />
     <parent link="base_link"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
@@ -184,7 +184,7 @@
    
   <!--   Joint for left wheel  -->
   <joint name="wheel_left_joint" type="continuous">
-    <origin rpy="0 0 0" xyz="0 ${wheel_seperation/2} -${chasis_height/2}"/>
+    <origin rpy="0 0 0" xyz="0 -${wheel_seperation/2} -${chasis_height/2}"/>
     <child link="wheel_left_link" />
     <parent link="base_link"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
