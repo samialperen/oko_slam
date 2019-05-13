@@ -21,18 +21,10 @@ pub_ = None #Since we are using publisher in the functions as well we need to
 linear_velocity_ = 0.03
 angular_velocity_ = 0.20
 
-max_dist2robot = 0.25
-
-regions = {
-        'east':  0,
+regions_ = {
+        'east': 0,
         'north': 0,
-        'west':  0,
-        'south': 0,
-}
-flags = {
-        'east':  0,
-        'north': 0,
-        'west':  0,
+        'west': 0,
         'south': 0,
 }
 
@@ -54,7 +46,7 @@ def wall_follower_switch(req):
 
 
 def callback_laser(msg):
-    global regions, flags
+    global regions_
 
     # Our laser publishes 128 point per rotation
     # Let's divide these 128 point to total_region_number different region
@@ -71,6 +63,7 @@ def callback_laser(msg):
 #    east_array = msg.ranges[124:127] + msg.ranges[0:3]
     north_array1 = msg.ranges[121:127]
     north_array2 = msg.ranges[0:6]
+
 #    north_east_west_west = np.nanmean(msg.ranges[119:120])
 #    north_east_west = np.nanmean(msg.ranges[115:118])
     north_east = np.nanmean(msg.ranges[110:120])
@@ -84,7 +77,7 @@ def callback_laser(msg):
 #    north_west_east_east = np.nanmean(msg.ranges[7:8])
 
 
-#    regions = {
+#    regions_ = {
 #      'north': np.nanmean(msg.ranges[28:36]),
 #      'west': np.nanmean(msg.ranges[60:68]),
 #      'south': np.nanmean(msg.ranges[92:100]),
@@ -92,22 +85,15 @@ def callback_laser(msg):
 #      'n-e': np.nanmean(msg.ranges[10:22]),
 #      'n-w': np.nanmean(msg.ranges[42:54])
 #     }
-    regions = {
-      'north': np.nanmin(np.concatenate((msg.ranges[121:127], msg.ranges[0:6]), axis=None)),
-      'west':  np.nanmin(msg.ranges[19:32]),
-      'south': np.nanmin(msg.ranges[60:68]),
-      'east':  np.nanmin(msg.ranges[96:109]),
-      'n-w':   np.nanmin(msg.ranges[7:18]), #(north_west_east_east, north_west_east, north_west, north_west_west, north_west_west_west),
-      'n-e':   np.nanmin(msg.ranges[110:120]) #(north_east_east_east, north_east_east, north_east, north_east_west, north_east_west_west),
+    regions_ = {
+      'north': min(np.nanmin(north_array1),np.nanmin(north_array2)),
+      'west': np.nanmean(msg.ranges[19:32]),
+      'south': np.nanmean(msg.ranges[60:68]),
+      'east':  np.nanmean(msg.ranges[96:109]),
+      'n-w': np.nanmin(north_west), #(north_west_east_east, north_west_east, north_west, north_west_west, north_west_west_west),
+      'n-e': np.nanmin(north_east) #(north_east_east_east, north_east_east, north_east, north_east_west, north_east_west_west),
      }
-     flags = {
-        'north': regions['north'] < max_dist2robot,
-        'west': regions['west'] < max_dist2robot,
-        'south': regions['south'] < max_dist2robot,
-        'east': regions['east'] < max_dist2robot,
-        'n-w': regions['n-w'] < max_dist2robot,
-        'n-e': regions['n-e'] < max_dist2robot,
-     }
+
     take_action()
 
 def change_state(state):
@@ -117,53 +103,59 @@ def change_state(state):
         state_ = state
 
 def take_action():
-    global linear_velocity_, angular_velocity_
+    global regions_, linear_velocity_, angular_velocity_
+    regions = regions_
     msg = Twist()
     linear_x = 0
     angular_z = 0
     state_description = ''
 
+    max_dist2robot = 0.25
+    min_dist2robot = 0.092
+    max_dist2obj = 0.25
+    min_dist2obj = 0.092
+
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
 
-    if flags['north'] and (not flags['west']) and (not flags['east'])
-        state_description = 'case 2 - north'
-        change_state(3)
-    elif flags['n-w'] and (not flags['n-e']) and (not flags['north']):
+    if regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > min_dist2robot:
+            state_description = 'case 2 - north'
+            change_state(3)
+    elif regions['n-w'] < max_dist2obj and regions['n-e'] > max_dist2obj and regions['n-w'] > min_dist2obj:
         state_description = 'case 9 nw'
         change_state(3)
-    elif (not flags['n-w']) and flags['n-e'] and (not flags['north']):
+    elif regions['n-w'] > max_dist2obj and regions['n-e'] < max_dist2obj and regions['n-e'] > min_dist2obj :
         state_description = 'case 10 ne'
         change_state(1)
-    elif flags['n-w'] and flags['n-e'] and (not flags['north']):
+    elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['north'] > max_dist2robot and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
         state_description = 'case 11 ne nw'
         change_state(0)
-    elif flags['n-w'] and flags['n-e'] and flags['north']:
+    elif regions['n-w'] < max_dist2obj and regions['n-e'] < max_dist2obj and regions['north'] < max_dist2robot and regions['n-w'] > min_dist2obj and regions['n-e'] > min_dist2obj:
         state_description = 'case 11 ne nw n'
         change_state(3)
     else:
-        if (not flags['north']) and (not flags['west']) and (not flags['east']):
+        if regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot:
             state_description = 'case 1 - nothing'
             change_state(0)
-        elif flags['north'] and (not flags['west']) and (not flags['east']):
+        elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] > max_dist2robot and regions['north'] > min_dist2robot:
             state_description = 'case 2 - north'
             change_state(3)
-        elif (not flags['north']) and (not flags['west']) and flags['east']:
+        elif regions['north'] > max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot:
             state_description = 'case 3 - east'
             change_state(2)
-        elif (not flags['north']) and flags['west'] and (not flags['east']):
+        elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot:
             state_description = 'case 4 - west'
             change_state(2)
-        elif flags['north'] and (not flags['west']) and flags['east']:
+        elif regions['north'] < max_dist2robot and regions['west'] > max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['north'] > min_dist2robot:
             state_description = 'case 5 - north and east'
             change_state(1)
-        elif flags['north'] and flags['west'] and (not flags['east']):
+        elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] > max_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
             state_description = 'case 6 - north and west'
             change_state(3)
-        elif flags['north'] and flags['west'] and flags['east']:
+        elif regions['north'] < max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot and regions['north'] > min_dist2robot:
             state_description = 'case 7 - north and west and east'
             change_state(3)
-        elif (not flags['north']) and flags['west'] and flags['east']:
+        elif regions['north'] > max_dist2robot and regions['west'] < max_dist2robot and regions['east'] < max_dist2robot and regions['east'] > min_dist2robot and regions['west'] > min_dist2robot:
             state_description = 'case 8 - west and east'
             change_state(0)
         else:
@@ -193,11 +185,12 @@ def turn_right():
     return msg
 
 def follow_the_wall():
+    global regions_
+
     msg = Twist()
     msg.linear.x = linear_velocity_
     msg.angular.z = 0
     return msg
-
 def sd_hook():
     msg = Twist()
     msg.linear.x = 0
