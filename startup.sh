@@ -14,6 +14,7 @@ currentdate=$(date +"%Y-%m-%d")
 
 index=$(cat /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/index.txt)
 echo $((index+1)) > /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/index.txt;
+mkdir /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate
 mkdir /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/test-$index
 # Gmapping
 #roslaunch kamu_robotu_launch oko_slam.launch 
