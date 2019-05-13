@@ -33,40 +33,20 @@ int main(int argc, char** argv)
 
     // Get parameter from user
     std::string file_dir = argv[1];
-    std::cout << argv[0] << std::endl;
-    std::cout << argv[1] << std::endl;
-//    
-//    if (nh.getParam("file_dir", file_dir))
-//    {
-//        ROS_INFO("Got param: %s", file_dir.c_str());
-//    }
-//    else
-//    {
-//        ROS_ERROR("Failed to get param 'file_dir'");
-//    }
-
-    //std::string current_dir = GetCurrentWorkingDir();
-    //std::string yaml_file =  current_dir + "/saved_maps/simulation_results/" + map_name + ".yaml";
     std::string yaml_file = file_dir + ".yaml";
-    std::cout << yaml_file << std::endl; 
+    std::string map_file = file_dir + ".pgm";
+    
     // Read yaml files
     YAML::Node config = YAML::LoadFile(yaml_file);
     float resolution = config["resolution"].as<float>();
     std::vector<float> origin_yaml = config["origin"].as<std::vector<float>>();
     int robot_initial_point_x = abs( origin_yaml[0]/resolution );
     int robot_initial_point_y = abs( origin_yaml[1]/resolution );
-    // Debug
-//    std::cout << "origin first element: " << origin_yaml[0] << std::endl;
-//    std::cout << "origin second element: " << origin_yaml[1] << std::endl;
-//    std::cout << "resolution: " << resolution << std::endl;
-//    std::cout << "Robot Initial Point X: " << robot_initial_point_x << std::endl;
-//    std::cout << "Robot Initial Point Y: " << robot_initial_point_y << std::endl;
-    
-    // Read Original Map Image 
-    std::string map_file = file_dir + ".pgm";
-       
+        
+    // Read Original Map Image        
     cv::Mat input_map_image, input_map_image_gs;
     input_map_image = cv::imread(map_file);
+    
     // Draw a Small Circle to Specify Initial Starting Point of Robot
     cv::circle( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y), 1.0, cv::Scalar(0,0,255), -1, 8, 0 );
     // Draw Coordinate Axis whose origin is robot initial position
@@ -105,103 +85,196 @@ int main(int argc, char** argv)
         double a = cv::contourArea( map_im_contours[i],false);
         if(a>largest_area){
             largest_area=a;
-            largest_contour_index=i;
+            largest_contour_index=i;      
             bounding_rect=cv::boundingRect(map_im_contours[i]);
         }
     }
-    ////// Display Rectangle that contains largest contour area = outer map walls
-    cv::rectangle(input_map_image, bounding_rect,  cv::Scalar(255,0,0),1, 8,0);
-    cv::namedWindow( "Area that will be cropped", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Area that will be cropped", 600, 800);
-    cv::imshow( "Area that will be cropped", input_map_image );
+    
+    cv::drawContours(input_map_image,map_im_contours,6,cv::Scalar(255,0,255),0,8,hierarchy);
+    cv::namedWindow( "Map Edges2", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Map Edges2", 600, 800);
+    cv::imshow("Map Edges2",input_map_image);
     cv::waitKey(0);
+    
+    
+    
+    
+//    //convex hulls
+//    std::vector<std::vector<cv::Point> >hull(map_im_contours.size());
+//    std::vector<std::vector<int> > hullsI(map_im_contours.size()); 
+//    std::vector<std::vector<cv::Vec4i>> defects(map_im_contours.size());
+//    for (int i = 0; i < map_im_contours.size(); i++)
+//    {
+//        cv::convexHull(map_im_contours[i], hull[i], false);
+//        cv::convexHull(map_im_contours[i], hullsI[i], false); 
+//        if(hullsI[i].size() > 3 )            
+//        {
+//            cv::convexityDefects(map_im_contours[i], hullsI[i], defects[i]);
+//        }
+//    }
+//    //REQUIRED contour is detected,then convex hell is found and also convexity defects are found and stored in defects
 
-    ////// Crop the original map image to eliminate redundant parts
-    cv::Mat map_im_cropped, map_im_cropped_gs;
-    map_im_cropped = input_map_image(bounding_rect);
-    cv::cvtColor( map_im_cropped, map_im_cropped_gs, CV_BGR2GRAY );
-    cv::namedWindow( "Cropped Map Im", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Cropped Map Im", 600, 800);
-    cv::imshow( "Cropped Map Im", map_im_cropped);
-    cv::waitKey(0);
+//    if (largest_area>100){
+//        std::cout << "Area is found" << std::endl;
+//        cv::drawContours(input_map_image, hull, largest_contour_index, cv::Scalar(255, 0, 255), 3, 8, std::vector<cv::Vec4i>(), 0, cv::Point());
+
+//        /// Draw convexityDefects
+//        for(int j=0; j<defects[largest_contour_index].size(); ++j)
+//        {
+//            const cv::Vec4i& v = defects[largest_contour_index][j];
+//            float depth = v[3] / 256;
+//            if (depth > 10) //  filter defects by depth
+//            {
+//                int startidx = v[0]; 
+//                cv::Point ptStart(map_im_contours[largest_contour_index][startidx]);
+//                int endidx = v[1]; 
+//                cv::Point ptEnd(map_im_contours[largest_contour_index][endidx]);
+//                int faridx = v[2]; 
+//                cv::Point ptFar(map_im_contours[largest_contour_index][faridx]);
+
+//                cv::line(input_map_image, ptStart, ptEnd, cv::Scalar(0, 255, 0), 1);
+//                cv::line(input_map_image, ptStart, ptFar, cv::Scalar(0, 255, 0), 1);
+//                cv::line(input_map_image, ptEnd, ptFar, cv::Scalar(0, 255, 0), 1);
+//                cv::circle(input_map_image, ptFar, 4, cv::Scalar(0, 255, 0), 2);
+//            }
+//        }
+//    }
+//    
+//    cv::namedWindow( "Convex Defects", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Convex Defects", 600, 800);
+//    cv::imshow( "Convex Defects", input_map_image );
+//    cv::waitKey(0);
+
+//    
+//    
+////    std::cout << largest_contour_index << std::endl;
+////    cv::drawContours(input_map_image,map_im_contours,largest_contour_index,cv::Scalar(255,0,255),0,8,hierarchy);
+////    cv::namedWindow( "Largest Contour", CV_WINDOW_NORMAL);
+////    cv::resizeWindow("Largest Contour", 600, 800);
+////    cv::imshow("Largest Contour",input_map_image);
+////    cv::waitKey(0);
+//    
+//    
+//        
+////    ////// Display Rectangle that contains largest contour area = outer map walls
+//    cv::rectangle(input_map_image, bounding_rect,  cv::Scalar(255,0,0),1, 8,0);
+//    cv::namedWindow( "Area that will be cropped", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Area that will be cropped", 600, 800);
+//    cv::imshow( "Area that will be cropped", input_map_image );
+//    cv::waitKey(0);
+
+//    // Crop the original map image to eliminate redundant parts
+//    cv::Mat map_im_cropped, map_im_cropped_gs;
+//    map_im_cropped = input_map_image(bounding_rect);
+//    cv::cvtColor( map_im_cropped, map_im_cropped_gs, CV_BGR2GRAY );
+//    cv::namedWindow( "Cropped Map Im", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Cropped Map Im", 600, 800);
+//    cv::imshow( "Cropped Map Im", map_im_cropped);
+//    cv::waitKey(0);
+//    
+    
+    
+    
+
+//    // Count edge numbers of contours to detect objects
+//    std::vector<std::vector<cv::Point> > cropped_contours;
+//    std::vector<cv::Vec4i> cropped_hierarchy;
+//    cv::findContours(map_im_cropped_gs, cropped_contours, cropped_hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+//    std::cout << "Largest Area: " << largest_area << std::endl;
+//    for( int i = 0; i< cropped_contours.size(); i++ )
+//    {
+//        std::vector<cv::Point> approx_cont;
+//        cv::approxPolyDP(cropped_contours[i], approx_cont, 0.1*cv::arcLength(map_im_contours[i],true),true);
+//        std::cout << "Edge Number:" << approx_cont.size() << std::endl;
+//        if (approx_cont.size() == 3 && cv::contourArea( cropped_contours[i],false) < largest_area/4)
+//        {
+//            cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(0,255,255),0,8,cropped_hierarchy);
+//        }
+//        if (approx_cont.size() == 4 && cv::contourArea( cropped_contours[i],false) < (largest_area/100) )
+//        {
+//            cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
+//        }
+//    }
+//    cv::namedWindow( "Detected Objects", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Detected Objects", 600, 800);
+//    cv::imshow("Detected Objects",map_im_cropped);
+//    cv::waitKey(0);
+
+
+
+
+
+
+
+
 
 
 
     //////// OBJECT DETECTION
-    ////// CIRCLE DETECTION
-    std::vector<cv::Vec3f> circles;
-    cv::Mat im_cropped_gs_blurred;
-    cv::GaussianBlur(map_im_cropped_gs, im_cropped_gs_blurred, cv::Size(9,9),2,2);
-    cv::HoughCircles(im_cropped_gs_blurred, circles, CV_HOUGH_GRADIENT, 1, im_cropped_gs_blurred.rows/20, 250, 25, 0, 0 );
-    /// Draw the circles detected
-    for( size_t i = 0; i < circles.size(); i++ )
-    {
-        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-        int radius = cvRound(circles[i][2]);
-        // circle center
-        cv::circle( map_im_cropped, center, 1, cv::Scalar(0,255,0), 1, 8, 0 );
-        // circle outline
-        cv::circle( map_im_cropped, center, radius, cv::Scalar(0,0,255), 1, 8, 0 );
-    }
+    //// CIRCLE DETECTION
+//    std::vector<cv::Vec3f> circles;
+//    cv::Mat im_cropped_gs_blurred;
+//    cv::GaussianBlur(map_im_cropped_gs, im_cropped_gs_blurred, cv::Size(9,9),2,2);
+//    cv::HoughCircles(im_cropped_gs_blurred, circles, CV_HOUGH_GRADIENT, 1, im_cropped_gs_blurred.rows/20, 250, 25, 0, 0 );
+//    /// Draw the circles detected
+//    for( size_t i = 0; i < circles.size(); i++ )
+//    {
+//        cv::Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+//        int radius = cvRound(circles[i][2]);
+//        // circle center
+//        cv::circle( map_im_cropped, center, 1, cv::Scalar(0,255,0), 1, 8, 0 );
+//        // circle outline
+//        cv::circle( map_im_cropped, center, radius, cv::Scalar(0,0,255), 1, 8, 0 );
+//    }
 
-    cv::namedWindow( "Detected Circles", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Detected Circles", 600, 800);
-    cv::imshow("Detected Circles",map_im_cropped);
-    cv::waitKey(0);
+//    cv::namedWindow( "Detected Circles", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Detected Circles", 600, 800);
+//    cv::imshow("Detected Circles",map_im_cropped);
+//    cv::waitKey(0);
 
-    ////// TRIANGLE DETECTION
-    // Dilate the image (bridge the gaps, objects grows)
-    cv::Mat im_cropped_gs_dilated;
-    int dilation_size = 3;
-    cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,
-                                                cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
-                                                cv::Point(dilation_size, dilation_size) );
-    cv::dilate(map_im_cropped_gs,im_cropped_gs_dilated,element);
-    cv::namedWindow( "Dilated Image", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Dilated Image", 600, 800);
-    cv::imshow("Dilated Image",im_cropped_gs_dilated);
-    cv::waitKey(0);
-    // Smooth the image
-    cv::Mat im_crop_dil_blur;
-    cv::GaussianBlur(im_cropped_gs_dilated, im_crop_dil_blur, cv::Size(5,5),0,0);
-    cv::namedWindow( "Blurred Dilated Image", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Blurred Dilated Image", 600, 800);
-    cv::imshow("Blurred Dilated Image",im_crop_dil_blur);
-    cv::waitKey(0);
+    //// TRIANGLE DETECTION
+    //Dilate the image (bridge the gaps, objects grows)
+//    cv::Mat im_cropped_gs_dilated;
+//    int dilation_size = 3;
+//    cv::Mat element = cv::getStructuringElement(cv::MORPH_CROSS,
+//                                                cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+//                                                cv::Point(dilation_size, dilation_size) );
+//    cv::dilate(map_im_cropped_gs,im_cropped_gs_dilated,element);
+//    cv::namedWindow( "Dilated Image", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Dilated Image", 600, 800);
+//    cv::imshow("Dilated Image",im_cropped_gs_dilated);
+//    cv::waitKey(0);
+//    //Smooth the image
+//    cv::Mat im_crop_dil_blur;
+//    cv::GaussianBlur(im_cropped_gs_dilated, im_crop_dil_blur, cv::Size(5,5),0,0);
+//    cv::namedWindow( "Blurred Dilated Image", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Blurred Dilated Image", 600, 800);
+//    cv::imshow("Blurred Dilated Image",im_crop_dil_blur);
+//    cv::waitKey(0);
 
-    // Adaptive threshold may be needed
-    std::vector<std::vector<cv::Point> > cropped_contours;
-    std::vector<cv::Vec4i> cropped_hierarchy;
-    cv::findContours(map_im_cropped_gs, cropped_contours, cropped_hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-    std::cout << "Largest Area: " << largest_area << std::endl;
-    for( int i = 0; i< cropped_contours.size(); i++ )
-    {
-        std::vector<cv::Point> approx_cont;
-        cv::approxPolyDP(cropped_contours[i], approx_cont, 0.1*cv::arcLength(map_im_contours[i],true),true);
-        std::cout << "Edge Number:" << approx_cont.size() << std::endl;
-        if (approx_cont.size() == 3 && cv::contourArea( cropped_contours[i],false) < largest_area/4)
-        {
-            cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(0,255,255),0,8,cropped_hierarchy);
-        }
-        if (approx_cont.size() == 4 && cv::contourArea( cropped_contours[i],false) < (largest_area/100) )
-        {
-            cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
-        }
-    }
-    cv::namedWindow( "Detected Triangles + Circles + Rectangles", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Detected Triangles + Circles + Rectangles", 600, 800);
-    cv::imshow("Detected Triangles + Circles + Rectangles",map_im_cropped);
-    cv::waitKey(0);
+//   //Adaptive threshold may be needed
+//    std::vector<std::vector<cv::Point> > cropped_contours;
+//    std::vector<cv::Vec4i> cropped_hierarchy;
+//    cv::findContours(map_im_cropped_gs, cropped_contours, cropped_hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+//    std::cout << "Largest Area: " << largest_area << std::endl;
+//    for( int i = 0; i< cropped_contours.size(); i++ )
+//    {
+//        std::vector<cv::Point> approx_cont;
+//        cv::approxPolyDP(cropped_contours[i], approx_cont, 0.1*cv::arcLength(map_im_contours[i],true),true);
+//        std::cout << "Edge Number:" << approx_cont.size() << std::endl;
+//        if (approx_cont.size() == 3 && cv::contourArea( cropped_contours[i],false) < largest_area/4)
+//        {
+//            cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(0,255,255),0,8,cropped_hierarchy)
+//        }
+//        if (approx_cont.size() == 4 && cv::contourArea( cropped_contours[i],false) < (largest_area/100) )
+//        {
+//            cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
+//        }
+//    }
+//    cv::namedWindow( "Detected Triangles + Circles + Rectangles", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Detected Triangles + Circles + Rectangles", 600, 800);
+//    cv::imshow("Detected Triangles + Circles + Rectangles",map_im_cropped);
+//    cv::waitKey(0);
 
     return 0;
 }
-
-
-std::string GetCurrentWorkingDir( void ) {
-    char buff[FILENAME_MAX];
-    GetCurrentDir( buff, FILENAME_MAX );
-    std::string current_working_dir(buff);
-    return current_working_dir;
-}
-
-
