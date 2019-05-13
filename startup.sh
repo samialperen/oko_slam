@@ -21,4 +21,4 @@ mkdir /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/car
 
 # cartographer
 
-roslaunch kamu_robotu_launch oko.launch slam_type:=cartographer sim_time:=false bagname:=carto-$currentdate/test-$index/test-$index.bag
+roslaunch kamu_robotu_launch oko.launch slam_type:=cartographer sim_time:=false bagname:=carto-$currentdate/test-$index/test-$((index+1)).bag
