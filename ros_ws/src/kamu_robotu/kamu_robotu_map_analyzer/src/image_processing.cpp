@@ -1,4 +1,4 @@
-// rosrun kamu_robotu_map_analyzer map_analyzer _map_name:=easy_map_scaled_360p_2hz_0.02res
+// rosrun kamu_robotu_map_analyzer map_analyzer /home/alperen/MY_WORKSPACES/oko_slam/ros_ws/saved_maps/simulation_results/carto-kamu_map_1.2m-maxrange
 
 // ROS
 #include <ros/ros.h>
@@ -11,6 +11,7 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
+#include <vector>
 
 #include <boost/filesystem.hpp>
 #include <dirent.h>
@@ -30,39 +31,53 @@ int main(int argc, char** argv)
     ros::init(argc, argv, "map_analyzer");
     ros::NodeHandle nh("~");
 
-    // Get map name from user
-    std::string map_name;
-    if (nh.getParam("map_name", map_name))
-    {
-        ROS_INFO("Got param: %s", map_name.c_str());
-    }
-    else
-    {
-        ROS_ERROR("Failed to get param 'map_name'");
-    }
+    // Get parameter from user
+    std::string file_dir = argv[1];
+    std::cout << argv[0] << std::endl;
+    std::cout << argv[1] << std::endl;
+//    
+//    if (nh.getParam("file_dir", file_dir))
+//    {
+//        ROS_INFO("Got param: %s", file_dir.c_str());
+//    }
+//    else
+//    {
+//        ROS_ERROR("Failed to get param 'file_dir'");
+//    }
 
-    std::string current_dir = GetCurrentWorkingDir();
-    std::string read_direc =  current_dir + "/saved_maps/current_results/" + map_name + ".yaml";
-     
-     
-    //std::cout << read_direc << std::endl; 
+    //std::string current_dir = GetCurrentWorkingDir();
+    //std::string yaml_file =  current_dir + "/saved_maps/simulation_results/" + map_name + ".yaml";
+    std::string yaml_file = file_dir + ".yaml";
+    std::cout << yaml_file << std::endl; 
     // Read yaml files
-    //YAML::Node config = YAML::LoadFile(read_direc);
-
-    std::string read_dir = current_dir + "/saved_maps/current_results/" + map_name + ".pgm";
+    YAML::Node config = YAML::LoadFile(yaml_file);
+    float resolution = config["resolution"].as<float>();
+    std::vector<float> origin_yaml = config["origin"].as<std::vector<float>>();
+    int robot_initial_point_x = abs( origin_yaml[0]/resolution );
+    int robot_initial_point_y = abs( origin_yaml[1]/resolution );
+    // Debug
+//    std::cout << "origin first element: " << origin_yaml[0] << std::endl;
+//    std::cout << "origin second element: " << origin_yaml[1] << std::endl;
+//    std::cout << "resolution: " << resolution << std::endl;
+//    std::cout << "Robot Initial Point X: " << robot_initial_point_x << std::endl;
+//    std::cout << "Robot Initial Point Y: " << robot_initial_point_y << std::endl;
     
-    
-    
-    //std::cout << "OpenCV version : " << CV_VERSION << std::endl;
-
-    
-    ////// Read saved map_name.pgm in oko_slam/ros_ws/saved_maps
+    // Read Original Map Image 
+    std::string map_file = file_dir + ".pgm";
+       
     cv::Mat input_map_image, input_map_image_gs;
-    input_map_image = cv::imread(read_dir);
-    cv::namedWindow( "Original Map", CV_WINDOW_NORMAL);
+    input_map_image = cv::imread(map_file);
+    // Draw a Small Circle to Specify Initial Starting Point of Robot
+    cv::circle( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y), 1.0, cv::Scalar(0,0,255), -1, 8, 0 );
+    // Draw Coordinate Axis whose origin is robot initial position
+    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x+25,robot_initial_point_y), cv::Scalar(0,0,255), 1,8); //X axis
+    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x,robot_initial_point_y-25), cv::Scalar(0,255,0), 1,8); //Y axis
+    
+    cv::namedWindow( "Original Map", CV_WINDOW_NORMAL);    
     cv::resizeWindow("Original Map", 600, 800);
     cv::imshow("Original Map",input_map_image);
     cv::waitKey(0);
+
 
     // Convert original map image to grayscale
     cv::cvtColor( input_map_image, input_map_image_gs, CV_BGR2GRAY );
@@ -74,6 +89,8 @@ int main(int argc, char** argv)
     cv::resizeWindow("Map Edges", 600, 800);
     cv::imshow("Map Edges",map_im_edges);
     cv::waitKey(0);
+    
+    
 
     ////// Find Contours of the map with largest area and get a rectangle around
     // findContours uses edges to detect contours which possible belong to
