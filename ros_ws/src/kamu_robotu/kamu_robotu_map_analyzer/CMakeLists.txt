@@ -14,7 +14,11 @@ find_package(catkin REQUIRED COMPONENTS
   image_transport
   message_generation
 )
+
 find_package(OpenCV REQUIRED)
+
+find_package(yaml-cpp REQUIRED)
+
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
@@ -27,17 +31,19 @@ catkin_package(
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS roscpp std_msgs message_runtime
   DEPENDS system_lib
+  DEPENDS YAML_CPP
 )
 
 
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${YAML_CPP_INCLUDE_DIR}
 )
 
 
 add_executable(map_analyzer src/image_processing.cpp)
-target_link_libraries(map_analyzer ${catkin_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(map_analyzer ${catkin_LIBRARIES} ${OpenCV_LIBS} ${YAML_CPP_LIBRARIES})
 
 
 #add_executable(binary_converter src/binary_converter.cpp src/binary_converter_node.cpp src/ParseArg.cpp)
