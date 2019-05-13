@@ -30,10 +30,10 @@ regions = {
         'south': 0,
 }
 flags = {
-        'east':  0,
-        'north': 0,
-        'west':  0,
-        'south': 0,
+        'east':  True,
+        'north': True,
+        'west':  True,
+        'south': True,
 }
 
 state_ = 0 #Start from find the wall state
@@ -100,7 +100,8 @@ def callback_laser(msg):
       'n-w':   np.nanmin(msg.ranges[7:18]), #(north_west_east_east, north_west_east, north_west, north_west_west, north_west_west_west),
       'n-e':   np.nanmin(msg.ranges[110:120]) #(north_east_east_east, north_east_east, north_east, north_east_west, north_east_west_west),
      }
-     flags = {
+
+    flags = {
         'north': regions['north'] < max_dist2robot,
         'west': regions['west'] < max_dist2robot,
         'south': regions['south'] < max_dist2robot,
@@ -126,7 +127,7 @@ def take_action():
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
 
-    if flags['north'] and (not flags['west']) and (not flags['east'])
+    if flags['north'] and (not flags['west']) and (not flags['east']):
         state_description = 'case 2 - north'
         change_state(3)
     elif flags['n-w'] and (not flags['n-e']) and (not flags['north']):

@@ -59,9 +59,9 @@ int main (int argc, char** argv){
     	{
        		ser.setPort("/dev/rfcomm0");
         	ser.setBaudrate(115200);
-		    serial::stopbits_t  stopbits;
-		    stopbits = serial::stopbits_two;
-		    ser.setStopbits(stopbits);
+		serial::stopbits_t  stopbits;
+		stopbits = serial::stopbits_two;
+		ser.setStopbits(stopbits);
         	serial::Timeout to = serial::Timeout::simpleTimeout(1000);
         	ser.setTimeout(to);
         	ser.open();
@@ -90,7 +90,7 @@ int main (int argc, char** argv){
 	scan.angle_increment = 6.2832/num_readings;
 	scan.time_increment = (1/laser_frequency)/(num_readings);
 	scan.range_min = 0.092;
-	scan.range_max = 0.80;
+	scan.range_max = 1.20;
     	while(n.ok()){
 
         	ros::spinOnce();
