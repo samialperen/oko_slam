@@ -1,4 +1,6 @@
-// rosrun kamu_robotu_map_analyzer map_analyzer /home/alperen/MY_WORKSPACES/oko_slam/ros_ws/saved_maps/simulation_results/carto-kamu_map_1.2m-maxrange
+/* rosrun kamu_robotu_map_analyzer map_analyzer /
+home/alperen/MY_WORKSPACES/oko_slam/ros_ws/saved_maps/real_results/cartographer_maps/4Objects128pt3 */
+
 
 // ROS
 #include <ros/ros.h>
