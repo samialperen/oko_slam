@@ -4,6 +4,7 @@
 
 import rospy
 import os
+import time
 from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
@@ -224,6 +225,7 @@ def main():
     desired_duration = current_duration + d.to_sec()
     print "desired_duration = " + str(desired_duration)
     rate = rospy.Rate(5)
+    time.sleep(30);
     while not rospy.is_shutdown():
         if not active_:
             rate.sleep()
