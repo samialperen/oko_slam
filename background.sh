@@ -7,7 +7,7 @@
 
 # Get your current ip address
 sleep 1
-  
+
   hostname -I >> ~/RaspiShare/ip.txt
   iwgetid  >> ~/RaspiShare/ssid.txt
 
