@@ -1,6 +1,5 @@
-/* rosrun kamu_robotu_map_analyzer map_analyzer /
+/* rosrun kamu_robotu_map_analyzer map_analyzer2 /
 home/alperen/MY_WORKSPACES/oko_slam/ros_ws/saved_maps/real_results/cartographer_maps/4Objects128pt3 */
-
 
 // ROS
 #include <ros/ros.h>
@@ -28,9 +27,15 @@ home/alperen/MY_WORKSPACES/oko_slam/ros_ws/saved_maps/real_results/cartographer_
 // Function Prototypes
 std::string GetCurrentWorkingDir(void);
 
+// Helper function to find a cosine of angle between vectors from pt0->pt1 and pt0->pt2
+static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0);
+// Helper function to display text in the center of a contour
+void setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour);
+
+
 int main(int argc, char** argv)
 {
-    ros::init(argc, argv, "map_analyzer");
+    ros::init(argc, argv, "map_analyzer2");
     ros::NodeHandle nh("~");
 
     // Get parameter from user
@@ -180,51 +185,58 @@ int main(int argc, char** argv)
     std::vector<cv::Vec4i> cropped_hierarchy;
     cv::findContours(map_im_cropped_gs, cropped_contours, cropped_hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
 
-
-    std::vector<cv::Point2f> triangle;    
-    cv::Point2f center, vtx[4];
-    float radius = 0;
     for( int i = 0; i< cropped_contours.size(); i++ )
     {
         std::vector<cv::Point> approx_cont;
         cv::approxPolyDP(cropped_contours[i], approx_cont, 0.1*cv::arcLength(map_im_contours[i],true),true);
         std::cout << "Edge Number:" << approx_cont.size() << std::endl;
+        
         if ( !cv::isContourConvex(approx_cont) )
         {
             continue;
         }
         else if (approx_cont.size() == 3 && cv::contourArea( cropped_contours[i],false) < largest_area/10)
         {
-            //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(0,255,255),0,8,cropped_hierarchy);
-            cv::minEnclosingTriangle(cropped_contours[i], triangle);
+            setLabel(map_im_cropped, "TRI", cropped_contours[i]);    
         }
-        else if ( (approx_cont.size() == 4 || approx_cont.size() == 5) && cv::contourArea( cropped_contours[i],false) < (largest_area/100) ) 
+        if ( (approx_cont.size() >= 4 && approx_cont.size() <= 6) && cv::contourArea( cropped_contours[i],false) < (largest_area/100) ) 
         {
-            //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
-            cv::RotatedRect box = minAreaRect(cropped_contours[i]);
-            box.points(vtx);
-        }
-        else if (approx_cont.size() >= 6 && cv::contourArea( cropped_contours[i],false) < (largest_area/50) )
-        {
-            //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
-            cv::minEnclosingCircle(cv::Mat(cropped_contours[i]), center, radius);
-        }
-    }
-    
-    // Draw Detected Objects
-    
-    
-    for(int i = 0; i < 4; i++ )
-    {
-        cv::line(map_im_cropped, vtx[i], vtx[(i+1)%4], cv::Scalar(255, 0, 0), 1);
-    }
-    cv::circle(map_im_cropped, center, cvRound(radius), cv::Scalar(0, 255, 0), 1);
-    
-//    for( int i = 0; i < 3; i++ )
-//    {
-//        cv::line(map_im_cropped, triangle[i], triangle[(i+1)%3], cv::Scalar(0, 0, 255), 1);
-//    }
+            int vtc = approx_cont.size();
+            
+            std::vector<double> cos;
+            for (int j = 2; j < vtc+1; j++)
+				cos.push_back(angle(approx_cont[j%vtc], approx_cont[j-2], approx_cont[j-1]));
 
+			// Sort ascending the cosine values
+			std::sort(cos.begin(), cos.end());
+
+			// Get the lowest and the highest cosine
+			double mincos = cos.front();
+			double maxcos = cos.back();
+
+			// Use the degrees obtained above and the number of vertices
+			// to determine the shape of the contour
+			if (vtc == 4 && mincos >= -0.1 && maxcos <= 0.3)
+				setLabel(map_im_cropped, "RECT", cropped_contours[i]);
+			else if (vtc == 5 && mincos >= -0.34 && maxcos <= -0.27)
+				setLabel(map_im_cropped, "PENTA", cropped_contours[i]);
+			else if (vtc == 6 && mincos >= -0.55 && maxcos <= -0.45)
+				setLabel(map_im_cropped, "HEXA", cropped_contours[i]);
+        }
+        else if (approx_cont.size() >= 7 && cv::contourArea( cropped_contours[i],false) < (largest_area/50) )
+        {
+            // Detect and label circles
+			double area = cv::contourArea(cropped_contours[i]);
+			cv::Rect r = cv::boundingRect(cropped_contours[i]);
+			int radius = r.width / 2;
+
+			if (std::abs(1 - ((double)r.width / r.height)) <= 0.2 &&
+			    std::abs(1 - (area / (CV_PI * std::pow(radius, 2)))) <= 0.2)
+				setLabel(map_im_cropped, "CIR", cropped_contours[i]);        
+        }
+    }
+    
+   
     cv::namedWindow( "Detected Objects", CV_WINDOW_NORMAL);
     cv::resizeWindow("Detected Objects", 600, 800);
     cv::imshow("Detected Objects",map_im_cropped);
@@ -236,4 +248,35 @@ int main(int argc, char** argv)
     //cv::imwrite(output_image, map_im_cropped);
 
     return 0;
+}
+
+/**
+ * Helper function to find a cosine of angle between vectors
+ * from pt0->pt1 and pt0->pt2
+ */
+static double angle(cv::Point pt1, cv::Point pt2, cv::Point pt0)
+{
+	double dx1 = pt1.x - pt0.x;
+	double dy1 = pt1.y - pt0.y;
+	double dx2 = pt2.x - pt0.x;
+	double dy2 = pt2.y - pt0.y;
+	return (dx1*dx2 + dy1*dy2)/sqrt((dx1*dx1 + dy1*dy1)*(dx2*dx2 + dy2*dy2) + 1e-10);
+}
+
+/**
+ * Helper function to display text in the center of a contour
+ */
+void setLabel(cv::Mat& im, const std::string label, std::vector<cv::Point>& contour)
+{
+	int fontface = cv::FONT_HERSHEY_SIMPLEX;
+	double scale = 0.4;
+	int thickness = 1;
+	int baseline = 0;
+
+	cv::Size text = cv::getTextSize(label, fontface, scale, thickness, &baseline);
+	cv::Rect r = cv::boundingRect(contour);
+
+	cv::Point pt(r.x + ((r.width - text.width) / 2), r.y + ((r.height + text.height) / 2));
+	cv::rectangle(im, pt + cv::Point(0, baseline), pt + cv::Point(text.width, -text.height), CV_RGB(255,255,255), CV_FILLED);
+	cv::putText(im, label, pt, fontface, scale, CV_RGB(0,0,0), thickness, 8);
 }
