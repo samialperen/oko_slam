@@ -128,11 +128,12 @@ def take_action():
     # If there exists an object only north then turn left --> Case 2
     # Positive turn around z axis corresponds to turning left
 
-    if (not flags['n-w']) and (not flags['north']) and (not flags['n-e']):
+    if (not flags['n-w']) and (not flags['north']) and (not flags['n-e']) and not (flags['east']) and (not flags['west']) :
         state_description = 'case 2 - not n-w,n-e,north'
-        change_state(3)
-    else:
         change_state(0)
+    else:
+        state_description = 'case 3 - some  n-w,n-e,north'
+        change_state(3)
     rospy.loginfo(state_description)
     rospy.loginfo(regions)
 
@@ -186,7 +187,7 @@ def main():
     desired_duration = current_duration + d.to_sec()
     print "desired_duration = " + str(desired_duration)
     rate = rospy.Rate(5)
-    time.sleep(30);
+    time.sleep(3);
     while not rospy.is_shutdown():
         if not active_:
             rate.sleep()
