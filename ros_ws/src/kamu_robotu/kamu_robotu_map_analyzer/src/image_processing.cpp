@@ -50,14 +50,14 @@ int main(int argc, char** argv)
     int robot_initial_point_x = abs( origin_yaml[0]/resolution );
     int robot_initial_point_y = offset_coordinate_axis - abs( origin_yaml[1]/resolution );
     
-    std::cout << "x: " << robot_initial_point_x << std::endl;
-    std::cout << "y: " << robot_initial_point_y << std::endl;
+    std::cout << "robot initial pose x: " << robot_initial_point_x << std::endl;
+    std::cout << "robot initial pose y: " << robot_initial_point_y << std::endl;
         
     // Draw a Small Circle to Specify Initial Starting Point of Robot
     cv::circle( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y), 1.0, cv::Scalar(0,0,255), -1, 8, 0 );
     // Draw Coordinate Axis whose origin is robot initial position
-    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x+50,robot_initial_point_y), cv::Scalar(0,0,255), 1,8); //X axis
-    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x,robot_initial_point_y-50), cv::Scalar(0,255,0), 1,8); //Y axis
+    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x+25,robot_initial_point_y), cv::Scalar(0,0,255), 1,8); //X axis
+    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x,robot_initial_point_y-25), cv::Scalar(0,255,0), 1,8); //Y axis
     
 //    cv::namedWindow( "Original Map", CV_WINDOW_NORMAL);    
 //    cv::resizeWindow("Original Map", 600, 800);
@@ -66,9 +66,7 @@ int main(int argc, char** argv)
 
 
     // Convert original map image to grayscale
-    std::cout << "Mc Ahmet" << std::endl;
     cv::cvtColor( input_map_image, input_map_image_gs, CV_BGR2GRAY );
-    std::cout << "Mc Ahmet2" << std::endl;
     ////// Smooth the image to filter noise and find edges using Canny
     cv::Mat map_im_blurred, map_im_edges;
     cv::GaussianBlur(input_map_image_gs, map_im_blurred, cv::Size(3,3),0,0);
@@ -89,11 +87,10 @@ int main(int argc, char** argv)
     double second_largest_area = 0.0; 
     int second_largest_contour_index = 0; 
 
-
     for( int i = 0; i< map_im_contours.size(); i++ )
     {
         double a = cv::contourArea( map_im_contours[i],false);
-        std::cout << "Area: " << a << std::endl;
+        //std::cout << "Area: " << a << std::endl;
         if(a>=largest_area && (a-largest_area) >= 500)
         {
             second_largest_area = largest_area;
@@ -114,8 +111,7 @@ int main(int argc, char** argv)
 //    cv::imshow("Map Edges2",input_map_image);
 //    cv::waitKey(0);
 //    cv::drawContours(input_map_image,map_im_contours,i
-//    ,cv::Scalar(0,0,0),0,8,hierarchy);
-                                              
+//    ,cv::Scalar(0,0,0),0,8,hierarchy);                                          
     }
                   
     //convex hulls    
@@ -169,16 +165,71 @@ int main(int argc, char** argv)
     cv::rectangle(input_map_image, bounding_rect,  cv::Scalar(255,0,0),1, 8,0);
     
     // Crop the original map image to eliminate redundant parts
-    cv::Mat map_im_cropped, map_im_cropped_gs;
+    cv::Mat map_im_cropped;
+    cv::Mat map_im_cropped_gs;
     map_im_cropped = input_map_image(bounding_rect);
-    cv::cvtColor( map_im_cropped, map_im_cropped_gs, CV_BGR2GRAY );
+
 //    cv::namedWindow( "Cropped Map Im", CV_WINDOW_NORMAL);
 //    cv::resizeWindow("Cropped Map Im", 600, 800);
 //    cv::imshow( "Cropped Map Im", map_im_cropped);
 //    cv::waitKey(0);
 
-    std::string output_image = file_dir + "_processed.png";
-    cv::imwrite(output_image, map_im_cropped);
+    // Count edge numbers of contours to detect objects
+    cv::cvtColor( map_im_cropped, map_im_cropped_gs, CV_BGR2GRAY );
+    std::vector<std::vector<cv::Point> > cropped_contours;
+    std::vector<cv::Vec4i> cropped_hierarchy;
+    cv::findContours(map_im_cropped_gs, cropped_contours, cropped_hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
+
+
+    std::vector<cv::Point2f> triangle;    
+    cv::Point2f center, vtx[4];
+    float radius = 0;
+    for( int i = 0; i< cropped_contours.size(); i++ )
+    {
+        std::vector<cv::Point> approx_cont;
+        cv::approxPolyDP(cropped_contours[i], approx_cont, 0.1*cv::arcLength(map_im_contours[i],true),true);
+        std::cout << "Edge Number:" << approx_cont.size() << std::endl;
+        if (approx_cont.size() == 3 && cv::contourArea( cropped_contours[i],false) < largest_area/10)
+        {
+            //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(0,255,255),0,8,cropped_hierarchy);
+            cv::minEnclosingTriangle(cropped_contours[i], triangle);
+        }
+        if ( (approx_cont.size() == 4 || approx_cont.size() == 5) && cv::contourArea( cropped_contours[i],false) < (largest_area/100) ) 
+        {
+            //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
+            cv::RotatedRect box = minAreaRect(cropped_contours[i]);
+            box.points(vtx);
+        }
+        if (approx_cont.size() >= 6 && cv::contourArea( cropped_contours[i],false) < (largest_area/50) )
+        {
+            //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
+            cv::minEnclosingCircle(cv::Mat(cropped_contours[i]), center, radius);
+        }
+    }
+    
+    // Draw Detected Objects
+    
+    
+    for(int i = 0; i < 4; i++ )
+    {
+        cv::line(map_im_cropped, vtx[i], vtx[(i+1)%4], cv::Scalar(255, 0, 0), 1);
+    }
+    cv::circle(map_im_cropped, center, cvRound(radius), cv::Scalar(0, 255, 0), 1);
+    
+//    for( int i = 0; i < 3; i++ )
+//    {
+//        cv::line(map_im_cropped, triangle[i], triangle[(i+1)%3], cv::Scalar(0, 0, 255), 1);
+//    }
+
+    cv::namedWindow( "Detected Objects", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Detected Objects", 600, 800);
+    cv::imshow("Detected Objects",map_im_cropped);
+    cv::waitKey(0);
+
+
+
+    //std::string output_image = file_dir + "_processed.png";
+    //cv::imwrite(output_image, map_im_cropped);
 
     return 0;
 }
