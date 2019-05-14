@@ -2,7 +2,7 @@
   <node name="cartographer_node" pkg="cartographer_ros"
       type="cartographer_node" args="
           -configuration_directory $(find cartographer_ros)/configuration_files
-          -configuration_basename kamu_robotu2.lua"
+          -configuration_basename kamu_robotu.lua"
       output="screen">
   </node>
 
