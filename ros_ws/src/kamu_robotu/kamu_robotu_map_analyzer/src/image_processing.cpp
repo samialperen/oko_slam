@@ -201,10 +201,12 @@ int main(int argc, char** argv)
         else if ( (approx_cont.size() == 4 || approx_cont.size() == 5) && cv::contourArea( cropped_contours[i],false) < (largest_area/100) ) 
         {
             //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
-            cv::RotatedRect box = minAreaRect(cropped_contours[i]);
-            box.points(vtx);
+            //cv::RotatedRect box = minAreaRect(cropped_contours[i]);
+            //box.points(vtx);
+            cv::Rect bound_rect=cv::boundingRect(cropped_contours[i]);
+            cv::rectangle(map_im_cropped, bound_rect,  cv::Scalar(255,0,0),1, 8,0);
         }
-        else if (approx_cont.size() >= 6 && cv::contourArea( cropped_contours[i],false) < (largest_area/50) )
+        else if (approx_cont.size() >= 6 && cv::contourArea( cropped_contours[i],false) < (largest_area/1) )
         {
             //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
             cv::minEnclosingCircle(cv::Mat(cropped_contours[i]), center, radius);
@@ -214,10 +216,10 @@ int main(int argc, char** argv)
     // Draw Detected Objects
     
     
-    for(int i = 0; i < 4; i++ )
-    {
-        cv::line(map_im_cropped, vtx[i], vtx[(i+1)%4], cv::Scalar(255, 0, 0), 1);
-    }
+//    for(int i = 0; i < 4; i++ )
+//    {
+//        cv::line(map_im_cropped, vtx[i], vtx[(i+1)%4], cv::Scalar(255, 0, 0), 1);
+//    }
     cv::circle(map_im_cropped, center, cvRound(radius), cv::Scalar(0, 255, 0), 1);
     
 //    for( int i = 0; i < 3; i++ )
@@ -225,15 +227,15 @@ int main(int argc, char** argv)
 //        cv::line(map_im_cropped, triangle[i], triangle[(i+1)%3], cv::Scalar(0, 0, 255), 1);
 //    }
 
-    cv::namedWindow( "Detected Objects", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Detected Objects", 600, 800);
-    cv::imshow("Detected Objects",map_im_cropped);
-    cv::waitKey(0);
+//    cv::namedWindow( "Detected Objects", CV_WINDOW_NORMAL);
+//    cv::resizeWindow("Detected Objects", 600, 800);
+//    cv::imshow("Detected Objects",map_im_cropped);
+//    cv::waitKey(0);
 
 
 
-    //std::string output_image = file_dir + "_processed.png";
-    //cv::imwrite(output_image, map_im_cropped);
+    std::string output_image = file_dir + "_processed.png";
+    cv::imwrite(output_image, map_im_cropped);
 
     return 0;
 }
