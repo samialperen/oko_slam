@@ -157,9 +157,9 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
 
     //set the velocity
     odom.child_frame_id = "base_link";
-    odom.twist.twist.linear.x = odom_mess.vx/1000.0;
+    odom.twist.twist.linear.x = 0.0;//odom_mess.vx/1000.0;
     odom.twist.twist.linear.y = 0.0;
-    odom.twist.twist.angular.z = odom_mess.w;
+    odom.twist.twist.angular.z = 0.0;//odom_mess.w;
 
     //publish the message
     odom_pub.publish(odom);
