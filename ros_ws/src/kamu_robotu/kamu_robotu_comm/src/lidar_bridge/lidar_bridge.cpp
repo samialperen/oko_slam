@@ -99,7 +99,8 @@ int main (int argc, char** argv){
 		{
             		ROS_INFO_STREAM("Reading from serial port");
             		std_msgs::String result;
-            		readable = ser.readline(280,eol);
+            		readable = ser.readline(620,eol);
+			ROS_INFO("1-%d 2-%d ",readable[0], readable[263]);
 			for(i=0;i<2*num_readings+8;i++)
 			{
 				dummy_8 = readable[i];

@@ -22,7 +22,7 @@ pub_ = None #Since we are using publisher in the functions as well we need to
 linear_velocity_ = 0.03
 angular_velocity_ = 0.20
 
-max_dist2robot = 0.25
+max_dist2robot = 0.22
 
 regions = {
         'east':  0,
