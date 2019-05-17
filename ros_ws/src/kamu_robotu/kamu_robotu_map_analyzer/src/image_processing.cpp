@@ -228,10 +228,10 @@ int main(int argc, char** argv)
         cv::line(map_im_cropped, triangle[i], triangle[(i+1)%3], cv::Scalar(0, 0, 255), 1);
     }
 
-    cv::namedWindow( "Detected Objects", CV_WINDOW_NORMAL);
-    cv::resizeWindow("Detected Objects", 600, 800);
-    cv::imshow("Detected Objects",map_im_cropped);
-    cv::waitKey(0);
+    //cv::namedWindow( "Detected Objects", CV_WINDOW_NORMAL);
+    //cv::resizeWindow("Detected Objects", 600, 800);
+    //cv::imshow("Detected Objects",map_im_cropped);
+    //cv::waitKey(0);
 
 
 
