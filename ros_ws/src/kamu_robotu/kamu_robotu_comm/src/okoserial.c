@@ -24,6 +24,7 @@ guicmd_message guicmd_mess;
 
 
 uint8_t data_index=0;
+uint8_t data_index_odom=0;
 uint8_t k=0;
 
 uint8_t Bluetooth_Data_Buffer[32];
@@ -210,56 +211,56 @@ void getSingleByte(uint8_t  byte)
 			break;
 		case odometry_coming:
 
-			if(data_index <3)
+			if(data_index_odom <3)
 			{
-				float_buffer[data_index++] = byte;
+				float_buffer[data_index_odom++] = byte;
 			}
-			else if(data_index==3)
+			else if(data_index_odom==3)
 			{
-				float_buffer[data_index++] = byte;
+				float_buffer[data_index_odom++] = byte;
 				memcpy(&(odom_mess.x),float_buffer,4);
 				printf("odom_mess.x :%f , %d \n " , odom_mess.x , state);
 			}
-			else if(data_index <7)
+			else if(data_index_odom <7)
 			{
-				float_buffer[(data_index++)-4] = byte;
+				float_buffer[(data_index_odom++)-4] = byte;
 			}
-			else if(data_index==7)
+			else if(data_index_odom==7)
 			{
-				float_buffer[(data_index++)-4] = byte;
+				float_buffer[(data_index_odom++)-4] = byte;
 				memcpy(&(odom_mess.y),float_buffer,4);
 				printf("odom_mess.y :%f , %d  \n" , odom_mess.y , state);
 			}
-			else if(data_index <11)
+			else if(data_index_odom <11)
 			{
-				float_buffer[(data_index++)-8] = byte;
+				float_buffer[(data_index_odom++)-8] = byte;
 			}
-			else if(data_index==11)
+			else if(data_index_odom==11)
 			{
-				float_buffer[(data_index++)-8] = byte;
+				float_buffer[(data_index_odom++)-8] = byte;
 				memcpy(&(odom_mess.theta),float_buffer,4);
 				printf("odom_mess.theta :%f , %d \n " , odom_mess.theta , state);
 			}
-			else if(data_index <15)
+			else if(data_index_odom <15)
 			{
-				float_buffer[(data_index++)-12] = byte;
+				float_buffer[(data_index_odom++)-12] = byte;
 			}
-			else if(data_index==15)
+			else if(data_index_odom==15)
 			{
-				float_buffer[(data_index++)-12] = byte;
+				float_buffer[(data_index_odom++)-12] = byte;
 				memcpy(&(odom_mess.vx),float_buffer,4);
 				printf("odom_mess.vx :%f , %d  \n" , odom_mess.vx , state);
 			}
-			else if(data_index<19)
+			else if(data_index_odom<19)
 			{
-				float_buffer[(data_index++)-16] = byte;
+				float_buffer[(data_index_odom++)-16] = byte;
 			}
-			else if(data_index == 19)
+			else if(data_index_odom == 19)
 			{
-				float_buffer[(data_index++)-16] = byte;
+				float_buffer[(data_index_odom++)-16] = byte;
 				memcpy(&(odom_mess.w),float_buffer,4);
 				printf("odom_mess.w :%f , %d \n " , odom_mess.w , state);
-				data_index = 0;
+				data_index_odom = 0;
 				state = data_came;
 				state = waiting_heading; // omit xor for now
 
