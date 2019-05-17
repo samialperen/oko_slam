@@ -56,8 +56,8 @@ int main(int argc, char** argv)
     // Draw a Small Circle to Specify Initial Starting Point of Robot
     cv::circle( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y), 1.0, cv::Scalar(0,0,255), -1, 8, 0 );
     // Draw Coordinate Axis whose origin is robot initial position
-    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x+25,robot_initial_point_y), cv::Scalar(0,0,255), 1,8); //X axis
-    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x,robot_initial_point_y-25), cv::Scalar(0,255,0), 1,8); //Y axis
+    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x+10,robot_initial_point_y), cv::Scalar(0,0,255), 1,8); //X axis
+    cv::line( input_map_image, cv::Point(robot_initial_point_x,robot_initial_point_y) , cv::Point(robot_initial_point_x,robot_initial_point_y-10), cv::Scalar(0,255,0), 1,8); //Y axis
     
 //    cv::namedWindow( "Original Map", CV_WINDOW_NORMAL);    
 //    cv::resizeWindow("Original Map", 600, 800);
@@ -184,7 +184,7 @@ int main(int argc, char** argv)
     std::vector<cv::Point2f> triangle;    
     cv::Point2f center, vtx[4];
     float radius = 0;
-    std::cout << "TEST1" << std::endl;
+
     for( int i = 0; i< cropped_contours.size(); i++ )
     {
         std::vector<cv::Point> approx_cont;
@@ -213,25 +213,25 @@ int main(int argc, char** argv)
             cv::minEnclosingCircle(cv::Mat(cropped_contours[i]), center, radius);
         }
     }
-    std::cout << "TEST2" << std::endl;
+
     // Draw Detected Objects
     
     
-//    for(int i = 0; i < 4; i++ )
-//    {
-//        cv::line(map_im_cropped, vtx[i], vtx[(i+1)%4], cv::Scalar(255, 0, 0), 1);
-//    }
+    for(int i = 0; i < 4; i++ )
+    {
+        cv::line(map_im_cropped, vtx[i], vtx[(i+1)%4], cv::Scalar(255, 0, 0), 1);
+    }
     cv::circle(map_im_cropped, center, cvRound(radius), cv::Scalar(0, 255, 0), 1);
     
-//    for( int i = 0; i < 3; i++ )
-//    {
-//        cv::line(map_im_cropped, triangle[i], triangle[(i+1)%3], cv::Scalar(0, 0, 255), 1);
-//    }
+    for( int i = 0; i < 3; i++ )
+    {
+        cv::line(map_im_cropped, triangle[i], triangle[(i+1)%3], cv::Scalar(0, 0, 255), 1);
+    }
 
-//    cv::namedWindow( "Detected Objects", CV_WINDOW_NORMAL);
-//    cv::resizeWindow("Detected Objects", 600, 800);
-//    cv::imshow("Detected Objects",map_im_cropped);
-//    cv::waitKey(0);
+    cv::namedWindow( "Detected Objects", CV_WINDOW_NORMAL);
+    cv::resizeWindow("Detected Objects", 600, 800);
+    cv::imshow("Detected Objects",map_im_cropped);
+    cv::waitKey(0);
 
 
 
