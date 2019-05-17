@@ -284,7 +284,7 @@ void getSingleByte(uint8_t  byte)
 
 				else state = waiting_heading;
 			}
-			else if(k == laserscan_length/2)
+			if(k == laserscan_length/2)
             {
 			k=0;
 			state = waiting_heading; // omit xor for now
