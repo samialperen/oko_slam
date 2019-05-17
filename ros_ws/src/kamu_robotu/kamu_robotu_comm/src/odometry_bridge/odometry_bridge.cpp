@@ -55,10 +55,10 @@ int main(int argc, char** argv){
   ros::Subscriber twist_sub = n.subscribe("/cmd_vel",100, twistlistenerCallback);
   tf::TransformBroadcaster odom_broadcaster;
     
-  double old_x, old_y, old_quad;
+  double old_x=0.0, old_y=0.0, old_theta=0.0;
 
   
-double odometry_info[num_readings]; // x,y,th,vx,vy,w
+  double odometry_info[num_readings]; // x,y,th,vx,vy,w
   
   
   try // Connect to the port
@@ -129,17 +129,18 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
     // and here
     // and here
     
-    //since all odometry is 6DOF we'll need a quaternion created from yaw
-    geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(odom_mess.theta);
 
-    //first, we'll publish the transform over tf
-    geometry_msgs::TransformStamped odom_trans;
-    odom_trans.header.stamp = current_time;
-    odom_trans.header.frame_id = "odom";
-    odom_trans.child_frame_id = "base_link";
-
-    if((fabs(odom_mess.x/1000.0 - old_x) < 5.0) || fabs(odom_mess.y/1000.0 - old_y) < 5.0)
+    if((fabs(odom_mess.x/1000.0 - old_x) < 0.05) && (fabs(odom_mess.y/1000.0 - old_y) < 0.05) && (fabs(odom_mess.theta - old_theta) < 1))
     {  
+        //since all odometry is 6DOF we'll need a quaternion created from yaw
+        geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(odom_mess.theta);
+
+        //first, we'll publish the transform over tf
+        geometry_msgs::TransformStamped odom_trans;
+        odom_trans.header.stamp = current_time;
+        odom_trans.header.frame_id = "odom";
+        odom_trans.child_frame_id = "base_link";
+        
         odom_trans.transform.translation.x = odom_mess.x/1000.0;
         odom_trans.transform.translation.y = odom_mess.y/1000.0;
         odom_trans.transform.translation.z = 0.0;
@@ -147,30 +148,31 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
     
         old_x = odom_trans.transform.translation.x;
         old_y = odom_trans.transform.translation.y;
+        old_theta = odom_mess.theta;
         //send the transform
         odom_broadcaster.sendTransform(odom_trans);
+        
+        //next, we'll publish the odometry message over ROS
+        nav_msgs::Odometry odom;
+        odom.header.stamp = current_time;
+        odom.header.frame_id = "odom";
+
+        //set the position
+        odom.pose.pose.position.x = odom_mess.x/1000.0;
+        odom.pose.pose.position.y = odom_mess.y/1000.0;
+        odom.pose.pose.position.z = 0.0;
+        odom.pose.pose.orientation = odom_quat;
+
+        //set the velocity
+        odom.child_frame_id = "base_link";
+        odom.twist.twist.linear.x = 0.0;//odom_mess.vx/1000.0;
+        odom.twist.twist.linear.y = 0.0;
+        odom.twist.twist.angular.z = 0.0;//odom_mess.w;
+
+        //publish the message
+        odom_pub.publish(odom);    
     }
-    
 
-    //next, we'll publish the odometry message over ROS
-    nav_msgs::Odometry odom;
-    odom.header.stamp = current_time;
-    odom.header.frame_id = "odom";
-
-    //set the position
-    odom.pose.pose.position.x = odom_mess.x/1000.0;
-    odom.pose.pose.position.y = odom_mess.y/1000.0;
-    odom.pose.pose.position.z = 0.0;
-    odom.pose.pose.orientation = odom_quat;
-
-    //set the velocity
-    odom.child_frame_id = "base_link";
-    odom.twist.twist.linear.x = 0.0;//odom_mess.vx/1000.0;
-    odom.twist.twist.linear.y = 0.0;
-    odom.twist.twist.angular.z = 0.0;//odom_mess.w;
-
-    //publish the message
-    odom_pub.publish(odom);
     r.sleep();
   }
   initial_req.cmd_type = AutoManuel_Cmd; //
