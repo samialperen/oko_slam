@@ -179,26 +179,27 @@ int main(int argc, char** argv)
     std::vector<std::vector<cv::Point> > cropped_contours;
     std::vector<cv::Vec4i> cropped_hierarchy;
     cv::findContours(map_im_cropped_gs, cropped_contours, cropped_hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-
+    
 
     std::vector<cv::Point2f> triangle;    
     cv::Point2f center, vtx[4];
     float radius = 0;
+    std::cout << "TEST1" << std::endl;
     for( int i = 0; i< cropped_contours.size(); i++ )
     {
         std::vector<cv::Point> approx_cont;
-        cv::approxPolyDP(cropped_contours[i], approx_cont, 0.1*cv::arcLength(map_im_contours[i],true),true);
+        cv::approxPolyDP(cropped_contours[i], approx_cont, 0.1*cv::arcLength(cropped_contours[i],true),true);
         std::cout << "Edge Number:" << approx_cont.size() << std::endl;
         if ( !cv::isContourConvex(approx_cont) )
         {
             continue;
         }
-        else if (approx_cont.size() == 3 && cv::contourArea( cropped_contours[i],false) < largest_area/10)
+        else if (approx_cont.size() == 3 && (cv::contourArea( cropped_contours[i],false) < largest_area/10) && (cv::contourArea( cropped_contours[i],false) > (largest_area/1000)))
         {
             //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(0,255,255),0,8,cropped_hierarchy);
             cv::minEnclosingTriangle(cropped_contours[i], triangle);
         }
-        else if ( (approx_cont.size() == 4 || approx_cont.size() == 5) && cv::contourArea( cropped_contours[i],false) < (largest_area/100) ) 
+        else if ( (approx_cont.size() == 4 || approx_cont.size() == 5) && (cv::contourArea( cropped_contours[i],false) < (largest_area/10)) && (cv::contourArea( cropped_contours[i],false) > (largest_area/500)) ) 
         {
             //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
             //cv::RotatedRect box = minAreaRect(cropped_contours[i]);
@@ -206,13 +207,13 @@ int main(int argc, char** argv)
             cv::Rect bound_rect=cv::boundingRect(cropped_contours[i]);
             cv::rectangle(map_im_cropped, bound_rect,  cv::Scalar(255,0,0),1, 8,0);
         }
-        else if (approx_cont.size() >= 6 && cv::contourArea( cropped_contours[i],false) < (largest_area/1) )
+        else if (approx_cont.size() >= 6 && (cv::contourArea( cropped_contours[i],false) < (largest_area/10)) && (cv::contourArea( cropped_contours[i],false) > (largest_area/1000)))
         {
             //cv::drawContours(map_im_cropped,cropped_contours,i,cv::Scalar(255,0,255),0,8,cropped_hierarchy);
             cv::minEnclosingCircle(cv::Mat(cropped_contours[i]), center, radius);
         }
     }
-    
+    std::cout << "TEST2" << std::endl;
     // Draw Detected Objects
     
     
