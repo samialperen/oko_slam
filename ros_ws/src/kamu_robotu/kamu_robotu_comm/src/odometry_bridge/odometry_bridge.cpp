@@ -47,13 +47,15 @@ return true;
 }
 
 int main(int argc, char** argv){
+
   ros::init(argc, argv, "odometry_bridge");
   ros::NodeHandle n;
   ros::ServiceServer service = n.advertiseService("/kamu_guicmd", gui_command_handler);
   ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
   ros::Subscriber twist_sub = n.subscribe("/cmd_vel",100, twistlistenerCallback);
   tf::TransformBroadcaster odom_broadcaster;
-
+    
+  double old_x, old_y, old_quad;
 
   
 double odometry_info[num_readings]; // x,y,th,vx,vy,w
@@ -136,13 +138,19 @@ double odometry_info[num_readings]; // x,y,th,vx,vy,w
     odom_trans.header.frame_id = "odom";
     odom_trans.child_frame_id = "base_link";
 
-    odom_trans.transform.translation.x = odom_mess.x/1000.0;
-    odom_trans.transform.translation.y = odom_mess.y/1000.0;
-    odom_trans.transform.translation.z = 0.0;
-    odom_trans.transform.rotation = odom_quat;
-
-    //send the transform
-    odom_broadcaster.sendTransform(odom_trans);
+    if((fabs(odom_mess.x/1000.0 - old_x) < 5.0) || fabs(odom_mess.y/1000.0 - old_y) < 5.0)
+    {  
+        odom_trans.transform.translation.x = odom_mess.x/1000.0;
+        odom_trans.transform.translation.y = odom_mess.y/1000.0;
+        odom_trans.transform.translation.z = 0.0;
+        odom_trans.transform.rotation = odom_quat;
+    
+        old_x = odom_trans.transform.translation.x;
+        old_y = odom_trans.transform.translation.y;
+        //send the transform
+        odom_broadcaster.sendTransform(odom_trans);
+    }
+    
 
     //next, we'll publish the odometry message over ROS
     nav_msgs::Odometry odom;
