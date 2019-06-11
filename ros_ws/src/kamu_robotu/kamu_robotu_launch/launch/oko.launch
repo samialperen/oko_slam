@@ -5,11 +5,8 @@
   <arg name="bagname"  default="defaultname" doc="this name will be used to create bag file under saved maps"/>
   <param name="/use_sim_time" value="$(arg sim_time)"/>
 
-  <param name="robot_description" command="$(find xacro)/xacro --inorder $(find kamu_robotu_gazebo)/urdf/kamu_robotu.xacro" />
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" output="screen"></node>
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen"></node>
   <include file="$(find kamu_robotu_comm)/launch/comm.launch"/>
-  <node name="avoid_follow" pkg="kamu_robotu_navigation" type="avoid_follow.py" respawn="false" output="screen"></node>
+  <node name="follow_wall" pkg="kamu_robotu_navigation" type="follow_wall.py" respawn="false" output="screen"></node>
 
   <include file="$(find kamu_robotu_launch)/launch/oko_$(arg slam_type).launch"/>
   <include file="$(find kamu_robotu_launch)/launch/record.launch">

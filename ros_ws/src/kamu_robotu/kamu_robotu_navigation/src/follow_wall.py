@@ -221,11 +221,11 @@ def main():
 
     current_duration = rospy.get_time()
     print "current_duration = " + str(current_duration)
-    d = rospy.Duration.from_sec(60.0*12)
+    d = rospy.Duration.from_sec(60.0*15)
     desired_duration = current_duration + d.to_sec()
     print "desired_duration = " + str(desired_duration)
     rate = rospy.Rate(5)
-    time.sleep(30);
+    time.sleep(5);
     while not rospy.is_shutdown():
         if not active_:
             rate.sleep()
