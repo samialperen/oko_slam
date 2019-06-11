@@ -52,7 +52,7 @@ index=$(cat /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_resul
 mkdir /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate
 mkdir /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/test-$index
 
-echo  'kamurobotu' | sudo -S  rclone copy -v ~/Documents/oko_slam/ros_ws/saved_maps/ ozkardesler:
+echo  'kamurobotu' | sudo -S  rclone copy -v ~/Documents/oko_slam/ros_ws/saved_maps/current_results ozkardesler:
 rosrun carto_map_server carto_map_saver -f /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/test-$index/$currenttime
 rosrun kamu_robotu_map_analyzer map_analyzer /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/test-$index/$currenttime
 convert /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/test-$index/$currenttime.pgm  /home/ozkardesler/Documents/oko_slam/ros_ws/saved_maps/current_results/carto-$currentdate/test-$index/$currenttime.png
