@@ -130,7 +130,7 @@ int main(int argc, char** argv){
     // and here
     
 
-    if((fabs(odom_mess.x/1000.0 - old_x) < 0.05) && (fabs(odom_mess.y/1000.0 - old_y) < 0.05) && (fabs(odom_mess.theta - old_theta) < 1))
+    if(1)//(fabs(odom_mess.x/1000.0 - old_x) < 0.05) && (fabs(odom_mess.y/1000.0 - old_y) < 0.05) && (fabs(odom_mess.theta - old_theta) < 1))
     {  
         //since all odometry is 6DOF we'll need a quaternion created from yaw
         geometry_msgs::Quaternion odom_quat = tf::createQuaternionMsgFromYaw(odom_mess.theta);
