@@ -65,9 +65,9 @@ int main(int argc, char** argv){
     {
         ser.setPort("/dev/ttyS0"); // miniuart port of the rpi, /dev/ttyS0
         ser.setBaudrate(9600);
-	serial::stopbits_t  stopbits;
-	stopbits = serial::stopbits_one;	
-	ser.setStopbits(stopbits);
+	    serial::stopbits_t  stopbits;
+	    stopbits = serial::stopbits_one;	
+	    ser.setStopbits(stopbits);
         serial::Timeout to = serial::Timeout::simpleTimeout(100);
         ser.setTimeout(to);
         ser.open();
@@ -89,7 +89,7 @@ int main(int argc, char** argv){
   
   initial_req.cmd_type = Odom_Reset_Cmd;
   initial_req.cmd_param = 0; // Odom reset does not require any param
-//  gui_command_handler(initial_req,initial_res); // Initially, reset odometry
+  gui_command_handler(initial_req,initial_res); // Initially, reset odometry
   
   initial_req.cmd_type = AutoManuel_Cmd;
   initial_req.cmd_param = 0; // Activate Auto mode
